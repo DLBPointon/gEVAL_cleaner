@@ -1,5 +1,4 @@
 # cleandata.py by dp24
-A python update to a bash script inuse in a GRIT pipeline
 
 ## Development Diary
 
