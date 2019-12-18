@@ -192,17 +192,22 @@ def downandsave(orgname, datatype, save):
                       {orgname}/{datatype}/*{datatype}{file_end}'''
 
 
-    download = os.popen(f'''wget -q -o /dev/null {FTP_ADDRESS}''')
+    download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{orgname}/{datatype}/*{datatype}{file_end}''')
 
-    movetodirect = os.popen(f'''mv *all.fa.gz {save}/
-                                cleaning_data/downloaded/''')
-
+    movetodirect = os.popen(f'''mv *all.fa.gz {save}/cleaning_data/downloaded/''')
 
 def decompress(save, orgname, datatype):
     newfile = f'{save}/cleaning_data/downloaded/{orgname}-{datatype}.all.fa'
-    with open(newfile, 'w') as filein:
-        with gzip.open('''gEVAL_cleaner/cleaning_data/downloaded/{orgname}*{datatype}.all.fa.gz''', 'r') as fileout:
-            shutil.copyfileobj(filein, fileout)
+    directory = f'{save}/cleaning_data/downloaded/'
+    for file in os.listdir(directory):
+        if file.endswith(f'.{datatype}.all.fa.gz'):
+            unzipme = file
+        else:
+            print(f'There is no file ending with {datatype}.all.fa.gz')
+    
+    with open(unzipme, 'rb') as filein:
+        with gzip.open(newfile, 'wb') as fileout:
+            shutil.copyfileobj(filein, fileout, 100)
 
 
 def read_fasta(fileout):
