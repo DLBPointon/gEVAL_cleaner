@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 if sys.version_info[0] < 3 and sys.version_info[1] < 7:
@@ -26,25 +26,8 @@ except ImportError:
     print(PRINT_ERROR)
     sys.exit(0)
 
-try:
-    import glob2
-    print('glob2 imported')
-except ImportError:
-    print('glob2 not imported')
-    print(PRINT_ERROR)
-    sys.exit(0)
-
-try:
-    import wget
-    print('wget imported')
-except ImportError:
-    print('wget not imported')
-    print(PRINT_ERROR)
-    sys.exit(0)
-
 import gzip
 import shutil
-import delegator
 
 '''Please use ./cleandata.py -h for the full __doc__'''
 
@@ -57,8 +40,7 @@ DOCSTRING ="""
     Updated from wc2's clean_gEVALsupport_data.sh
 -------------------------------------------------------------
     IMPORTANT NOTES BEOFRE CARRYING ON
-This script is written in python 3.7 although it should be 
-        possible to run on 3.6.
+This script is written in for python3.6
 
           IMPORT MODULES
 
@@ -211,7 +193,7 @@ def downandsave(orgname, datatype, save):
     full_address = f'{FTP_ADDRESS}{orgname}*{datatype}{file_end}'
     print(full_address)
 
-    filetodecomp = delegator.run(f'wget -P {save}/cleaning_data/downloaded/ {full_address}')
+    filetodecomp = os.popen(f'wget -P {save}/cleaning_data/downloaded/ {full_address}')
 
     return filetodecomp
 
