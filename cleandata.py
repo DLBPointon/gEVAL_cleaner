@@ -177,9 +177,8 @@ def main():
         if option.org and option.TYPE:
             print('Lets do stuff')
 
-            full_address = downandsave(option.org, option.TYPE, option.SAVE)
-
-            # fileout = decompress(full_address, option.SAVE, option.org, option.TYPE)
+            downandsave(option.org, option.TYPE, option.SAVE)
+            decompress(option.SAVE, option.org, option.TYPE)
 
             # entryfunction(fileout, naming, op.TYPE)
 
@@ -188,23 +187,23 @@ def main():
 
 
 def downandsave(orgname, datatype, save):
-    FTP_ADDRESS = 'ftp://ftp.ensembl.org/pub/release-98/fasta/'
     file_end = '.all.fa.gz'
-    full_address = f'{FTP_ADDRESS}{orgname}*{datatype}{file_end}'
-    print(full_address)
+    FTP_ADDRESS = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
+                      {orgname}/{datatype}/*{datatype}{file_end}'''
 
-    filetodecomp = os.popen(f'wget -P {save}/cleaning_data/downloaded/ {full_address}')
 
-    return filetodecomp
+    download = os.popen(f'''wget -q -o /dev/null {FTP_ADDRESS}''')
+
+    movetodirect = os.popen(f'''mv *all.fa.gz {save}/
+                                cleaning_data/downloaded/''')
 
 
 def decompress(full_address, save, orgname, datatype):
-    newfile = f'{save}/cleaning_data/downloads/{orgname}-{datatype}.fa'
+    newfile = f'{save}/cleaning_data/downloaded/{orgname}-{datatype}.all.fa'
     with open(newfile, 'w') as filein:
-        with gzip.open(full_address, 'r') as fileout:
+        with gzip.open('''gEVAL_cleaner/cleaning_data/downloaded/
+                          {orgname}-{datatype}*''', 'r') as fileout:
             shutil.copyfileobj(filein, fileout)
-
-    return fileout
 
 
 def read_fasta(fileout):
