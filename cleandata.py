@@ -201,8 +201,7 @@ def downandsave(orgname, datatype, save):
 def decompress(save, orgname, datatype):
     newfile = f'{save}/cleaning_data/downloaded/{orgname}-{datatype}.all.fa'
     with open(newfile, 'w') as filein:
-        with gzip.open('''gEVAL_cleaner/cleaning_data/downloaded/
-                          {orgname}-{datatype}*''', 'r') as fileout:
+        with gzip.open('''gEVAL_cleaner/cleaning_data/downloaded/{orgname}*{datatype}.all.fa.gz''', 'r') as fileout:
             shutil.copyfileobj(filein, fileout)
 
 
