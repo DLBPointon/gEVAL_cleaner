@@ -198,7 +198,7 @@ def downandsave(orgname, datatype, save):
                                 cleaning_data/downloaded/''')
 
 
-def decompress(full_address, save, orgname, datatype):
+def decompress(save, orgname, datatype):
     newfile = f'{save}/cleaning_data/downloaded/{orgname}-{datatype}.all.fa'
     with open(newfile, 'w') as filein:
         with gzip.open('''gEVAL_cleaner/cleaning_data/downloaded/
