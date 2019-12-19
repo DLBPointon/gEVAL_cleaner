@@ -26,12 +26,10 @@ except ImportError:
     print(PRINT_ERROR)
     sys.exit(0)
 
-import gzip
-import shutil
 
 '''Please use ./cleandata.py -h for the full __doc__'''
 
-DOCSTRING ="""
+DOCSTRING = """
 -------------------------------------------------------------
         Clean_gEVAL_supporting_DATA
 -------------------------------------------------------------
@@ -47,10 +45,6 @@ This script is written in for python3.6
             arg.parse
             os
             sys
-            glob2
-            shutil
-            contextlib
-            urllib2
 -------------------------------------------------------------
 
 USE CASE FOR THE SCRIPT
@@ -81,6 +75,13 @@ USAGE INSTRUCTIONS
  
  - Clean - and optional argument to remove parent files
 
+ - Organism Name - the name of the orgnaism as it looks in
+ the respective database.
+
+ - Save - The directotry to save all files
+
+
+
 -------------------------------------------------------------
 
 FUTURE CHANGES
@@ -110,26 +111,18 @@ def parse_command_args(args=None):
                         action = 'version',
                         version = '%(prog)s Alpha 1.0')
 
-    parser.add_argument('-FASTA',
-                        type = str,
-                        action = 'store',
-                        help = 'The path for the FASTA input')
-
     parser.add_argument('-TYPE',
                         type = str,
                         choices=['cds', 'cdna', 'pep', 'ncrna'],
                         help = 'The type of DATA contained in the file',
-                        required = True)
+                        required = True,
+                        dest = 'ty')
 
-    parser.add_argument('-PREFIX',
+    parser.add_argument('--prefix',
                         type = str,
                         action = 'store',
-                        help = 'User-defined naming scheme',)
-
-    parser.add_argument('-ENTRIES',
-                        type = int,
-                        action = 'store',
-                        help = 'User-defined number of entries per file')
+                        help = 'User-defined naming scheme',
+                        dest = 'pre')
 
     parser.add_argument('-ORGNAME',
                         type = str,
@@ -144,7 +137,8 @@ def parse_command_args(args=None):
                         type = str,
                         action = 'store',
                         help = 'Save location for the downloaded files',
-                        required = True)
+                        required = True,
+                        dest = 'sv')
 
     parser.add_argument('--clean',
                         action = 'store_true',
@@ -165,55 +159,73 @@ def main():
 
     if option.org:
         for direct in directlist:
-            path = option.SAVE + direct
-            try:
-                os.makedirs(path, accessrights)
-            except OSError:
-                print(f'Creation of directory has failed at: {path}')
+            path = option.sv + direct
+            if os.path.exists(path):
+                print(f'Path: {path} :already exists')
             else:
-                print(f'Successfully created the directory path at: {path}')
+                try:
+                    os.makedirs(path, accessrights)
+                except OSError:
+                    print(f'Creation of directory has failed at: {path}')
+                else:
+                    print(f'Successfully created the directory path at: {path}')
 
     
-        if option.org and option.TYPE:
+        if option.org and option.ty:
             print('Lets do stuff')
 
-            downandsave(option.org, option.TYPE, option.SAVE)
-            decompress(option.SAVE, option.org, option.TYPE)
+            downandsave(option.org, option.sv, option.ty)
 
-            # entryfunction(fileout, naming, op.TYPE)
+            entryfunction(option.org, option.sv, option.pre, option.ty)
 
+            seqclean()
+
+            rm_redundants()
         # Then for the files saved from entryfunction
         # send each one to Seqclean
 
 
-def downandsave(orgname, datatype, save):
-    file_end = '.all.fa.gz'
+def downandsave(org, sv, ty = 'pep'):
+    """
+    A function to dowload a user defined file and mv it into the
+    downloaded folder.
+    """
+    if ty == 'ncrna':
+        file_end = '.fa.gz'
+    else:
+        file_end = '.all.fa.gz'
     FTP_ADDRESS = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
-                      {orgname}/{datatype}/*{datatype}{file_end}'''
-
-
-    download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{orgname}/{datatype}/*{datatype}{file_end}''')
-
-    movetodirect = os.popen(f'''mv *all.fa.gz {save}/cleaning_data/downloaded/''')
-
-def decompress(save, orgname, datatype):
-    newfile = f'{save}/cleaning_data/downloaded/{orgname}-{datatype}.all.fa'
-    directory = f'{save}/cleaning_data/downloaded/'
-    for file in os.listdir(directory):
-        if file.endswith(f'.{datatype}.all.fa.gz'):
-            unzipme = file
-        else:
-            print(f'There is no file ending with {datatype}.all.fa.gz')
+                      {org}/{ty}/*{ty}{file_end}'''
+    downloadloc = f'{sv}/cleaning_data/downloaded/'
     
-    with open(unzipme, 'rb') as filein:
-        with gzip.open(newfile, 'wb') as fileout:
-            shutil.copyfileobj(filein, fileout, 100)
+    download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{org}/{ty}/*{ty}{file_end}''')
+
+    movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
 
 
-def read_fasta(fileout):
-    """A function which opens and splits a fasta into name and seq"""
+def decompress(org, sv, ty = 'pep'):
+    """
+    A function to decompress the downloaded file from downandsave().
+    """
+    if ty == 'ncrna':
+        file_end = '.fa.gz'
+        file_uncomp = '.fa'
+    else:
+        file_end = '.all.fa.gz'
+        file_uncomp = '.all.fa'
+    newfile = f'{sv}/cleaning_data/downloaded/{org}-{ty}{file_uncomp}'
+    directory = f'{sv}/cleaning_data/downloaded/'
+    for file in os.listdir(directory):
+        if file.endswith(f'.{ty}{file_end}'):
+            unzipper = os.popen(f'gunzip {directory}{file_end}')
+    return unzipper
+
+def read_fasta(filetoparse):
+    """
+    A function which opens and splits a fasta into name and seq.
+    """
     name, seq = None, []
-    for line in fileout:
+    for line in filetoparse:
         line = line.rstrip()
         if line.startswith(">"):
             if name:
@@ -225,74 +237,126 @@ def read_fasta(fileout):
         yield (name, ''.join(seq))
 
 
-def entryfunction(filein, naming, datatype='pep'):
-    """The entryfunction function splits a FASTA file into a user defined
-    number of entries per file"""
-    if datatype == 'pep':
+def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
+    """
+    The entryfunction function splits a FASTA file into a defined
+    number of entries per file, pep == 2000 enteries and everything
+    else is split into 5000 enteries.
+    """
+    if ty == 'pep':
         print('peptide datatypes split at 2000 entries per file')
         entryper = 2000
     else:
         print('CDs, cDNA and RNA all split at 5000 entries per file')
         entryper = 5000
 
+    if ty == 'ncrna':
+        file_uncomp = '.fa'
+    else:
+        file_uncomp = '.all.fa'
+
+
     count = 0
     filecounter = 0
     entry = []
 
-    FO += '/fastaparsed/entries/'
+    filesavedto = f'{sv}/cleaning_data/entries/'
+    directory = f'{sv}/cleaning_data/downloaded/'
 
-    with open(FI) as filetoparse:
-        for name, seq in read_fasta(filetoparse):
-            nameseq = name, seq
-            entry.append(nameseq)
-            count += 1
+    for file in os.listdir(directory):
 
-            if count == entryper:
-                filecounter += 1
+        if file.endswith(file_uncomp):
+            unzipped = f'{directory}{file}'
 
-                with open(f'{FO}{naming}{filecounter}.fa', 'w') as done:
-                    print(f'Find your file at: \n {FO}entry{filecounter}.fa')
-                    for idss, sequence in entry:
-                        done.write(f'{idss} {sequence} \n\n')
+            if os.path.exists(unzipped):
+                print('It\'s a valid address')
+            else FileNotFoundError:
+                print('Cannot find the file, check the folders')
 
-                    count = 0
-                    entry = []
+            with open(unzipped,'r') as filetoparse:
+                for name, seq in read_fasta(filetoparse):
+                    name = massage(name)
+                    print('Cleaning the headers')
+                    if ty == 'dna':
+                        seq = seqclean(seq)
+                        print('Cleaning the dna sequences')
 
-        filecounter += 1
-        with open(f'{FO}{naming}{filecounter}.fa', 'w') as done:
-            print(f'Find your file at: \n {FO}entry{filecounter}.fa')
-            for idss, sequence in entry:
-                done.write(f'{idss} {sequence} \n\n')
+                    nameseq = name, seq
+                    entry.append(nameseq)
+                    count += 1
 
-            entry = []
+                    if count == entryper:
+                        filecounter += 1
 
+                        with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
+                            print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
+                            for header, sequence in entry:
+                                done.write(f'{header} {sequence} \n\n')
 
-def seqclean():
+                            count = 0
+                            entry = []
+
+                    filecounter += 1
+                    with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
+                        print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
+                        for header, sequence in entry:
+                            done.write(f'{header} {sequence} \n\n')
+
+                        entry = []
+
+-----------------------
+def seqclean(seq):
+    """
+    A function to sent entry split files to the seqclean perl script,
+    this script will clean the sequence to ensure there is nothing that
+    requires correcting.
+    """
     # Send to wc2 seqclean perl script
-    # Can use envoy or sys
     seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
-    entr_file_loc = [] # for all files in the location for the entry folder
-    run_seqclean = delegator.run('bsub -o cleanplease.out -K seqlean')
-    else_run = delegator.run('bsub -o cleanplease.out -K /nfs/users/nfs_w/wc2/tools/seqclean')
+    run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
+    else_run = os.popen('bsub -o cleanplease.out -K /nfs/users/nfs_w/wc2/tools/seqclean')
 
-    for file in entr_file_loc:
-        if seqclean_v_check:
-            run_seqclean + file
-        if seqclean_v_check == False:
-            else_run + file
-        else:
-            print('Failed to run')
-            sys.exit(0)
+    if ty == 'dna':
 
+        for seq:
+            if seqclean_v_check:
+                run_seqclean + file
+            if seqclean_v_check == False:
+                else_run + file
+            else:
+                print('Failed to run')
+                sys.exit(0)
+    else:
+        print('Seq clean skipped, only for DNA')
 
-def massage():
-    for header, seq in entry:
-        print(header)
+    return seq
+
+def massage(name, ty):
+    """
+    A function to 'massage' the sequence headers into a more human readable style
+    """
+    if ty == 'ncrna'
+        print('Damned NCBI RNA')
+
+    else:
+        print('Data from Ensembl')
+
+        Need the gene symbol and the ENS code >symbol(ENS code)
+        
         #Use regex to get string segment at gene name to label the header 
 
+    return name
 
-def rm_redundants():
-    print('x')
+def rm_redundants(sv, clean):
+    """
+    A function to remove all redunant files, an optional 
+    """
+    dellogs = os.popen('rm ')
+
+    needs to get rid of *log, *.cidx, *.cln, outparts*
+    
+    .clean files are what we need!!!!
+
     # rm the now useless files
 
 

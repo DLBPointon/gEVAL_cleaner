@@ -29,3 +29,24 @@
 - Simplified with use of os module.
 - downandsave() works - downloads all.fa.gz and mv's to a downloaded folder (/gEVAL_cleaner/cleaning_data/downloaded/).
 - decompress() semi-functional - a file is decompressed but unfortunately the output is corrupted.
+
+### 19/12/19
+- decompress() fixed, used the simpler gunzip method rather than importing modules specifically for the task.
+#### Update 2
+- Expanded the folder directory creater so that it doesn't throw a false error if the folder already exists.
+- Changed argument layouts for consistancy.
+- Changed entryfunction to use option.prefix as an optional argument to specify the name of the produced entry files.
+#### Update 3
+- entryfunction() now working propperly.
+	- Indentation Errors.
+	- Expanded to include massage function.
+		- Currently not working.
+	- File locating Error.
+- Addition of function __docs__.
+- Made a start on massage().
+- Made a start on rm_redundants().
+- Made changes to account for the fact that ncrna files do not contain .all.fa.gz and instead are .ncrna.fa.gz.
+- NCRNA Will need reworking as data comes from RefSeq not ensembl.
+- fleshed out more plans for the script.
+- Attempting regex.
+
