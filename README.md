@@ -50,3 +50,10 @@
 - fleshed out more plans for the script.
 - Attempting regex.
 
+### 20/12/19
+- Fixed the entry functions issue with numbers of entries per file - indentation error.
+- Completed massage() but there is an error where it will break a dozen files in.
+- rm_redundants() has been added to.
+- seqclean() will take some time to understand as well as understand the resulting files.
+- Added to command structure.
+- 

@@ -26,6 +26,13 @@ except ImportError:
     print(PRINT_ERROR)
     sys.exit(0)
 
+try:
+    import re
+    print('regex imported')
+except ImportError:
+    print('regex cannot be imported')
+    print(PRINT_ERROR)
+    sys.exit(0)
 
 '''Please use ./cleandata.py -h for the full __doc__'''
 
@@ -178,9 +185,10 @@ def main():
 
             entryfunction(option.org, option.sv, option.pre, option.ty)
 
-            seqclean()
-
-            rm_redundants()
+#            seqclean(seq, ty)
+            
+        if option.clean:
+            rm_redundants(option.sv)
         # Then for the files saved from entryfunction
         # send each one to Seqclean
 
@@ -269,13 +277,13 @@ def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
             unzipped = f'{directory}{file}'
 
             if os.path.exists(unzipped):
-                print('It\'s a valid address')
-            else FileNotFoundError:
-                print('Cannot find the file, check the folders')
+                print('I CAN find the unzipped fasta')
+            else:
+                print('I CANNOT find the unzipped fasta')
 
             with open(unzipped,'r') as filetoparse:
                 for name, seq in read_fasta(filetoparse):
-                    name = massage(name)
+                    name = massage(name, ty)
                     print('Cleaning the headers')
                     if ty == 'dna':
                         seq = seqclean(seq)
@@ -297,15 +305,14 @@ def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
                             entry = []
 
                     filecounter += 1
-                    with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
-                        print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
-                        for header, sequence in entry:
-                            done.write(f'{header} {sequence} \n\n')
+                with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
+                    print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
+                    for header, sequence in entry:
+                        done.write(f'{header} {sequence} \n\n')
 
-                        entry = []
+                    entry = []
 
------------------------
-def seqclean(seq):
+def seqclean(seq, ty):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
@@ -318,7 +325,7 @@ def seqclean(seq):
 
     if ty == 'dna':
 
-        for seq:
+        if seq:
             if seqclean_v_check:
                 run_seqclean + file
             if seqclean_v_check == False:
@@ -335,27 +342,44 @@ def massage(name, ty):
     """
     A function to 'massage' the sequence headers into a more human readable style
     """
-    if ty == 'ncrna'
-        print('Damned NCBI RNA')
+    if ty == 'pep' or 'cds' or 'dna':
+        print(f'This sequence is {ty} from ensembl.')
+
+        if name.startswith('>'):
+            gene_symbol = re.search(r'gene_symbol:(\w+)', name).group(0)
+            ens_code = re.search(r'ENS(\w+.\d+)', name).group(1)
+            name = f'> {gene_symbol} ({ens_code})'
+
+    elif ty == 'ncrna':
+        print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
 
     else:
-        print('Data from Ensembl')
-
-        Need the gene symbol and the ENS code >symbol(ENS code)
-        
-        #Use regex to get string segment at gene name to label the header 
-
+        print('Some how you\'ve got to this point with an incorrect data type')
+        sys.exit(0)
+    
     return name
 
-def rm_redundants(sv, clean):
+def rm_redundants(sv):
     """
     A function to remove all redunant files, an optional 
     """
-    dellogs = os.popen('rm ')
-
-    needs to get rid of *log, *.cidx, *.cln, outparts*
+    print('remover')
     
-    .clean files are what we need!!!!
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded',
+                  '/cleaning_data/logs', '/cleaning_data/cleaned']
+    exten_dels = ['.log', '.cidx', '.cln', 'outparts']
+    for direct in directlist
+        path = f'{sv}{direct}'
+        for file in os.listdir(path):
+            for extension in exten_dels:
+                if file.endswith(extension):
+                    del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
+                if extension == '.clean':
+                    mv_clean = os.popen('mv {sv}{directlist}{file} {sv}/cleaning_data/cleaned/')
+                else:
+                    print('What is this {file}?')
+
+    #.clean files are what we need!!!!
 
     # rm the now useless files
 
