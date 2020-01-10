@@ -224,9 +224,12 @@ def decompress(sv, ty):
     file_end = '.fa.gz'
 
     directory = f'{sv}/cleaning_data/downloaded/'
-    for file in os.listdir(directory):
+    filefinder = os.listdir(directory)
+    for file in filefinder:
         if file.endswith(f'{file_end}'):
-            unzipper = os.popen(f'gunzip {directory}{file_end}')
+            unzipper = os.popen(f'gunzip {directory}*{file_end}')
+            if file in filefinder.endswith('.fa'):
+                print(file)
 
 
 def read_fasta(filetoparse):
@@ -382,8 +385,7 @@ def rm_redundants(sv):
     """
     print('remover')
     
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded',
-                  '/cleaning_data/logs', '/cleaning_data/cleaned']
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned']
 
     exten_dels = ['.log', '.cidx', '.cln', 'outparts']
 
