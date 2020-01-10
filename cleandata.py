@@ -1,37 +1,39 @@
 #!/usr/bin/env python3
 
-import sys
-if sys.version_info[0] < 3 and sys.version_info[1] < 7:
-    raise Exception("""Must be using Python 3.7 for the full
-                    functionality of this script""")
-if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
-    print('Your using at least Version 3.7, You are good to go...')
-
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
                  If running server side then contact your admin'''
+
+try:
+    import sys
+    if sys.version_info[0] < 3 and sys.version_info[1] < 7:
+        raise Exception("""Must be using Python 3.7 for the full
+                        functionality of this script""")
+    if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+        print('Your using at least Version 3.7, You are good to go...')
+except ImportError:
+    print(f'sys not imported \n {PRINT_ERROR}' )
+    sys.exit(0)
+
 try:
     import argparse
     print('argparse imported')
 except ImportError:
-    print('argparse not imported')
-    print(PRINT_ERROR)
+    print(f'argparse not imported \n {PRINT_ERROR}' )
     sys.exit(0)
 
 try:
     import os
     print('os imported')
 except ImportError:
-    print('os not imported')
-    print(PRINT_ERROR)
+    print(f'os not imported \n {PRINT_ERROR}' )
     sys.exit(0)
 
 try:
     import re
     print('regex imported')
 except ImportError:
-    print('regex cannot be imported')
-    print(PRINT_ERROR)
+    print(f're not imported \n {PRINT_ERROR}' )
     sys.exit(0)
 
 '''Please use ./cleandata.py -h for the full __doc__'''
@@ -49,9 +51,11 @@ This script is written in for python3.6
 
           IMPORT MODULES
 
-            arg.parse
+            argparse
             os
             sys
+            re
+
 -------------------------------------------------------------
 
 USE CASE FOR THE SCRIPT
@@ -86,7 +90,6 @@ USAGE INSTRUCTIONS
  the respective database.
 
  - Save - The directotry to save all files
-
 
 
 -------------------------------------------------------------
@@ -155,11 +158,9 @@ def parse_command_args(args=None):
     return option
 
 
-
 def main():
 
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded',
-                  '/cleaning_data/logs', '/cleaning_data/cleaned']
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned', '/cleaning_data/dna_seqclean']
     accessrights = 0o755
 
     option = parse_command_args()
@@ -228,6 +229,7 @@ def decompress(org, sv, ty = 'pep'):
             unzipper = os.popen(f'gunzip {directory}{file_end}')
     return unzipper
 
+
 def read_fasta(filetoparse):
     """
     A function which opens and splits a fasta into name and seq.
@@ -277,9 +279,9 @@ def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
             unzipped = f'{directory}{file}'
 
             if os.path.exists(unzipped):
-                print('I CAN find the unzipped fasta')
+                print('CAN find the unzipped fasta')
             else:
-                print('I CANNOT find the unzipped fasta')
+                print('CANNOT find the unzipped fasta')
 
             with open(unzipped,'r') as filetoparse:
                 for name, seq in read_fasta(filetoparse):
@@ -312,31 +314,43 @@ def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
 
                     entry = []
 
+
 def seqclean(seq, ty):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
     requires correcting.
     """
-    # Send to wc2 seqclean perl script
+
     seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
     run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
     else_run = os.popen('bsub -o cleanplease.out -K /nfs/users/nfs_w/wc2/tools/seqclean')
+    option = parse_command_args()
+    path = f'{option.sv}/cleaning_data/enteries'
 
     if ty == 'dna':
+        if os.path.exists(path):
+            print('Path to files found')
+            for file in os.listdir(path):
+                try:
+                    set_script = os.popen(f'bsub -o cleanplease.out -M500 -R\'select[mem>500] rusage[mem=500]\' \\ ~wc2/tools/seqclean/seqclean {file}')
+                except IOError:
+                    print('Command or files are incorrect')
 
-        if seq:
-            if seqclean_v_check:
-                run_seqclean + file
-            if seqclean_v_check == False:
-                else_run + file
-            else:
-                print('Failed to run')
-                sys.exit(0)
+                result = set_script.read()
+                res.close()
+                print(f'Finished: {result}')
+                # The above should start the perl script and then check to see if the script runs and finishes for each of the fiules passed onto it and then print the file it has finihsed working on
+        else:
+            print('File paths not found')
+            sys.exit(0)
+
+
     else:
         print('Seq clean skipped, only for DNA')
 
     return seq
+
 
 def massage(name, ty):
     """
@@ -359,6 +373,7 @@ def massage(name, ty):
     
     return name
 
+
 def rm_redundants(sv):
     """
     A function to remove all redunant files, an optional 
@@ -367,21 +382,20 @@ def rm_redundants(sv):
     
     directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded',
                   '/cleaning_data/logs', '/cleaning_data/cleaned']
+
     exten_dels = ['.log', '.cidx', '.cln', 'outparts']
+
     for direct in directlist
         path = f'{sv}{direct}'
         for file in os.listdir(path):
             for extension in exten_dels:
                 if file.endswith(extension):
-                    del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
-                if extension == '.clean':
+                    if extension == '.clean':
                     mv_clean = os.popen('mv {sv}{directlist}{file} {sv}/cleaning_data/cleaned/')
+                    del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
+                
                 else:
                     print('What is this {file}?')
-
-    #.clean files are what we need!!!!
-
-    # rm the now useless files
 
 
 if __name__ == '__main__':
