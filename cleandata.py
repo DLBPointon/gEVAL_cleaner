@@ -261,7 +261,7 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
             if ty == 'pep':
                 entryper = 2000
                 print('Pep splits at 2000 per file')
-            if ty = 'ncrna':
+            if ty == 'ncrna':
                 file_uncomp = '.fa'
             else:
                 file_uncomp = '.all.fa' 
