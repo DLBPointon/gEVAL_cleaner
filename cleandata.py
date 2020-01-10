@@ -168,9 +168,9 @@ def main():
 
 
 
-    if option.org:
+    if option.o:
         for direct in directlist:
-            path = option.sv + direct
+            path = option.s + direct
             if os.path.exists(path):
                 print(f'Path: {path} :already exists')
             else:
@@ -182,19 +182,19 @@ def main():
                     print(f'Successfully created the directory path at: {path}')
 
     
-        if option.org and option.ty:
+        if option.o and option.t:
             print('Lets do stuff')
 
-            downandsave(option.org, option.sv, option.ty)
+            downandsave(option.o, option.s, option.t)
 
-            decompress(option.sv, option.ty)
+            decompress(option.s, option.t)
 
-            entryfunction(option.org, option.sv, option.pre, option.ty)
+            entryfunction(option.o, option.s, option.p, option.t)
 
             # seqclean(seq, ty)
             
-        if option.clean:
-            rm_redundants(option.sv)
+        if option.c:
+            rm_redundants(option.s)
         # Then for the files saved from entryfunction
         # send each one to Seqclean
 
@@ -328,7 +328,7 @@ def seqclean(seq, ty):
     run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
     else_run = os.popen('bsub -o cleanplease.out -K /nfs/users/nfs_w/wc2/tools/seqclean')
     option = parse_command_args()
-    path = f'{option.sv}/cleaning_data/enteries'
+    path = f'{option.s}/cleaning_data/enteries'
 
     if ty == 'dna':
         if os.path.exists(path):
