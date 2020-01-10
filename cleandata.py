@@ -364,8 +364,12 @@ def massage(name, ty):
         print(f'This sequence is {ty} from ensembl.')
 
         if name.startswith('>'):
-            gene_symbol = re.search(r'gene_symbol:(\w+)', name).group(0)
-            ens_code = re.search(r'ENS(\w+.\d+)', name).group(1)
+            gene_symbol = re.search(r'gene_symbol:(\w+)', name)
+            ens_code = re.search(r'ENS(\w+.\d+)', name)
+            if gene_symbol:
+                print(gene_symbol.groups())
+            if ens_code:
+                print(ens_code.groups())
             name = f'> {gene_symbol} ({ens_code})'
 
     elif ty == 'ncrna':
