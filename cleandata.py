@@ -189,7 +189,7 @@ def main():
 
             decompress(option.s, option.t)
 
-            entryfunction(option.o, option.s, option.p, option.t)
+            entryfunction(option.o, option.s, option.t, option.p)
 
             # seqclean(seq, ty)
             
@@ -269,8 +269,6 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
                 file_uncomp = '.fa'
             else:
                 file_uncomp = '.all.fa' 
-        else:
-            print(f'Is the file still compressed or is there an odd extention. \nLooking for \'.fa\' or \'.all.fa\'\nCheck your parent file in: {sv}/cleaning_data/downloads')
 
     count = 0
     filecounter = 0
