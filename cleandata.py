@@ -394,8 +394,8 @@ def rm_redundants(sv):
             for extension in exten_dels:
                 if file.endswith(extension):
                     if extension == '.clean':
-                    mv_clean = os.popen('mv {sv}{directlist}{file} {sv}/cleaning_data/cleaned/')
-                    del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
+                        mv_clean = os.popen('mv {sv}{directlist}{file} {sv}/cleaning_data/cleaned/')
+                        del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
                 
                 else:
                     print('What is this {file}?')
