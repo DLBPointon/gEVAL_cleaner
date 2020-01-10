@@ -3,17 +3,30 @@
 ## Development Diary
 
 ### Usage instructions
-./cleandata.py -TYPE cdna -ORG  mesocricetus_auratus -SAVE ./test
+./cleandata.py -t <-TYPE> cdna -o <-ORG>  mesocricetus_auratus -s <-SAVE> ./test
 
 --------------
 
 ### 10/01/2020
+
+#### Update 1
 - Changed README so that the newest change is at the top.
 - seqclean - rewritten thanks to a better unstanding of the original seqclean script - not finished.
-- decompress has stopped working - in process of rewritting.
+- Decompress has stopped working - in process of rewritting.
 - Considering rewritting downandsave to accept ftp address.
 - Enteries needs a rewrite so that the file outputs are saved in a 'type'.all.fa
-- possibly change save file generation to reduce the number of nested folders.
+- Possibly change save file generation to reduce the number of nested folders.
+
+#### Update 2
+- Added decompress to main()
+- Changed args for easier use in command
+	- t = -TYPE
+	- s = -SAVE
+	- o = -ORGNAME
+	- p = --prefix
+	- c = --clean
+- Changed the entry function type checking method so it is more comprehensive although more complex.
+- Simplified decompress - unnecessary complexity.
 
 ### 20/12/19
 - Fixed the entry functions issue with numbers of entries per file - indentation error.
@@ -24,10 +37,12 @@
 
 ### 19/12/19
 - decompress() fixed, used the simpler gunzip method rather than importing modules specifically for the task.
-#### Update 2
+
+#### Update 2 
 - Expanded the folder directory creater so that it doesn't throw a false error if the folder already exists.
 - Changed argument layouts for consistancy.
 - Changed entryfunction to use option.prefix as an optional argument to specify the name of the produced entry files.
+
 #### Update 3
 - entryfunction() now working propperly.
 	- Indentation Errors.

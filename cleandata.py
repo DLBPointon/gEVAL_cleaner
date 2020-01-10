@@ -126,13 +126,13 @@ def parse_command_args(args=None):
                         choices=['cds', 'cdna', 'pep', 'ncrna'],
                         help = 'The type of DATA contained in the file',
                         required = True,
-                        dest = 'ty')
+                        dest = 't')
 
     parser.add_argument('--prefix',
                         type = str,
                         action = 'store',
                         help = 'User-defined naming scheme',
-                        dest = 'pre')
+                        dest = 'p')
 
     parser.add_argument('-ORGNAME',
                         type = str,
@@ -141,18 +141,19 @@ def parse_command_args(args=None):
                                   (use how the name would appear in ensembl
                                   to make life easier, long name)''',
                         required = True,
-                        dest = 'org')
+                        dest = 'o')
 
     parser.add_argument('-SAVE',
                         type = str,
                         action = 'store',
                         help = 'Save location for the downloaded files',
                         required = True,
-                        dest = 'sv')
+                        dest = 's')
 
     parser.add_argument('--clean',
                         action = 'store_true',
-                        help = 'Specifying this argument, ')
+                        help = 'Specifying this argument allows the script to clean all un-nessasery files after use',
+                        dest = 'c')
 
     option = parser.parse_args(args)
     return option
@@ -186,6 +187,8 @@ def main():
 
             downandsave(option.org, option.sv, option.ty)
 
+            decompress(option.sv, option.ty)
+
             entryfunction(option.org, option.sv, option.pre, option.ty)
 
             # seqclean(seq, ty)
@@ -214,23 +217,16 @@ def downandsave(org, sv, ty):
     movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
 
 
-def decompress(org, sv, ty):
+def decompress(sv, ty):
     """
     A function to decompress the downloaded file from downandsave().
     """
-    if ty == 'ncrna':
-        file_end = '.fa.gz'
-
-    else:
-        file_end = '.all.fa.gz'
-
+    file_end = '.fa.gz'
 
     directory = f'{sv}/cleaning_data/downloaded/'
     for file in os.listdir(directory):
-        if file.endswith(f'.{ty}{file_end}'):
+        if file.endswith(f'{file_end}'):
             unzipper = os.popen(f'gunzip {directory}{file_end}')
-
-    return unzipper
 
 
 def read_fasta(filetoparse):
@@ -256,18 +252,21 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
     number of entries per file, pep == 2000 enteries and everything
     else is split into 5000 enteries.
     """
-    if ty == 'pep':
-        print('peptide datatypes split at 2000 entries per file')
-        entryper = 2000
-    else:
-        print('CDs, cDNA and RNA all split at 5000 entries per file')
-        entryper = 5000
+    print('CDs, cDNA and ncRNA all split at 5000 entries per file')
+    entryper = 5000
 
-    if ty == 'ncrna':
-        file_uncomp = '.fa'
-    else:
-        file_uncomp = '.all.fa'
-
+    typelist = ['pep', 'ncrna', 'cdna', 'cds']
+    for type in typelist:
+        if type == ty:
+            if ty == 'pep':
+                entryper = 2000
+                print('Pep splits at 2000 per file')
+            if ty = 'ncrna':
+                file_uncomp = '.fa'
+            else:
+                file_uncomp = '.all.fa' 
+        else:
+            print(f'Is the file still compressed or is there an odd extention. \nLooking for \'.fa\' or \'.all.fa\'\nCheck your parent file in: {sv}/cleaning_data/downloads')
 
     count = 0
     filecounter = 0
@@ -278,7 +277,7 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
 
     for file in os.listdir(directory):
 
-        if file.endswith(file_uncomp):
+        if file.endswith('.fa'):
             unzipped = f'{directory}{file}'
 
             if os.path.exists(unzipped):
@@ -301,8 +300,8 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
                     if count == entryper:
                         filecounter += 1
 
-                        with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
-                            print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
+                        with open(f'{filesavedto}{org}-{filecounter}.fa', 'w') as done:
+                            print(f'Find your file at: \n {filesavedto}-{org}-{filecounter}.fa')
                             for header, sequence in entry:
                                 done.write(f'{header} {sequence} \n\n')
 
@@ -310,8 +309,8 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
                             entry = []
 
                     filecounter += 1
-                with open(f'{filesavedto}{pre}-{filecounter}.fa', 'w') as done:
-                    print(f'Find your file at: \n {filesavedto}{pre}-{filecounter}.fa')
+                with open(f'{filesavedto}{org}-{filecounter}.fa', 'w') as done:
+                    print(f'Find your file at: \n {filesavedto}-{org}-{filecounter}.fa')
                     for header, sequence in entry:
                         done.write(f'{header} {sequence} \n\n')
 
