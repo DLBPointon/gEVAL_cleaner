@@ -165,6 +165,8 @@ def main():
 
     option = parse_command_args()
 
+
+
     if option.org:
         for direct in directlist:
             path = option.sv + direct
@@ -186,7 +188,7 @@ def main():
 
             entryfunction(option.org, option.sv, option.pre, option.ty)
 
-#            seqclean(seq, ty)
+            # seqclean(seq, ty)
             
         if option.clean:
             rm_redundants(option.sv)
@@ -194,7 +196,7 @@ def main():
         # send each one to Seqclean
 
 
-def downandsave(org, sv, ty = 'pep'):
+def downandsave(org, sv, ty):
     """
     A function to dowload a user defined file and mv it into the
     downloaded folder.
@@ -212,21 +214,22 @@ def downandsave(org, sv, ty = 'pep'):
     movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
 
 
-def decompress(org, sv, ty = 'pep'):
+def decompress(org, sv, ty):
     """
     A function to decompress the downloaded file from downandsave().
     """
     if ty == 'ncrna':
         file_end = '.fa.gz'
-        file_uncomp = '.fa'
+
     else:
         file_end = '.all.fa.gz'
-        file_uncomp = '.all.fa'
-    newfile = f'{sv}/cleaning_data/downloaded/{org}-{ty}{file_uncomp}'
+
+
     directory = f'{sv}/cleaning_data/downloaded/'
     for file in os.listdir(directory):
         if file.endswith(f'.{ty}{file_end}'):
             unzipper = os.popen(f'gunzip {directory}{file_end}')
+
     return unzipper
 
 
@@ -247,7 +250,7 @@ def read_fasta(filetoparse):
         yield (name, ''.join(seq))
 
 
-def entryfunction(org, sv, pre = 'OrgOfInt', ty = 'pep'):
+def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
     """
     The entryfunction function splits a FASTA file into a defined
     number of entries per file, pep == 2000 enteries and everything
@@ -385,7 +388,7 @@ def rm_redundants(sv):
 
     exten_dels = ['.log', '.cidx', '.cln', 'outparts']
 
-    for direct in directlist
+    for direct in directlist:
         path = f'{sv}{direct}'
         for file in os.listdir(path):
             for extension in exten_dels:
