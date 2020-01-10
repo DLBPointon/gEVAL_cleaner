@@ -228,8 +228,9 @@ def decompress(sv, ty):
     for file in filefinder:
         if file.endswith(f'{file_end}'):
             unzipper = os.popen(f'gunzip {directory}*{file_end}')
-            if file in filefinder.endswith('.fa'):
-                print(file)
+            for file in filefinder:
+                if file.endswith('.fa'):
+                    print(file)
 
 
 def read_fasta(filetoparse):
