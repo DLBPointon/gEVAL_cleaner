@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Test organism link at ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/
 
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
@@ -289,32 +290,32 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
 
             with open(unzipped,'r') as filetoparse:
                 for name, seq in read_fasta(filetoparse):
-                    name = massage(name, ty)
+                    new_name = massage(name, ty)
                     print('Cleaning the headers')
                     if ty == 'dna':
                         seq = seqclean(seq)
                         print('Cleaning the dna sequences')
 
-                    nameseq = name, seq
+                    nameseq = new_name, seq
                     entry.append(nameseq)
                     count += 1
 
                     if count == entryper:
                         filecounter += 1
 
-                        with open(f'{filesavedto}{org}-{filecounter}.fa', 'w') as done:
-                            print(f'Find your file at: \n {filesavedto}-{org}-{filecounter}.fa')
-                            for header, sequence in entry:
-                                done.write(f'{header} {sequence} \n\n')
+                        with open(f'{filesavedto}{org}-{filecounter}-{ty}.fa', 'w') as done:
+                            print(f'Find your final file at: \n {filesavedto}-{org}-{filecounter}-{ty}.fa')
+                            for new_name, seq in entry:
+                                done.write(f'{new_name} {seq} \n\n')
 
                             count = 0
                             entry = []
 
                     filecounter += 1
-                with open(f'{filesavedto}{org}-{filecounter}.fa', 'w') as done:
-                    print(f'Find your file at: \n {filesavedto}-{org}-{filecounter}.fa')
-                    for header, sequence in entry:
-                        done.write(f'{header} {sequence} \n\n')
+                with open(f'{filesavedto}{org}-{filecounter}-{ty}.fa', 'w') as done:
+                    print(f'Find your final file at: \n {filesavedto}-{org}-{filecounter}-{ty}.fa')
+                    for new_name, seq in entry:
+                        done.write(f'{new_name} {seq} \n\n')
 
                     entry = []
 
@@ -332,7 +333,7 @@ def seqclean(seq, ty):
     option = parse_command_args()
     path = f'{option.s}/cleaning_data/enteries'
 
-    if ty == 'dna':
+    if ty == 'cdna':
         if os.path.exists(path):
             print('Path to files found')
             for file in os.listdir(path):
@@ -360,16 +361,28 @@ def massage(name, ty):
     """
     A function to 'massage' the sequence headers into a more human readable style
     """
+    ens_code_lack = 0
+    gene_symbol_lack = 0
+
     if ty == 'pep' or 'cds' or 'dna':
         print(f'This sequence is {ty} from ensembl.')
 
         if name.startswith('>'):
             gene_symbol = re.search(r'gene_symbol:(\w+)', name)
             ens_code = re.search(r'ENS(\w+.\d+)', name)
+
             if gene_symbol:
                 print(gene_symbol.groups())
+            else:
+                gene_symbol = 'NoGeneName'
+                gene_symbol_lack += 1
+
             if ens_code:
                 print(ens_code.groups())
+            else:
+                ens_code = 'NoEnsCode'
+                ens_code_lack += 1
+
             name = f'> {gene_symbol} ({ens_code})'
 
     elif ty == 'ncrna':
@@ -377,6 +390,7 @@ def massage(name, ty):
 
     else:
         print('Some how you\'ve got to this point with an incorrect data type')
+    print(f' ens_code lacking = {ens_code_lack}\n gene_symbol_lacking = {gene_symbol_lack}')
         sys.exit(0)
     
     return name
@@ -396,11 +410,10 @@ def rm_redundants(sv):
         path = f'{sv}{direct}'
         for file in os.listdir(path):
             for extension in exten_dels:
-                if file.endswith(extension):
-                    if extension == '.clean':
+                if file.endswith(exten_dels):
+                        del_extem_del = os.popen(f'rm {file}')
+            if extension == '.clean':
                         mv_clean = os.popen('mv {sv}{directlist}{file} {sv}/cleaning_data/cleaned/')
-                        del_redun = os.popen(f'rm {sv}{directlist}*{exten_dels}')
-                
                 else:
                     print('What is this {file}?')
 
