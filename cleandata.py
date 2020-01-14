@@ -186,11 +186,11 @@ def main():
         if option.o and option.t:
             print('Lets do stuff')
 
-            downandsave(option.o, option.s, option.t)
+            org = downandsave(option.o, option.s, option.t)
 
             decompress(option.s, option.t)
 
-            entryfunction(option.o, option.s, option.t, option.p)
+            entryfunction(org, option.s, option.t, option.p)
 
             # seqclean(seq, ty)
             
@@ -205,17 +205,28 @@ def downandsave(org, sv, ty):
     A function to dowload a user defined file and mv it into the
     downloaded folder.
     """
+    downloadloc = f'{sv}/cleaning_data/downloaded/'
+
     if ty == 'ncrna':
         file_end = '.fa.gz'
     else:
         file_end = '.all.fa.gz'
-    FTP_ADDRESS = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
-                      {org}/{ty}/*{ty}{file_end}'''
-    downloadloc = f'{sv}/cleaning_data/downloaded/'
-    
-    download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{org}/{ty}/*{ty}{file_end}''')
 
+    if org.startswith('ftp://'):
+        download = os.popen(f'''wget -q -o /dev/null {org}''')
+        org_from_name = re.search(r'fasta\/(\w+)',org)
+        org = org_from_name.group(1)
+        
+    else:
+        FTP_ADDRESS = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
+                          {org}/{ty}/*{ty}{file_end}'''
+        download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{org}/{ty}/*{ty}{file_end}''')
+    
+    #else:
+     #   print('Input format not recognised!\nIs it exactly how the species name appears in the relevant database?\nOr the full link from the database?')
     movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
+    rm_originaldl = os.popen(f'''rm *{file_end}*''')
+    return org
 
 
 def decompress(sv, ty):
@@ -270,7 +281,7 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
                 file_uncomp = '.fa'
             else:
                 file_uncomp = '.all.fa' 
-
+    print(org)
     count = 0
     filecounter = 0
     entry = []
@@ -291,7 +302,6 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
             with open(unzipped,'r') as filetoparse:
                 for name, seq in read_fasta(filetoparse):
                     new_name = massage(name, ty)
-                    print('Cleaning the headers')
                     if ty == 'dna':
                         seq = seqclean(seq)
                         print('Cleaning the dna sequences')
@@ -303,19 +313,17 @@ def entryfunction(org, sv, ty, pre = 'OrgOfInt'):
                     if count == entryper:
                         filecounter += 1
 
-                        with open(f'{filesavedto}{org}-{filecounter}-{ty}.fa', 'w') as done:
-                            print(f'Find your final file at: \n {filesavedto}-{org}-{filecounter}-{ty}.fa')
+                        with open(f'{filesavedto}{org}-{ty}{filecounter}MOD.fa', 'w') as done:
                             for new_name, seq in entry:
-                                done.write(f'{new_name} {seq} \n\n')
+                                done.write(f'{new_name}\n{seq} \n\n')
 
                             count = 0
                             entry = []
 
                     filecounter += 1
-                with open(f'{filesavedto}{org}-{filecounter}-{ty}.fa', 'w') as done:
-                    print(f'Find your final file at: \n {filesavedto}-{org}-{filecounter}-{ty}.fa')
+                with open(f'{filesavedto}{org}-{ty}{filecounter}MOD.fa', 'w') as done:
                     for new_name, seq in entry:
-                        done.write(f'{new_name} {seq} \n\n')
+                        done.write(f'{new_name}\n{seq} \n\n')
 
                     entry = []
 
@@ -372,19 +380,20 @@ def massage(name, ty):
             ens_code = re.search(r'ENS(\w+.\d+)', name)
 
             if gene_symbol:
-                print(gene_symbol.groups())
+                gene_symbol = gene_symbol.group(1)
+                print(gene_symbol)
             else:
-                gene_symbol = 'NoGeneName'
+                gene_symbol = 'NoGeneSymbol'
                 gene_symbol_lack += 1
 
             if ens_code:
-                print(ens_code.groups())
+                ens_code = ens_code.group(0)
+                print(ens_code)
             else:
                 ens_code = 'NoEnsCode'
                 ens_code_lack += 1
 
-            name = f'> {gene_symbol.groups()} ({ens_code.groups()})'
-
+            name = f'>{gene_symbol}({ens_code})'
     elif ty == 'ncrna':
         print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
 
@@ -392,9 +401,7 @@ def massage(name, ty):
         print('Some how you\'ve got to this point with an incorrect data type')
         sys.exit(0)
 
-    print(f' ens_code lacking = {ens_code_lack}\n gene_symbol_lacking = {gene_symbol_lack}')
-    print(f'{name}')
-
+    print(name)
 
     return name
 
