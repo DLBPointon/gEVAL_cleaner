@@ -341,6 +341,45 @@ def entryfunction(org, save, data_type, pre='OrgOfInt'):
                     entry = []
 
 
+def massage(name, data_type):
+    """
+    A function to 'massage' the sequence headers into a more human readable style
+    """
+
+    if data_type == 'pep' or 'cds' or 'dna':
+        print(f'This sequence is {data_type} from ensembl.')
+
+        if name.startswith('>'):
+            gene_symbol = re.search(r'gene_symbol:(\w+)', name)
+            ens_code = re.search(r'ENSMAUT(\w+.\d+)', name)
+
+            if gene_symbol:
+                gene_symbol = gene_symbol.group(1)
+                print(gene_symbol)
+            else:
+                gene_symbol = re.search(r'ENSMAUG(\w+)', name)
+                gene_symbol = gene_symbol.group(0)
+
+            if ens_code:
+                ens_code = ens_code.group(0)
+                print(ens_code)
+            else:
+                ens_code = 'NoEnsCode'
+
+            name = f'>{gene_symbol}({ens_code})'
+    elif data_type == 'ncrna':
+        print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
+
+    else:
+        print('''Some how you\'ve got to this point with an
+                 incorrect data type''')
+        sys.exit(0)
+
+    print(name)
+
+    return name
+
+
 """
 BEYOND THIS POINT IS NOT COMPLETED AND MAY NOT RUN AT ALL
 """
@@ -382,49 +421,6 @@ def seqclean(seq, data_type):
         print('Seq clean skipped, only for DNA')
 
     return seq
-
-
-def massage(name, data_type):
-    """
-    A function to 'massage' the sequence headers into a more human readable style
-    """
-    ens_code_lack = 0
-    gene_symbol_lack = 0
-
-    if data_type == 'pep' or 'cds' or 'dna':
-        print(f'This sequence is {data_type} from ensembl.')
-
-        if name.startswith('>'):
-            gene_symbol = re.search(r'gene_symbol:(\w+)', name)
-            ens_code = re.search(r'ENSMAUT(\w+.\d+)', name)
-
-            if gene_symbol:
-                gene_symbol = gene_symbol.group(1)
-                print(gene_symbol)
-            else:
-                gene_symbol = re.search(r'ENSMAUG(\w+)', name)
-                gene_symbol = gene_symbol.group(0)
-                gene_symbol_lack += 1
-
-            if ens_code:
-                ens_code = ens_code.group(0)
-                print(ens_code)
-            else:
-                ens_code = 'NoEnsCode'
-                ens_code_lack += 1
-
-            name = f'>{gene_symbol}({ens_code})'
-    elif data_type == 'ncrna':
-        print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
-
-    else:
-        print('''Some how you\'ve got to this point with an
-                 incorrect data type''')
-        sys.exit(0)
-
-    print(name)
-
-    return name
 
 
 def rm_redundants(save):
