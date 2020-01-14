@@ -383,7 +383,7 @@ def massage(name, ty):
                 ens_code = 'NoEnsCode'
                 ens_code_lack += 1
 
-            name = f'> {gene_symbol} ({ens_code})'
+            name = f'> {gene_symbol.groups()} ({ens_code.groups()})'
 
     elif ty == 'ncrna':
         print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
