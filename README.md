@@ -32,7 +32,7 @@ or
 - Fixed Regex errors.
 - Majority pycodestyle compliant.
 - PyLint 8.12 - Due to unfinished nature of script.
-- Files are no saved in the format orgname-type-genecounterMOD.fa.
+- Files are now saved in the format orgname-type-genecounterMOD.fa.
 - DOCS Updated.
 - Reordered script to help it make more sense.
 - Updates to README in the form of Usage instructions and to do list.
