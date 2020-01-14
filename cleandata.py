@@ -393,6 +393,7 @@ def massage(name, ty):
         sys.exit(0)
 
     print(f' ens_code lacking = {ens_code_lack}\n gene_symbol_lacking = {gene_symbol_lack}')
+    print(f'{name}')
 
 
     return name
