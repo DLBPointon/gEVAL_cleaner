@@ -390,9 +390,11 @@ def massage(name, ty):
 
     else:
         print('Some how you\'ve got to this point with an incorrect data type')
-    print(f' ens_code lacking = {ens_code_lack}\n gene_symbol_lacking = {gene_symbol_lack}')
         sys.exit(0)
-    
+
+    print(f' ens_code lacking = {ens_code_lack}\n gene_symbol_lacking = {gene_symbol_lack}')
+
+
     return name
 
 
