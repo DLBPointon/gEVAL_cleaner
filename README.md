@@ -3,9 +3,39 @@
 ## Development Diary
 
 ### Usage instructions
-./cleandata.py -t <-TYPE> cdna -o <-ORG>  mesocricetus_auratus -s <-SAVE> ./test
+./cleandata.py -TYPE cdna -ORG mesocricetus_auratus -SAVE ./test
+
+or
+
+./cleandata.py -TYPE cdna -ORG ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz -SAVE ./test
+
+-------------
+#### Args
+
+- t = -TYPE 	cdna, pep, ncrna, cds.
+- s = -SAVE 	Save location for the file structure.
+- o = -ORGNAME 	Orgnaism name as appears on the relevant database or the full ftp link.
+- p = --prefix 	Currently Unused - User-defined naming scheme.
+- c = --clean 	Clean all unneeded files.
+--------------
+
+### To-Do list
+- SeqClean Function
+- rm_redundants function
 
 --------------
+### 14/01/2020
+- Fixed the renaming of enteries as master file is split.
+- Script now takes a ftp ensembl link as input as well as the organism name as it would appear on the website e.g. genus_species.
+	- Uses Regex to pull out a organism name.
+- Fixed spelling and syntax errors.
+- Fixed Regex errors.
+- Majority pycodestyle compliant.
+- PyLint 8.12 - Due to unfinished nature of script.
+- Files are no saved in the format orgname-type-genecounterMOD.fa.
+- DOCS Updated.
+- Reordered script to help it make more sense.
+- Updates to README in the form of Usage instructions and to do list.
 
 ### 10/01/2020
 
@@ -27,6 +57,10 @@
 	- c = --clean
 - Changed the entry function type checking method so it is more comprehensive although more complex.
 - Simplified decompress - unnecessary complexity.
+
+#### Update 3
+- Fixed decompress issue.
+- Massaging step is now finding missing gene_symbols.
 
 ### 20/12/19
 - Fixed the entry functions issue with numbers of entries per file - indentation error.
@@ -63,7 +97,7 @@
 - Added the addition of a directory structure to make downstream sorting easier, e.g. logs go to a log folder and .clean files to another etc.
 - Removed some modules for compataility with farm5.
 - Simplified with use of os module.
-- downandsave() works - downloads all.fa.gz and mv's to a downloaded folder (/gEVAL_cleaner/cleaning_data/downloaded/).
+- downandsave() works - downloads all.fa.gz and mv's to a downloaded folder (/'User-defined'/cleaning_data/downloaded/).
 - decompress() semi-functional - a file is decompressed but unfortunately the output is corrupted.
 
 ### 12/12/19
