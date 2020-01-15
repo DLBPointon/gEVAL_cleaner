@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Test organism link at
-# ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/
+
+'''Please use ./cleandata.py -h for the full __doc__'''
 
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
@@ -38,7 +38,7 @@ except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
-'''Please use ./cleandata.py -h for the full __doc__'''
+
 
 DOCSTRING = """
 -------------------------------------------------------------
@@ -84,20 +84,29 @@ USAGE INSTRUCTIONS
 
 or
 
-./cleandata.py -TYPE cdna -ORG ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz
+./cleandata.py -TYPE cdna -ORG ftp://ftp.ensembl.org/pub/
+release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
+MesAur1.0.cdna.all.fa.gz
 
- - SAVE ./test
+Optionals include --clean and/or --debug
+-------------------------------------------------------------
 
- - ORG - Organism Name - the name of the orgnaism as it looks in
- the respective database.
+ARGUMENTS
+
+ - SAVE - ./test
+
+ - ORG - Organism Name - the name of the orgnaism as it looks
+  in the respective database.
 
  - TYPE - will be a choice between cdna/cds/pep/rna
 
- - PRE - Prefix - will be the user defined naming scheme - NOT IN USE
+ - PRE - Prefix - will be the user defined naming scheme
+  - NOT IN USE
 
- - CLEAN - and optional argument to remove parent files
+ --clean - and optional argument to remove parent files
 
- - debug - Used to diagnose issues with the running of the script
+ --debug - Used to diagnose issues with the running of the
+  script
 
 
 -------------------------------------------------------------
@@ -110,6 +119,22 @@ CONTACT
     - dp24@sanger.ac.uk
 
 -------------------------------------------------------------
+FILE STRUCTURE
+
+                SAVE location
+                -------------
+                      |
+                      |
+                Cleaning_Data
+                      |
+                      |
+    ----------------------------------
+    |           |           |       |
+    |           |           |       |
+Downloaded   Enteries     Logs    cleaned
+
+--------------------------------------------------------------
+
 
 """
 
@@ -176,8 +201,11 @@ def parse_command_args(args=None):
 
 
 def main():
+    '''
+    A function containing the controlling logic of the script
+    '''
 
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned', '/cleaning_data/dna_seqclean']
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned']
     accessrights = 0o755
 
     option = parse_command_args()
@@ -204,19 +232,22 @@ def main():
 
             org = downandsave(option.o, option.s, option.t, option.d)
 
-            decompress(option.s, option.t, option.d)
+            decompress(option.s, option.d)
 
             if option.t == 'cdna':
                 # To produce a single file for seqclean
                 if option.d:
                     print('First run of entry funtion will clean headers')
                 entryfunction(org, option.s, option.t, option.d, 10000000000)
-                
-                # seqclean for what should be the only file in the entries folder with the ending all.mod.fa
-                # Need to make it so that the finished file form the seqclean is the one that is the input for the second round of entry.
+
+                # seqclean for what should be the only file in the entries
+                # folder with the ending all.mod.fa
+                # Need to make it so that the finished file form the
+                # seqclean is the one that is the input for the second round
+                # of entry.
                 if option.d:
                     print('DNA will now be split into 3000 seqs per file')
-                
+
                 entryfunction(org, option.s, option.t, option.d, 3000)
 
             if option.t == 'pep':
@@ -270,11 +301,11 @@ def downandsave(org, save, data_type, debug=False):
         org = org_from_name.group(1)
 
     else:
-        FTP_ADDRESS = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
+        ftp_address = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
                           {org}/{data_type}/*{data_type}{file_end}'''
         try:
             if debug:
-                print(f'Downloading: {FTP_ADDRESS}')
+                print(f'Downloading: {ftp_address}')
             download = os.popen(f'''wget -q -o /dev/null
              ftp://ftp.ensembl.org/pub/release-98/fasta/
              {org}/{data_type}/*{data_type}{file_end}''')
@@ -285,10 +316,12 @@ def downandsave(org, save, data_type, debug=False):
             sys.exit(0)
 
     # else:
-    # print('Input format not recognised!\nIs it exactly how the species name appears in the relevant database?\nOr the full link from the database?')
+    # print('Input format not recognised!\nIs it exactly how the species
+    # name appears in the relevant database?\nOr the full link from the
+    # database?')
     try:
-        movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
-        rm_originaldl = os.popen(f'''rm *{file_end}*''')
+        movetodirect = os.popen(f'mv *{file_end} {downloadloc}')
+        rm_originaldl = os.popen(f'rm *{file_end}*')
         if debug:
             print('''Moving downloaded file to correct place.
                     \nRemoving remaining unneeded files''')
@@ -299,7 +332,7 @@ def downandsave(org, save, data_type, debug=False):
     return org
 
 
-def decompress(save, data_type, debug=False):
+def decompress(save, debug=False):
     """
     A function to decompress the downloaded file from downandsave().
     """
@@ -318,6 +351,7 @@ def decompress(save, data_type, debug=False):
             if debug:
                 print('No gunzip file found')
             # Nees a sys.exit(0) but will break script
+
 
 def read_fasta(filetoparse, debug=False):
     """
@@ -384,11 +418,16 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                 with open(unzipped, 'r') as filetoparse:
                     for name, seq in read_fasta(filetoparse):
 
-                        # This block controlls cDNA files, the first run through this would allow massage to modify the headers, the second run through (to split the file), massage would be excluded to stop any possible errors.
+                        # This block controlls cDNA files, the first run
+                        # through this would allow massage to modify the
+                        # headers, the second run through (to split the
+                        # file), massage would be excluded to stop any
+                        # possible errors.
                         if data_type == 'cdna':
                             if entryper >= 5001:
                                 if debug:
-                                    print('First round of cleaning for cdna file')
+                                    print('''First round of cleaning for
+                                             cdna file''')
                                 name = massage(name, data_type)
                             else:
                                 if debug:
@@ -405,25 +444,29 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         if count == entryper:
                             filecounter += 1
 
-                            with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
-                                for new_name, seq in entry:
+                            with open(f'''{filesavedto}{org}{filecounter}
+                                    {data_type}{allmod}.fa''', 'w') as done:
+                                for name, seq in entry:
                                     done.write(f'{name}\n{seq} \n\n')
 
                                 count = 0
                                 entry = []
 
                             if debug:
-                                print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                                print(f'''File saved to:\n{filesavedto}{org}
+                                    {filecounter}{data_type}{allmod}.fa''')
 
                         filecounter += 1
-                    with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
+                    with open(f'''{filesavedto}{org}{filecounter}
+                                    {data_type}{allmod}.fa''', 'w') as done:
                         for new_name, seq in entry:
                             done.write(f'{name}\n{seq} \n\n')
 
                         entry = []
 
                     if debug:
-                        print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                        print(f'''File saved to:\n{filesavedto}{org}
+                            {filecounter}{data_type}{allmod}.fa''')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
@@ -431,7 +474,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
 def massage(name, data_type, debug=False):
     """
-    A function to 'massage' the sequence headers into a more human readable style
+    A function to 'massage' the sequence headers into a more human readable
+     style
     """
 
     if data_type == 'pep' or 'cds' or 'dna':
@@ -510,7 +554,10 @@ def seqclean(seq, data_type, debug=False):
                 res.close()
                 if debug:
                     print(f'Finished: {result}')
-                # The above should start the perl script and then check to see if the script runs and finishes for each of the fiules passed onto it and then print the file it has finihsed working on
+                # The above should start the perl script and then check to
+                # see if the script runs and finishes for each of the fiules
+                # passed onto it and then print the file it has finihsed
+                # working on
         else:
             if debug:
                 print('File paths not found')
@@ -539,7 +586,8 @@ def rm_redundants(save, debug=False):
                     mv_clean = os.popen(f'''mv {save}{directlist}{file}
                                          {save}/cleaning_data/cleaned/''')
                     if debug:
-                        print(f'File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/')
+                        print(f'''File:\n{file}\nBeing moved to:\n{save}/
+                                cleaning_data/cleaned/''')
                 else:
                     clean_out = os.popen(f'rm -rf {path}')
                     if debug:

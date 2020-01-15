@@ -24,6 +24,16 @@ or
 - rm_redundants function
 
 --------------
+### 15/01/2020
+- Fixed the impropper use of seqclean in entry function.
+- Added debug feature.
+- Changed up the ./cleandata.py -h.
+- Fixed more spelling, grammar and syntax errors.
+- Addition of numberous print() functions to aid debugging.
+- Added Folder tree showing the produced file structure.
+- Changed rm_redundants.
+- 
+
 ### 14/01/2020
 - Fixed the renaming of enteries as master file is split.
 - Script now takes a ftp ensembl link as input as well as the organism name as it would appear on the website e.g. genus_species.
