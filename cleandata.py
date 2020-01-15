@@ -397,8 +397,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 count = 0
                                 entry = []
 
-                            if debug:
-                                print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                            #if debug:
+                                #print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
 
                         filecounter += 1
                     with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
@@ -407,8 +407,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                         entry = []
 
-                    if debug:
-                        print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                if debug:
+                    print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
