@@ -304,7 +304,7 @@ def decompress(save, data_type, debug=False):
         else:
             if debug:
                 print('No gunzip file found')
-            sys.exit(0)
+            # Nees a sys.exit(0) but will break script
 
 def read_fasta(filetoparse, debug=False):
     """
@@ -345,7 +345,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
         file_uncomp = '.all.fa'
 
     if entryper >= 5001:
-        allmod = 'all.MOD'
+        allmod = '.all.MOD'
     else:
         allmod = 'MOD'
 
@@ -392,23 +392,23 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                             with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
                                 for new_name, seq in entry:
-                                    if debug:
-                                        print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
                                     done.write(f'{name}\n{seq} \n\n')
 
                                 count = 0
                                 entry = []
 
-                        # debug? print(f'File {filecounter}')
-                        filecounter += 1
-
-                    with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
-                        for new_name, seq in entry:
                             if debug:
                                 print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+
+                        filecounter += 1
+                    with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
+                        for new_name, seq in entry:
                             done.write(f'{name}\n{seq} \n\n')
-                        
+
                         entry = []
+
+                    if debug:
+                        print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
