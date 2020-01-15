@@ -357,7 +357,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
             if debug:
                 print(f'File in use:\n{unzipped}')
         # All other files
-        else file.endswith('.fa'):
+        if file.endswith('.fa'):
             unzipped = f'{directory}{file}'
             if debug:
                 print(f'File in use:\n{unzipped}')
