@@ -32,7 +32,10 @@ or
 - Addition of numberous print() functions to aid debugging.
 - Added Folder tree showing the produced file structure.
 - Changed rm_redundants.
-- 
+- PyCodeStyle Fixes.
+- PyLint score of 8.83.
+- DOCS updated.
+- Re-ordered entry function.
 
 ### 14/01/2020
 - Fixed the renaming of enteries as master file is split.
@@ -40,7 +43,7 @@ or
 	- Uses Regex to pull out a organism name.
 - Fixed spelling and syntax errors.
 - Fixed Regex errors.
-- Majority pycodestyle compliant.
+- Majority PyCodeStyle compliant.
 - PyLint 8.12 - Due to unfinished nature of script.
 - Files are no saved in the format orgname-type-genecounterMOD.fa.
 - DOCS Updated.
