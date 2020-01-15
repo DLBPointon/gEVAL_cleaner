@@ -36,6 +36,7 @@ or
 - PyLint score of 8.83.
 - DOCS updated.
 - Re-ordered entry function.
+- Changed position of rm_redundant function calling.
 
 ### 14/01/2020
 - Fixed the renaming of enteries as master file is split.

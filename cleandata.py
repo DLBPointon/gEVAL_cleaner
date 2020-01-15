@@ -250,11 +250,19 @@ def main():
 
                 entryfunction(org, option.s, option.t, option.d, 3000)
 
+                if option.c:
+                    rm_redundants(option.s, option.d)
+
+
             if option.t == 'pep':
                 if option.d:
                     print('Pep splits at 2000 per file')
 
                 entryfunction(org, option.s, option.t, option.d, 2000)
+
+                if option.c:
+                    rm_redundants(option.s, option.d)
+
 
             else:
                 if option.d:
@@ -262,15 +270,8 @@ def main():
 
                 entryfunction(org, option.s, option.t, option.d, 3000)
 
-        if option.c:
-            if option.d:
-                print('''Cleaning up the files and folders
-                         produced my this script''')
-
-            rm_redundants(option.s, option.d)
-
-            if option.d:
-                print('Cleaning finished')
+                if option.c:
+                    rm_redundants(option.s, option.d)
 
 
 def downandsave(org, save, data_type, debug=False):
@@ -578,6 +579,10 @@ def rm_redundants(save, debug=False):
 
     extensions = ['.log', '.cidx', '.cln', 'outparts']
 
+    if debug:
+        print('''Cleaning up the files and folders
+                   produced my this script''')
+
     for direct in directlist:
         path = f'{save}{direct}'
         for file in os.listdir(path):
@@ -592,6 +597,8 @@ def rm_redundants(save, debug=False):
                     clean_out = os.popen(f'rm -rf {path}')
                     if debug:
                         print(f'Up for deletion is:\n{path}')
+        if option.d:
+                print('Cleaning finished')
 
 
 if __name__ == '__main__':
