@@ -371,7 +371,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                         # This block controlls cDNA files, the first run through this would allow massage to modify the headers, the second run through (to split the file), massage would be excluded to stop any possible errors.
                         if data_type == 'cdna':
-                            if entry >= 5001:
+                            if entryper >= 5001:
                                 if debug:
                                     print('First round of cleaning for cdna file')
                                 name = massage(name, data_type)
