@@ -323,6 +323,8 @@ def read_fasta(filetoparse, debug=False):
     """
     A function which opens and splits a fasta into name and seq.
     """
+    if debug:
+        print('Splitting headers from sequences')
     name, seq = None, []
 
     for line in filetoparse:
