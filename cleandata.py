@@ -199,7 +199,8 @@ def main():
                      {path}''')
 
         if option.o and option.t:
-            print('Lets do stuff')
+            if option.d:
+                print('Lets do stuff')
 
             org = downandsave(option.o, option.s, option.t, option.d)
 
@@ -207,32 +208,38 @@ def main():
 
             if option.t == 'cdna':
                 # To produce a single file for seqclean
-                entryfunction(org, option.s, option.t, option.d, 10000000000)
                 if option.d:
-                    print('First run though entry funtion will clean headers')
+                    print('First run of entry funtion will clean headers')
+                entryfunction(org, option.s, option.t, option.d, 10000000000)
+                
                 # seqclean for what should be the only file in the entries folder with the ending all.mod.fa
                 # Need to make it so that the finished file form the seqclean is the one that is the input for the second round of entry.
-
-                entryfunction(org, option.s, option.t, option.d, 3000)
                 if option.d:
                     print('DNA will now be split into 3000 seqs per file')
+                
+                entryfunction(org, option.s, option.t, option.d, 3000)
 
             if option.t == 'pep':
-                entryfunction(org, option.s, option.t, option.d, 2000)
                 if option.d:
                     print('Pep splits at 2000 per file')
 
+                entryfunction(org, option.s, option.t, option.d, 2000)
+
             else:
-                entryfunction(org, option.s, option.t, option.d, 3000)
                 if option.d:
-                    print('CDs and ncRNA will split at 3000 entries per file')
+                    print('CDs and ncRNA split at 3000 entries per file')
+
+                entryfunction(org, option.s, option.t, option.d, 3000)
 
         if option.c:
-            rm_redundants(option.s, option.d)
             if option.d:
-                print('Cleaning up the files and folders produced my this script')
-        # Then for the files saved from entryfunction
-        # send each one to Seqclean
+                print('''Cleaning up the files and folders
+                         produced my this script''')
+
+            rm_redundants(option.s, option.d)
+
+            if option.d:
+                print('Cleaning finished')
 
 
 def downandsave(org, save, data_type, debug=False):
@@ -252,9 +259,11 @@ def downandsave(org, save, data_type, debug=False):
             if debug:
                 print(f'Downloading: {org}')
             download = os.popen(f'wget -q -o /dev/null {org}')
+
         except:
             if debug:
-                print('File not downloading: check spelling and whether it exists')
+                print('''File not downloading: check
+                 spelling and whether it exists''')
                 sys.exit(0)
 
         org_from_name = re.search(r'fasta\/(\w+)', org)
@@ -266,10 +275,13 @@ def downandsave(org, save, data_type, debug=False):
         try:
             if debug:
                 print(f'Downloading: {FTP_ADDRESS}')
-            download = os.popen(f'''wget -q -o /dev/null ftp://ftp.ensembl.org/pub/release-98/fasta/{org}/{data_type}/*{data_type}{file_end}''')
+            download = os.popen(f'''wget -q -o /dev/null
+             ftp://ftp.ensembl.org/pub/release-98/fasta/
+             {org}/{data_type}/*{data_type}{file_end}''')
         except:
             if debug:
-                print('File not downloading: check spelling and whether it exists')
+                print('''File not downloading: check spelling and
+                 whether it exists''')
             sys.exit(0)
 
     # else:
@@ -278,7 +290,8 @@ def downandsave(org, save, data_type, debug=False):
         movetodirect = os.popen(f'''mv *{file_end} {downloadloc}''')
         rm_originaldl = os.popen(f'''rm *{file_end}*''')
         if debug:
-            print('Moving downloaded file to correct place.\nRemoving remaining unneeded files')
+            print('''Moving downloaded file to correct place.
+                    \nRemoving remaining unneeded files''')
     except:
         if debug:
             print('No old files')
@@ -378,8 +391,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                             else:
                                 if debug:
                                     print('''File should should have
-                                         already been run through massage
-                                          so it doesn't need to again''')
+                                     already been run through massage
+                                      so it doesn't need to again''')
                         else:
                             name = massage(name, data_type)
 
@@ -397,8 +410,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 count = 0
                                 entry = []
 
-                            #if debug:
-                                #print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                            if debug:
+                                print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
 
                         filecounter += 1
                     with open(f'{filesavedto}{org}{filecounter}{data_type}{allmod}.fa', 'w') as done:
@@ -407,13 +420,11 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                         entry = []
 
-                if debug:
-                    print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
+                    if debug:
+                        print(f'File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
-                    
-
 
 
 def massage(name, data_type, debug=False):
@@ -475,7 +486,8 @@ def seqclean(seq, data_type, debug=False):
 
     seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
     run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
-    else_run = os.popen('bsub -o cleanplease.out -K /nfs/users/nfs_w/wc2/tools/seqclean')
+    else_run = os.popen('''bsub -o cleanplease.out -K /nfs/users/nfs_w/
+                            wc2/tools/seqclean''')
     option = parse_command_args()
     path = f'{option.s}/cleaning_data/enteries'
 
