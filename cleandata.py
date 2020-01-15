@@ -272,6 +272,10 @@ def main():
 
                 if option.c:
                     rm_redundants(option.s, option.d)
+    else:
+        if option.d:
+            print('SCRIPT FINISHED - Congrats')
+        sys.exit(0)
 
 
 def downandsave(org, save, data_type, debug=False):
@@ -597,7 +601,7 @@ def rm_redundants(save, debug=False):
                     clean_out = os.popen(f'rm -rf {path}')
                     if debug:
                         print(f'Up for deletion is:\n{path}')
-        if option.d:
+        if debug:
                 print('Cleaning finished')
 
 
