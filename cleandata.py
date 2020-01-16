@@ -49,7 +49,7 @@ DOCSTRING = """
         Updated from wc2's clean_gEVALsupport_data.sh
 -------------------------------------------------------------
             IMPORTANT NOTES BEOFRE CARRYING ON
-        This script is written in for python3.7
+        This script is written in for python3.6
 
                     IMPORT MODULES
 
@@ -495,9 +495,12 @@ def massage(name, data_type, debug=False):
                 gene_symbol = gene_symbol.group(1)
                 if debug:
                     print(gene_symbol)
-            else:
+            elif:
                 gene_symbol = re.search(r'ENSMAUG(\w+)', name)
                 gene_symbol = gene_symbol.group(0)
+
+            else: 
+                gene_symbol = MissingInfo
 
             if ens_code:
                 ens_code = ens_code.group(0)
@@ -547,16 +550,16 @@ def seqclean(seq, data_type, debug=False):
             if debug:
                 print('Path to files found')
             for file in os.listdir(path):
-                try:
-                    set_script = os.popen(f'''bsub -o cleanplease.out
-                     -M500 -R\'select[mem>500] rusage[mem=500]
-                     \' \\ ~wc2/tools/seqclean/seqclean {file}''')
-                except IOError:
-                    if debug:
-                        print('Command or files are incorrect')
+                if file.endswith('.all.MOD.fa'):
+                    try:
+                        set_script = os.popen(f'''bsub -o cleanplease.out
+                        -M500 -R\'select[mem>500] rusage[mem=500]
+                        \' \\ ~wc2/tools/seqclean/seqclean {file}''')
+                    except IOError:
+                        if debug:
+                            print('Command or files are incorrect')
 
-                result = set_script.read()
-                res.close()
+
                 if debug:
                     print(f'Finished: {result}')
                 # The above should start the perl script and then check to
@@ -579,30 +582,31 @@ def rm_redundants(save, debug=False):
     """
     A function to remove all redunant files, an optional.
     """
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs']
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded']
 
     extensions = ['.log', '.cidx', '.cln', 'outparts']
 
     if debug:
         print('''Cleaning up the files and folders
-                   produced my this script''')
+                   produced by this script''')
 
     for direct in directlist:
         path = f'{save}{direct}'
         for file in os.listdir(path):
             for extension in extensions:
                 if file.endswith('.clean'):
-                    mv_clean = os.popen(f'''mv {save}{directlist}{file}
-                                         {save}/cleaning_data/cleaned/''')
+                    mv_clean = os.popen(f'''mv {path}/{file} {save}/cleaning_data/cleaned/''')
                     if debug:
-                        print(f'''File:\n{file}\nBeing moved to:\n{save}/
-                                cleaning_data/cleaned/''')
-                else:
-                    clean_out = os.popen(f'rm -rf {path}')
-                    if debug:
-                        print(f'Up for deletion is:\n{path}')
+                        print(f'''File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/''')
+
+    for folder in directlist:
         if debug:
-                print('Cleaning finished')
+            print('Now deleting: {folder}')
+        try:
+            rm_direct = os.popen(f'rm -rf {save}/{folder}')
+        except:
+            if debug:
+                print('No Folder to remove')
 
 
 if __name__ == '__main__':
