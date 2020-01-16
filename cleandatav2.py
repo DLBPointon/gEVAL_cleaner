@@ -484,15 +484,18 @@ def massage(name, data_type, debug=False):
 
         if name.startswith('>'):
             gene_symbol = re.search(r'gene_symbol:(\w+)', name)
-            ens_code = re.search(r'ENSMAUT(\w+.\d+)', name)
+            ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
                 gene_symbol = gene_symbol.group(1)
                 if debug:
                     print(gene_symbol)
-            else:
-                gene_symbol = re.search(r'ENSMAUG(\w+)', name)
+            elif gene_symbol == None:
+                gene_symbol = re.search(r'EN(\w+)G(\w+)', name)
                 gene_symbol = gene_symbol.group(0)
+
+            else: 
+                gene_symbol = MissingInfo
 
             if ens_code:
                 ens_code = ens_code.group(0)
@@ -502,6 +505,7 @@ def massage(name, data_type, debug=False):
                 ens_code = 'NoEnsCode'
 
             name = f'>{gene_symbol}({ens_code})'
+
     elif data_type == 'ncrna':
         if debug:
             print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
