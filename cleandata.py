@@ -491,7 +491,7 @@ def massage(name, data_type, debug=False):
                 gene_symbol = gene_symbol.group(1)
                 if debug:
                     print(gene_symbol)
-            elif:
+            elif gene_symbol == None:
                 gene_symbol = re.search(r'ENSMAUG(\w+)', name)
                 gene_symbol = gene_symbol.group(0)
 
