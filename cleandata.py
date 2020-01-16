@@ -429,19 +429,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         # headers, the second run through (to split the
                         # file), massage would be excluded to stop any
                         # possible errors.
-                        if data_type == 'cdna':
-                            if entryper >= 5001:
-                                if debug:
-                                    print('''First round of cleaning for
-                                             cdna file''')
-                                name = massage(name, data_type)
-                            else:
-                                if debug:
-                                    print('''File should should have
-                                     already been run through massage
-                                      so it doesn't need to again''')
-                        else:
-                            name = massage(name, data_type)
+
+                        name = massage(name, data_type)
 
                         nameseq = name, seq
                         entry.append(nameseq)
@@ -507,6 +496,7 @@ def massage(name, data_type, debug=False):
                 ens_code = 'NoEnsCode'
 
             name = f'>{gene_symbol}({ens_code})'
+
     elif data_type == 'ncrna':
         if debug:
             print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
