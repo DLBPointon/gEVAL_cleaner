@@ -446,8 +446,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         if count == entryper:
                             filecounter += 1
 
-                            with open(f'''{filesavedto}{org}{filecounter}
-                                    {data_type}.{allmod}.fa''', 'w') as done:
+                            with open(f'''{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''', 'w') as done:
                                 for name, seq in entry:
                                     done.write(f'{name}\n{seq} \n\n')
 
@@ -455,20 +454,17 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 entry = []
 
                             if debug:
-                                print(f'''File saved to:\n{filesavedto}{org}
-                                    {filecounter}{data_type}.{allmod}.fa''')
+                                print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''')
 
                         filecounter += 1
-                    with open(f'''{filesavedto}{org}{filecounter}
-                                    {data_type}.{allmod}.fa''', 'w') as done:
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''', 'w') as done:
                         for new_name, seq in entry:
                             done.write(f'{name}\n{seq} \n\n')
 
                         entry = []
 
                     if debug:
-                        print(f'''File saved to:\n{filesavedto}{org}
-                            {filecounter}{data_type}.{allmod}.fa''')
+                        print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
