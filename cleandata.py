@@ -238,6 +238,7 @@ def main():
                 # To produce a single file for seqclean
                 if option.d:
                     print('First run of entry funtion will clean headers')
+
                 entryfunction(org, option.s, option.t, option.d, 10000000000)
 
                 # seqclean for what should be the only file in the entries
@@ -485,14 +486,14 @@ def massage(name, data_type, debug=False):
 
         if name.startswith('>'):
             gene_symbol = re.search(r'gene_symbol:(\w+)', name)
-            ens_code = re.search(r'ENSMAUT(\w+.\d+)', name)
+            ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
                 gene_symbol = gene_symbol.group(1)
                 if debug:
                     print(gene_symbol)
             elif gene_symbol == None:
-                gene_symbol = re.search(r'ENSMAUG(\w+)', name)
+                gene_symbol = re.search(r'EN(\w+)G(\w+)', name)
                 gene_symbol = gene_symbol.group(0)
 
             else: 
