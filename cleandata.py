@@ -235,17 +235,6 @@ def main():
             decompress(option.s, option.d)
 
             if option.t == 'cdna':
-                # To produce a single file for seqclean
-                if option.d:
-                    print('First run of entry funtion will clean headers')
-
-                entryfunction(org, option.s, option.t, option.d, 10000000000)
-
-                # seqclean for what should be the only file in the entries
-                # folder with the ending all.mod.fa
-                # Need to make it so that the finished file form the
-                # seqclean is the one that is the input for the second round
-                # of entry.
                 if option.d:
                     print('DNA will now be split into 3000 seqs per file')
 
@@ -406,11 +395,6 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
     for file in os.listdir(directory):
 
-        # This is for the DNA post seqclean file
-        if file.endswith('.all.MOD.fa.clean'):
-            unzipped = f'{directory}{file}'
-            if debug:
-                print(f'File in use:\n{unzipped}')
         # All other files
         if file.endswith('.fa'):
             unzipped = f'{directory}{file}'
@@ -430,9 +414,9 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         # file), massage would be excluded to stop any
                         # possible errors.
 
-                        name = massage(name, data_type)
+                        new_name = massage(name, data_type)
 
-                        nameseq = name, seq
+                        nameseq = new_name, seq
                         entry.append(nameseq)
                         count += 1
 
@@ -440,8 +424,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                             filecounter += 1
 
                             with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
-                                for name, seq in entry:
-                                    done.write(f'{name}\n{seq} \n\n')
+                                for new_name, seq in entry:
+                                    done.write(f'{new_name}\n{seq} \n\n')
 
                                 count = 0
                                 entry = []
@@ -452,7 +436,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         filecounter += 1
                     with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
                         for new_name, seq in entry:
-                            done.write(f'{name}\n{seq} \n\n')
+                            done.write(f'{new_name}\n{seq} \n\n')
 
                         entry = []
 
