@@ -437,7 +437,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         else:
                             new_name = massage(name, data_type)
 
-                        name = new_name
+                            name = new_name
 
                         nameseq = name, seq
                         entry.append(nameseq)
@@ -447,7 +447,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                             filecounter += 1
 
                             with open(f'''{filesavedto}{org}{filecounter}
-                                    {data_type}{allmod}.fa''', 'w') as done:
+                                    {data_type}.{allmod}.fa''', 'w') as done:
                                 for name, seq in entry:
                                     done.write(f'{name}\n{seq} \n\n')
 
@@ -456,11 +456,11 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                             if debug:
                                 print(f'''File saved to:\n{filesavedto}{org}
-                                    {filecounter}{data_type}{allmod}.fa''')
+                                    {filecounter}{data_type}.{allmod}.fa''')
 
                         filecounter += 1
                     with open(f'''{filesavedto}{org}{filecounter}
-                                    {data_type}{allmod}.fa''', 'w') as done:
+                                    {data_type}.{allmod}.fa''', 'w') as done:
                         for new_name, seq in entry:
                             done.write(f'{name}\n{seq} \n\n')
 
@@ -468,7 +468,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
 
                     if debug:
                         print(f'''File saved to:\n{filesavedto}{org}
-                            {filecounter}{data_type}{allmod}.fa''')
+                            {filecounter}{data_type}.{allmod}.fa''')
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
