@@ -429,17 +429,17 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                     print('''First round of cleaning for
                                              cdna file''')
                                 new_name = massage(name, data_type)
+
                             else:
                                 if debug:
                                     print('''File should should have
                                      already been run through massage
                                       so it doesn't need to again''')
+                                new_name = massage(name, data_type)
                         else:
                             new_name = massage(name, data_type)
 
-                        name = new_name
-
-                        nameseq = name, seq
+                        nameseq = new_name, seq
                         entry.append(nameseq)
                         count += 1
 
