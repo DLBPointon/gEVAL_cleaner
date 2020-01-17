@@ -424,8 +424,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         # possible errors.
                    
                    
-                         name = massage(name, data_type)
-                         if debug:
+                        name = massage(name, data_type)
+                        if debug:
                                 print('''File should should have
                                         already been run through massage
                                         so it doesn't need to again''')
