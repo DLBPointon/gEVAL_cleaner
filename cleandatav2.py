@@ -246,9 +246,9 @@ def main():
                 # seqclean is the one that is the input for the second round
                 # of entry.
                 if option.d:
-                    print('DNA will now be split into 3000 seqs per file')
+                    print('DNA will now be split into 5000 seqs per file')
 
-                entryfunction(org, option.s, option.t, option.d, 3000)
+                entryfunction(org, option.s, option.t, option.d, 5000)
 
             if option.t == 'pep':
                 if option.d:
@@ -396,7 +396,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
     if entryper >= 10000000000:
         allmod = '.all.MOD'
     else:
-        allmod = 'MOD'
+        allmod = '.MOD'
 
     for file in os.listdir(directory):
 
@@ -572,9 +572,11 @@ def rm_redundants(save, debug=False):
     """
     A function to remove all redunant files, an optional.
     """
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs']
+    directlist = ['/cleaning_data/downloaded', '/cleaning_data/logs']
 
     extensions = ['.log', '.cidx', '.cln', 'outparts']
+
+    # Add segment about moving the weant to keep files to another folder.
 
     for direct in directlist:
         path = f'{save}{direct}'
