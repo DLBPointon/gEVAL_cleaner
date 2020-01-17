@@ -315,8 +315,8 @@ def downandsave(org, save, data_type, debug=False):
     # name appears in the relevant database?\nOr the full link from the
     # database?')
     try:
-        movetodirect = os.popen(f'mv *{file_end} {downloadloc}')
-        rm_originaldl = os.popen(f'rm *{file_end}*')
+        movetodirect = os.popen(f'mv ./*{file_end} {downloadloc}')
+        rm_originaldl = os.popen(f'rm ./*{file_end}*')
         if debug:
             print('''Moving downloaded file to correct place.
                     \nRemoving remaining unneeded files''')
