@@ -376,6 +376,9 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
     number of entries per file, pep == 2000 enteries and everything
     else is split into 5000 enteries.
     """
+    if debug:
+        print('Entry Function starting')
+
     count = 0
     filecounter = 0
     entry = []
@@ -466,6 +469,8 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
             else:
                 if debug:
                     print('CANNOT find the unzipped fasta')
+    if debug:
+        print('Entry Function Finished')
 
 
 def massage(name, data_type, debug=False):
