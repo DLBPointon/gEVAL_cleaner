@@ -313,10 +313,17 @@ def downandsave(org, save, data_type, debug=False):
     # else:
     # print('Input format not recognised!\nIs it exactly how the species
     # name appears in the relevant database?\nOr the full link from the
-    # database?')
+    # database?'
+
+    if org.startswith('ftp://'):
+        ftp_name = org.split('/')
+        file_name = ftp_name[8]
+    else:
+        file_name = f'*{org[1:]}*{file_end}'
+
     try:
-        movetodirect = os.popen(f'mv ./*{file_end} {downloadloc}')
-        rm_originaldl = os.popen(f'rm ./*{file_end}*')
+        movetodirect = os.popen(f'mv ./{file_name} {downloadloc}')
+        rm_originaldl = os.popen(f'rm ./{file_name}')
         if debug:
             print('''Moving downloaded file to correct place.
                     \nRemoving remaining unneeded files''')
