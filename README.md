@@ -24,6 +24,24 @@ or
 - rm_redundants function
 
 --------------
+### 17/01/2020
+- Removed excessive use of the "\n" character to match "house style".
+	- {header}\n\n{sequence} rather than {header}\n{sequence}.
+- File save formatting fixed (too many .).
+	- {name}.all.MOD.fa rather than {name}..all.MOD.fa
+- File save formatting fixed (too few .).
+	- {name}.MOD.fa rather than {name}MOD.fa
+- Entryper fix )to stop multi all files.
+- cdna has been changed to an entryper of 5000.
+- Changed executable settings for cleandatav2.py.
+
+### 16/01/2020
+- Test runs were failing due to a missing function call in a next of if branches.
+	- Added the missing new_name = massage(name, data_type).
+- Series of Syntax and grammar changes to improve functionality.
+- Added a third missing gene symbol catch as a just in case (possiblity was caught in the failing tests).
+- 
+
 ### 15/01/2020
 - Fixed the impropper use of seqclean in entry function.
 - Added debug feature.
