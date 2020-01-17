@@ -426,12 +426,12 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         if data_type == 'cdna':
                             if entryper >= 5001:
                                 if debug:
-                                    print('''First round of cleaning for cdna file''')
+                                    print('First round of cleaning for cdna file')
                                 new_name = massage(name, data_type)
 
                             else:
                                 if debug:
-                                    print('''File should should have already been run through massage so it doesn't need to again''')
+                                    print('File should should have already been run through massage so it doesn\'t need to again')
                                 new_name = massage(name, data_type)
                         else:
                             new_name = massage(name, data_type)
@@ -507,7 +507,7 @@ def massage(name, data_type, debug=False):
 
     else:
         if debug:
-            print('''Some how you\'ve got to this point with an incorrect data type''')
+            print('Some how you\'ve got to this point with an incorrect data type')
         sys.exit(0)
 
     if debug:
@@ -586,8 +586,7 @@ def rm_redundants(save, debug=False):
                     mv_clean = os.popen(f'''mv {save}{directlist}{file}
                                          {save}/cleaning_data/cleaned/''')
                     if debug:
-                        print(f'''File:\n{file}\nBeing moved to:\n{save}/
-                                cleaning_data/cleaned/''')
+                        print(f'File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/')
                 else:
                     clean_out = os.popen(f'rm -rf {path}')
                     if debug:
