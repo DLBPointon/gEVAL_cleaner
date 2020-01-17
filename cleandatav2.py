@@ -249,12 +249,12 @@ def main():
                     print('DNA will now be split into 5000 seqs per file')
                 entryfunction(org, option.s, option.t, option.d, 5000)
 
-            if option.t == 'pep':
+            elif option.t == 'pep':
                 if option.d:
                     print('Pep splits at 2000 per file')
                 entryfunction(org, option.s, option.t, option.d, 2000)
 
-            if option.t != 'cdna' or 'pep':
+            else:
                 if option.d:
                     print('CDs and ncRNA split at 3000 entries per file')
                 entryfunction(org, option.s, option.t, option.d, 3000)
