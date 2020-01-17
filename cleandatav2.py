@@ -247,26 +247,21 @@ def main():
                 # of entry.
                 if option.d:
                     print('DNA will now be split into 5000 seqs per file')
-
                 entryfunction(org, option.s, option.t, option.d, 5000)
 
             if option.t == 'pep':
                 if option.d:
                     print('Pep splits at 2000 per file')
-
                 entryfunction(org, option.s, option.t, option.d, 2000)
 
             else:
                 if option.d:
                     print('CDs and ncRNA split at 3000 entries per file')
-
                 entryfunction(org, option.s, option.t, option.d, 3000)
 
         if option.c:
             if option.d:
-                print('''Cleaning up the files and folders
-                         produced my this script''')
-
+                print('Cleaning up the files and folders produced my this script')
             rm_redundants(option.s, option.d)
 
             if option.d:
@@ -424,7 +419,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         # file), massage would be excluded to stop any
                         # possible errors.
                         if data_type == 'cdna':
-                            if entryper >= 5001:
+                            if entryper >= 10000000000:
                                 if debug:
                                     print('First round of cleaning for cdna file')
                                 new_name = massage(name, data_type)
