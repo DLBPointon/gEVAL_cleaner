@@ -393,7 +393,7 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
     else:
         file_uncomp = '.all.fa'
 
-    if entryper >= 5001:
+    if entryper >= 10000000000:
         allmod = '.all.MOD'
     else:
         allmod = 'MOD'
@@ -426,15 +426,12 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         if data_type == 'cdna':
                             if entryper >= 5001:
                                 if debug:
-                                    print('''First round of cleaning for
-                                             cdna file''')
+                                    print('''First round of cleaning for cdna file''')
                                 new_name = massage(name, data_type)
 
                             else:
                                 if debug:
-                                    print('''File should should have
-                                     already been run through massage
-                                      so it doesn't need to again''')
+                                    print('''File should should have already been run through massage so it doesn't need to again''')
                                 new_name = massage(name, data_type)
                         else:
                             new_name = massage(name, data_type)
@@ -446,9 +443,9 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         if count == entryper:
                             filecounter += 1
 
-                            with open(f'''{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''', 'w') as done:
+                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
                                 for name, seq in entry:
-                                    done.write(f'{name}\n{seq} \n\n')
+                                    done.write(f'{name}\n{seq} \n')
 
                                 count = 0
                                 entry = []
@@ -457,9 +454,9 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''')
 
                         filecounter += 1
-                    with open(f'''{filesavedto}{org}{filecounter}{data_type}.{allmod}.fa''', 'w') as done:
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
                         for new_name, seq in entry:
-                            done.write(f'{name}\n{seq} \n\n')
+                            done.write(f'{name}\n{seq} \n')
 
                         entry = []
 
@@ -510,8 +507,7 @@ def massage(name, data_type, debug=False):
 
     else:
         if debug:
-            print('''Some how you\'ve got to this point with an
-                 incorrect data type''')
+            print('''Some how you\'ve got to this point with an incorrect data type''')
         sys.exit(0)
 
     if debug:
