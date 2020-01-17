@@ -318,12 +318,10 @@ def downandsave(org, save, data_type, debug=False):
     if org.startswith('ftp://'):
         ftp_name = org.split('/')
         file_name = ftp_name[8]
-    else:
-        file_name = f'*{org[1:]}*{file_end}'
 
     try:
-        movetodirect = os.popen(f'mv ./{file_name} {downloadloc}')
-        rm_originaldl = os.popen(f'rm ./{file_name}')
+        movetodirect = os.popen(f'mv ./*{file_end} {downloadloc}')
+        rm_originaldl = os.popen(f'rm ./*{file_end}*')
         if debug:
             print('''Moving downloaded file to correct place.
                     \nRemoving remaining unneeded files''')
