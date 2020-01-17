@@ -428,8 +428,14 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 if debug:
                                     print('File should should have already been run through massage so it doesn\'t need to again')
                                 new_name = massage(name, data_type)
-                        else:
+
+                        elif data_type == 'cds' or 'ncrna':
                             new_name = massage(name, data_type)
+
+                        else:
+                            if debug:
+                                print('Data type not recognised')
+                            sys.exit(0)
 
                         nameseq = new_name, seq
                         entry.append(nameseq)
