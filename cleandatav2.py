@@ -254,7 +254,7 @@ def main():
                     print('Pep splits at 2000 per file')
                 entryfunction(org, option.s, option.t, option.d, 2000)
 
-            else:
+            if option.t == 'cds' or 'ncrna':
                 if option.d:
                     print('CDs and ncRNA split at 3000 entries per file')
                 entryfunction(org, option.s, option.t, option.d, 3000)
