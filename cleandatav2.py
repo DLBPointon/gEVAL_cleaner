@@ -218,8 +218,18 @@ def main():
 
             org = downandsave(option.o, option.s, option.t, option.d)
 
-            move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
-            move_fa_to_direct = os.popen(f'mv *.fa. {downloadloc}')
+            try:
+                move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
+            except:
+                if option.d:
+                    print('No zipped file found')
+
+            try:
+                move_fa_to_direct = os.popen(f'mv *.fa. {downloadloc}')
+            except:
+                if option.d:
+                    print('No unzipped file found')
+
 
             decompress(option.s, option.d)
 
