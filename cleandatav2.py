@@ -460,9 +460,9 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''')
 
                         filecounter += 1
-                        with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
-                            for name, seq in entry:
-                                done.write(f'{name}\n{seq} \n')
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
+                        for name, seq in entry:
+                            done.write(f'{name}\n{seq} \n')
 
                         entry = []
 
