@@ -218,7 +218,7 @@ def main():
 
             org = downandsave(option.o, option.s, option.t, option.d)
 
-            move_to_direct = os.popen(f'mv *.fa {downloadloc}')
+            move_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
 
             decompress(option.s, option.d)
 
