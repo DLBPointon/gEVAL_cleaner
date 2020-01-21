@@ -328,7 +328,12 @@ def decompress(save, debug=False):
         if file.endswith(f'{file_end}'):
             if debug:
                 print('Unzipping downloaded file with gunzip')
-            unzipper = os.popen(f'gunzip {directory}*{file_end}')
+                try:
+                    unzipper = os.popen(f'gunzip {directory}*{file_end}')
+                except:
+                    if debug:
+                        print('No gunzip file found or already unzipped')
+                    pass
 
         else:
             if debug:
