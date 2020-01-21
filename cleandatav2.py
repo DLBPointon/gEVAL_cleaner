@@ -493,7 +493,7 @@ def massage(name, data_type, debug=False):
             if gene_symbol:
                 gene_symbol = gene_symbol.group(1)
 
-            if gene_symbol == None:
+            elif gene_symbol == None:
                 gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
                 gene_symbol = gene_symbol.group(0)
 
