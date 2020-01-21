@@ -487,15 +487,14 @@ def massage(name, data_type, debug=False):
             print(f'This sequence is {data_type} from ensembl.')
 
         if name.startswith('>'):
-            gene_symbol = re.search(r'gene_symbol:(\w+)', name)
+            gene_symbol = re.search(r'symbol:(\w+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
                 gene_symbol = gene_symbol.group(1)
-                if debug:
-                    print(gene_symbol)
+
             if gene_symbol == None:
-                gene_symbol = re.search(r'EN(\w+)G(\w+)', name)
+                gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
                 gene_symbol = gene_symbol.group(0)
 
             else: 
