@@ -22,8 +22,12 @@ or
 ### To-Do list
 - SeqClean Function
 - rm_redundants function
-
+- Replace the large number of print (debug) with logging module debugs.
 --------------
+### 21/01/2020
+- Removed various errors in structure (too many spaces and gaps.
+- 
+
 ### 17/01/2020
 - Removed excessive use of the "\n" character to match "house style".
 	- {header}\n\n{sequence} rather than {header}\n{sequence}.
@@ -34,6 +38,9 @@ or
 - Entryper fix )to stop multi all files.
 - cdna has been changed to an entryper of 5000.
 - Changed executable settings for cleandatav2.py.
+
+#### Update 2
+- Bug where script needs to be run 4 times to complete task.
 
 ### 16/01/2020
 - Test runs were failing due to a missing function call in a next of if branches.

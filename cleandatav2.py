@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-
-'''Please use ./cleandata.py -h for the full __doc__'''
+"""Please use ./cleandata.py -h for the full __doc__"""
 
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
@@ -38,13 +37,11 @@ except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
-
-
 DOCSTRING = """
 -------------------------------------------------------------
-                Clean_gEVAL_supporting_DATA
--------------------------------------------------------------
                         cleandata.py
+-------------------------------------------------------------
+                Cleaning gEVAL supporting DATA
                           By dp24
         Updated from wc2's clean_gEVALsupport_data.sh
 -------------------------------------------------------------
@@ -58,9 +55,7 @@ DOCSTRING = """
             sys      - for system interfacing
                        mainly just sys.exit(0) 
             re       - for regex usage
-
 -------------------------------------------------------------
-
 USE CASE FOR THE SCRIPT
 1, The aim of this script is to take an input FASTA file
 (whether cdna/cds/pep or rna) from ensembl or refseq.
@@ -75,9 +70,7 @@ format.
 
 5, Finally the sequences are split into user defined entries
 per file.
-
 -------------------------------------------------------------
-
 USAGE INSTRUCTIONS
 
 ./cleandata.py -TYPE cdna -ORG mesocricetus_auratus -SAVE ./test
@@ -90,9 +83,7 @@ MesAur1.0.cdna.all.fa.gz
 
 Optionals include --clean and/or --debug
 -------------------------------------------------------------
-
 ARGUMENTS
-
  - SAVE - ./test
 
  - ORG - Organism Name - the name of the orgnaism as it looks
@@ -107,20 +98,15 @@ ARGUMENTS
 
  --debug - Used to diagnose issues with the running of the
   script
-
-
 -------------------------------------------------------------
 
 FUTURE CHANGES
     - More sanity checking
-
 -------------------------------------------------------------
 CONTACT
     - dp24@sanger.ac.uk
-
 -------------------------------------------------------------
 FILE STRUCTURE
-
                 SAVE location
                 -------------
                       |
@@ -132,10 +118,7 @@ FILE STRUCTURE
     |           |           |       |
     |           |           |       |
 Downloaded   Enteries     Logs    cleaned
-
 --------------------------------------------------------------
-
-
 """
 
 
@@ -201,9 +184,9 @@ def parse_command_args(args=None):
 
 
 def main():
-    '''
+    """
     A function containing the controlling logic of the script
-    '''
+    """
 
     directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned']
     accessrights = 0o755
@@ -320,14 +303,14 @@ def downandsave(org, save, data_type, debug=False):
         file_name = ftp_name[8]
 
     try:
-        movetodirect = os.popen(f'mv ./*{file_end} {downloadloc}')
-        rm_originaldl = os.popen(f'rm ./*{file_end}*')
+        move_to_direct = os.popen(f'mv *{file_end} {downloadloc}')
         if debug:
             print('''Moving downloaded file to correct place.
                     \nRemoving remaining unneeded files''')
     except:
         if debug:
             print('No old files')
+        print('Didn\'t Move the file')
 
     return org
 
@@ -496,12 +479,12 @@ def massage(name, data_type, debug=False):
                 gene_symbol = gene_symbol.group(1)
                 if debug:
                     print(gene_symbol)
-            elif gene_symbol == None:
+            if gene_symbol == None:
                 gene_symbol = re.search(r'EN(\w+)G(\w+)', name)
                 gene_symbol = gene_symbol.group(0)
 
             else: 
-                gene_symbol = MissingInfo
+                gene_symbol = 'MissingInfo'
 
             if ens_code:
                 ens_code = ens_code.group(0)
@@ -560,7 +543,7 @@ def seqclean(seq, data_type, debug=False):
                         print('Command or files are incorrect')
 
                 result = set_script.read()
-                res.close()
+                result.close()
                 if debug:
                     print(f'Finished: {result}')
                 # The above should start the perl script and then check to
@@ -602,6 +585,8 @@ def rm_redundants(save, debug=False):
                     clean_out = os.popen(f'rm -rf {path}')
                     if debug:
                         print(f'Up for deletion is:\n{path}')
+
+    rm_original_dl = os.popen(f'rm ./*.gz')
 
 
 if __name__ == '__main__':
