@@ -79,7 +79,7 @@ or
 
 ./cleandata.py -TYPE cdna -ORG ftp://ftp.ensembl.org/pub/
 release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
-MesAur1.0.cdna.all.fa.gz
+MesAur1.0.cdna.all.fa.gz -SAVE ./test
 
 Optionals include --clean and/or --debug
 -------------------------------------------------------------
@@ -188,10 +188,13 @@ def main():
     A function containing the controlling logic of the script
     """
 
+
     directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned']
     accessrights = 0o755
 
     option = parse_command_args()
+
+    downloadloc = f'{option.s}/cleaning_data/downloaded/'
 
     if option.o:
         for direct in directlist:
@@ -215,12 +218,15 @@ def main():
 
             org = downandsave(option.o, option.s, option.t, option.d)
 
+            move_to_direct = os.popen(f'mv *.fa {downloadloc}')
+
             decompress(option.s, option.d)
 
             if option.t == 'cdna':
                 # To produce a single file for seqclean
                 if option.d:
                     print('First run of entry funtion will clean headers')
+
                 entryfunction(org, option.s, option.t, option.d, 10000000000)
 
                 # seqclean for what should be the only file in the entries
@@ -230,16 +236,19 @@ def main():
                 # of entry.
                 if option.d:
                     print('DNA will now be split into 5000 seqs per file')
+
                 entryfunction(org, option.s, option.t, option.d, 5000)
 
             elif option.t == 'pep':
                 if option.d:
                     print('Pep splits at 2000 per file')
+
                 entryfunction(org, option.s, option.t, option.d, 2000)
 
             else:
                 if option.d:
                     print('CDs and ncRNA split at 3000 entries per file')
+
                 entryfunction(org, option.s, option.t, option.d, 3000)
 
         if option.c:
@@ -256,7 +265,6 @@ def downandsave(org, save, data_type, debug=False):
     A function to dowload a user defined file and mv it into the
     downloaded folder.
     """
-    downloadloc = f'{save}/cleaning_data/downloaded/'
 
     if data_type == 'ncrna':
         file_end = '.fa.gz'
@@ -301,16 +309,7 @@ def downandsave(org, save, data_type, debug=False):
     if org.startswith('ftp://'):
         ftp_name = org.split('/')
         file_name = ftp_name[8]
-
-    try:
-        move_to_direct = os.popen(f'mv *{file_end} {downloadloc}')
-        if debug:
-            print('''Moving downloaded file to correct place.
-                    \nRemoving remaining unneeded files''')
-    except:
-        if debug:
-            print('No old files')
-        print('Didn\'t Move the file')
+        print(file_name)
 
     return org
 

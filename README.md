@@ -26,7 +26,7 @@ or
 --------------
 ### 21/01/2020
 - Removed various errors in structure (too many spaces and gaps.
-- 
+- Changed Quotes so that doubles are used for doc_strings rather than singles.
 
 ### 17/01/2020
 - Removed excessive use of the "\n" character to match "house style".
