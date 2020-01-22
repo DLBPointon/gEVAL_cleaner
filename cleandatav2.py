@@ -328,9 +328,10 @@ def decompress(save):
     for file in filefinder:
 
         if file.endswith(file_end):
+            logging.debug('File to unzip Found')
             try:
                 logging.info(f'Starting Decompression of {file}')
-                os.popen(f'gunzip {directory}{file}')
+                os.popen(f'gunzip {directory}{file}*')
                 logging.info('Decompression Complete')
             except:
                 logging.critical('Decompression cannot be completed, check the file?')
@@ -338,6 +339,7 @@ def decompress(save):
         else:
             logging.critical('File to decompress not found')
             sys.exit(0)
+
     logging.debug('Decompression finished')
 
 
