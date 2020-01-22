@@ -293,9 +293,9 @@ def downandsave(org, data_type):
             logging.critical('File NOT Downloaded')
             sys.exit(0)
 
-        org_from_name = re.search(r'fasta(\w+)', org)
+        org_from_name = re.search(r'fasta\/(\w+)', org)
         org = org_from_name.group(1)
-        logging.info('')
+        logging.info('Name pulled from FTP address')
 
     else:
         logging.info('FTP address not giving, creating one from args')
