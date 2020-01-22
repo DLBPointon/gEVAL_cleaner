@@ -24,6 +24,9 @@ or
 - rm_redundants function
 - Replace the large number of print (debug) with logging module debugs.
 --------------
+### 22/01/2020
+- 
+
 ### 21/01/2020
 - Removed various errors in structure (too many spaces and gaps.
 - Changed Quotes so that doubles are used for doc_strings rather than singles.

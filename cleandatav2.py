@@ -7,6 +7,7 @@ PRINT_ERROR = '''Does not exist\n
 
 try:
     import sys
+
     if sys.version_info[0] < 3 and sys.version_info[1] < 7:
         raise Exception("""Must be using Python 3.7 for the full
                         functionality of this script""")
@@ -18,6 +19,7 @@ except ImportError:
 
 try:
     import argparse
+
     print('argparse imported')
 except ImportError:
     print(f'argparse not imported \n {PRINT_ERROR}')
@@ -25,6 +27,7 @@ except ImportError:
 
 try:
     import os
+
     print('os imported')
 except ImportError:
     print(f'os not imported \n {PRINT_ERROR}')
@@ -32,10 +35,20 @@ except ImportError:
 
 try:
     import re
+
     print('regex imported')
 except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
     sys.exit(0)
+
+try:
+    import logging
+
+    print('logging imported')
+except ImportError:
+    print(f'logging not imported \n {PRINT_ERROR}')
+    sys.exit(0)
+
 
 DOCSTRING = """
 -------------------------------------------------------------
@@ -55,6 +68,8 @@ DOCSTRING = """
             sys      - for system interfacing
                        mainly just sys.exit(0) 
             re       - for regex usage
+            __________________________________
+            logging
 -------------------------------------------------------------
 USE CASE FOR THE SCRIPT
 1, The aim of this script is to take an input FASTA file
@@ -86,7 +101,7 @@ Optionals include --clean and/or --debug
 ARGUMENTS
  - SAVE - ./test
 
- - ORG - Organism Name - the name of the orgnaism as it looks
+ - ORG - Organism Name - the name of the organism as it looks
   in the respective database.
 
  - TYPE - will be a choice between cdna/cds/pep/rna
@@ -153,8 +168,8 @@ def parse_command_args(args=None):
                         type=str,
                         action='store',
                         help='''The Organism under scrutiny
-                                  (use how the name would appear in ensembl
-                                  to make life easier, long name)''',
+                                   (use how the name would appear in ensembl
+                                   to make life easier, long name)''',
                         required=True,
                         dest='o')
 
@@ -187,95 +202,81 @@ def main():
     """
     A function containing the controlling logic of the script
     """
-
-
-    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs', '/cleaning_data/cleaned']
-    accessrights = 0o755
-
     option = parse_command_args()
 
+    directlist = ['/cleaning_data', '/cleaning_data/entries', '/cleaning_data/downloaded', '/cleaning_data/logs',
+                  '/cleaning_data/cleaned']
+    accessrights = 0o755
+
     downloadloc = f'{option.s}/cleaning_data/downloaded/'
+
+    if option.d:
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
+                            filename='gEVAL_clean.log')
 
     if option.o:
         for direct in directlist:
             path = option.s + direct
             if os.path.exists(path):
-                print(f'Path: {path} :already exists')
+                logging.info(f'Path: {path} :already exists')
             else:
                 try:
                     os.makedirs(path, accessrights)
                 except OSError:
-                    if option.d:
-                        print(f'Creation of directory has failed at: {path}')
+                    logging.critical(f'Creation of directory has failed at: {path}')
                 else:
-                    if option.d:
-                        print(f'''Successfully created the directory path at:
+                    logging.info(f'''Successfully created the directory path at:
                      {path}''')
 
         if option.o and option.t:
-            if option.d:
-                print('Lets do stuff')
-
-            org = downandsave(option.o, option.s, option.t, option.d)
+            logging.info('Args accepted - Lets do stuff')
+            org = downandsave(option.o, option.t)
 
             try:
                 move_gz_to_direct = os.popen(f'mv *.fa.gz* {downloadloc}')
             except:
-                if option.d:
-                    print('No zipped file found')
+                logging.critical('No zipped file found')
+                sys.exit(0)
 
             try:
                 move_fa_to_direct = os.popen(f'mv *.fa* {downloadloc}')
             except:
-                if option.d:
-                    print('No unzipped file found')
+                logging.critical('No unzipped file found')
+                sys.exit(0)
 
-
-            decompress(option.s, option.d)
+            decompress(option.s)
 
             if option.t == 'cdna':
-                # To produce a single file for seqclean
-                if option.d:
-                    print('First run of entry funtion will clean headers')
-
-                entryfunction(org, option.s, option.t, option.d, 10000000000)
+                logging.info('First run of entry funtion will clean headers and produce a singular file for seqclean')
+                entryfunction(org, option.s, option.t, 10000000000)
 
                 # seqclean for what should be the only file in the entries
                 # folder with the ending all.mod.fa
                 # Need to make it so that the finished file form the
                 # seqclean is the one that is the input for the second round
                 # of entry.
-                if option.d:
-                    print('DNA will now be split into 5000 seqs per file')
 
-                entryfunction(org, option.s, option.t, option.d, 5000)
+                logging.info('DNA will now be split into 5000 seqs per file')
+                entryfunction(org, option.s, option.t, 5000)
 
             elif option.t == 'pep':
-                if option.d:
-                    print('Pep splits at 2000 per file')
-
-                entryfunction(org, option.s, option.t, option.d, 2000)
+                logging.info('Pep splits at 2000 per file')
+                entryfunction(org, option.s, option.t, 2000)
 
             else:
-                if option.d:
-                    print('CDs and ncRNA split at 3000 entries per file')
-
-                entryfunction(org, option.s, option.t, option.d, 3000)
+                logging.info('CDs and ncRNA split at 3000 entries per file')
+                entryfunction(org, option.s, option.t, 3000)
 
         if option.c:
-            if option.d:
-                print('Cleaning up the files and folders produced my this script')
-            rm_redundants(option.s, option.d)
-
-            if option.d:
-                print('Cleaning finished')
+            rm_redundants(option.s)
 
 
-def downandsave(org, save, data_type, debug=False):
+def downandsave(org, data_type):
     """
     A function to dowload a user defined file and mv it into the
     downloaded folder.
     """
+    logging.debug('Downandsave called')
 
     if data_type == 'ncrna':
         file_end = '.fa.gz'
@@ -284,79 +285,67 @@ def downandsave(org, save, data_type, debug=False):
 
     if org.startswith('ftp://'):
         try:
-            if debug:
-                print(f'Downloading: {org}')
+            logging.info(f'Starting Download of {org}')
             download = os.popen(f'wget -q -o /dev/null {org}')
+            logging.info('Download finished')
 
         except:
-            if debug:
-                print('''File not downloading: check
-                 spelling and whether it exists''')
-                sys.exit(0)
+            logging.critical('File NOT Downloaded')
+            sys.exit(0)
 
         org_from_name = re.search(r'fasta(\w+)', org)
         org = org_from_name.group(1)
+        logging.info('')
 
     else:
+        logging.info('FTP address not giving, creating one from args')
         ftp_address = f'''ftp://ftp.ensembl.org/pub/release-98/fasta/
                           {org}/{data_type}/*{data_type}{file_end}'''
         try:
-            if debug:
-                print(f'Downloading: {ftp_address}')
+            logging.info('Attempting to download the created FTP address')
             download = os.popen(f'''wget -q -o /dev/null
              ftp://ftp.ensembl.org/pub/release-98/fasta/
              {org}/{data_type}/*{data_type}{file_end}''')
+            logging.info('Download complete')
         except:
-            if debug:
-                print('''File not downloading: check spelling and
-                 whether it exists''')
+            logging.critical('Download NOT performed, error in org name is most likely.')
             sys.exit(0)
 
-    # else:
-    # print('Input format not recognised!\nIs it exactly how the species
-    # name appears in the relevant database?\nOr the full link from the
-    # database?'
-
-    if org.startswith('ftp://'):
-        ftp_name = org.split('/')
-        file_name = ftp_name[8]
-        print(file_name)
-
+    logging.debug('Downandsave finished')
     return org
 
 
-def decompress(save, debug=False):
+def decompress(save):
     """
     A function to decompress the downloaded file from downandsave().
     """
+    logging.debug('Decompress called')
     file_end = '.fa.gz'
 
     directory = f'{save}/cleaning_data/downloaded/'
     filefinder = os.listdir(directory)
 
     for file in filefinder:
-        if file.endswith(f'{file_end}'):
-            if debug:
-                print('Unzipping downloaded file with gunzip')
-                try:
-                    unzipper = os.popen(f'gunzip {directory}*{file_end}')
-                except:
-                    if debug:
-                        print('No gunzip file found or already unzipped')
-                    pass
+
+        if file.endswith(file_end):
+            try:
+                logging.info(f'Starting Decompression of {file}')
+                os.popen(f'gunzip {directory}{file}')
+                logging.info('Decompression Complete')
+            except:
+                logging.critical('Decompression cannot be completed, check the file?')
 
         else:
-            if debug:
-                print('No gunzip file found')
-            # Nees a sys.exit(0) but will break script
+            logging.critical('File to decompress not found')
+            sys.exit(0)
+    logging.debug('Decompression finished')
 
 
-def read_fasta(filetoparse, debug=False):
+def read_fasta(filetoparse):
     """
     A function which opens and splits a fasta into name and seq.
     """
-    if debug:
-        print('Splitting headers from sequences')
+    logging.debug('Read_fasta called')
     name, seq = None, []
 
     for line in filetoparse:
@@ -371,16 +360,16 @@ def read_fasta(filetoparse, debug=False):
 
     if name:
         yield (name, ''.join(seq))
+    logging.info('Entery produced')
 
 
-def entryfunction(org, save, data_type, debug=False, entryper=1):
+def entryfunction(org, save, data_type, entryper=1):
     """
     The entryfunction function splits a FASTA file into a defined
     number of entries per file, pep == 2000 enteries and everything
     else is split into 5000 enteries.
     """
-    if debug:
-        print('Entry Function starting')
+    logging.debug('Entryfunction called')
 
     count = 0
     filecounter = 0
@@ -390,31 +379,54 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
     directory = f'{save}/cleaning_data/downloaded/'
 
     if data_type == 'ncrna':
+        logging.info('ncrna data type used')
         file_uncomp = '.fa'
+        file_ex = '.fna'
+        if org.startswith('ftp://'):
+
+            if 'GCF' in org:
+                logging.info('FTP address being split to find the organism name (GCF name)')
+                org = re.search(r'GC\w+...(\w+\S\d.\d.\d\S){3}', org)
+                org = org.group(1)
+            elif 'GCA' in org:
+                logging.info('FTP address being split to find the organism name (GCA name)')
+                org = re.search(r'GC\w+...(\w+){3}', org)
+                org = org.group(1)
+            else:
+                if org == None:
+                    logging.info('Regex cannot find org name in FTP address, using simpler method.')
+                    org_split = org.split('/')
+                    org = org_split[10]
+                    org_split2 = org.split('_')
+                    org = org_split2[1:].join('')
     else:
+        logging.info('Standard latin name provided')
         file_uncomp = '.all.fa'
+        file_ex = '.fa'
 
     if entryper >= 10000000000:
+        logging.info('cDNA file supplied - First run to return a complete multi-fasta')
         allmod = '.all.MOD'
     else:
-        allmod = '.MOD'
+        if data_type == 'ncrna':
+            logging.info('ncRNA supplied')
+            allmod = ''
+        else:
+            logging.info(f'Supplied data is not ncRNA - it is {data_type}')
+            allmod = '.MOD'
 
     for file in os.listdir(directory):
-
         # This is for the DNA post seqclean file
         if file.endswith('.all.MOD.fa.clean'):
             unzipped = f'{directory}{file}'
-            if debug:
-                print(f'File in use:\n{unzipped}')
+            logging.debug(f'File to be used: {unzipped}')
         # All other files
-        if file.endswith('.fa'):
+        elif file.endswith('.fa'):
             unzipped = f'{directory}{file}'
-            if debug:
-                print(f'File in use:\n{unzipped}')
+            logging.debug(f'File to be used: {unzipped}')
 
             if os.path.exists(unzipped):
-                if debug:
-                    print('CAN find the unzipped fasta')
+                logging.info(f'File found at {unzipped}')
 
                 with open(unzipped, 'r') as filetoparse:
                     for name, seq in read_fasta(filetoparse):
@@ -426,21 +438,22 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                         # possible errors.
                         if data_type == 'cdna':
                             if entryper >= 10000000000:
-                                if debug:
-                                    print('First round of cleaning for cdna file')
+                                logging.debug('First round of cleaning for cDNA file in Massage')
                                 new_name = massage(name, data_type)
 
                             else:
-                                if debug:
-                                    print('File should should have already been run through massage so it doesn\'t need to again')
+                                logging.debug('Second round of cDNA through Massage')
                                 new_name = massage(name, data_type)
 
-                        elif data_type == 'cds' or 'ncrna':
+                        elif data_type == 'cds' or 'ncrna' or 'pep':
+                            logging.debug(f'{data_type} being used')
                             new_name = massage(name, data_type)
+                            if data_type == 'ncra':
+                                data_type = ''
+                                allmod = ''
 
                         else:
-                            if debug:
-                                print('Data type not recognised')
+                            logging.critical(f'Data type of {data_type} not recognised.')
                             sys.exit(0)
 
                         nameseq = new_name, seq
@@ -456,34 +469,35 @@ def entryfunction(org, save, data_type, debug=False, entryper=1):
                                 count = 0
                                 entry = []
 
-                            if debug:
-                                print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''')
+                            logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
 
                         filecounter += 1
-                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
                         for name, seq in entry:
                             done.write(f'{name}\n{seq} \n')
 
                         entry = []
 
-                    if debug:
-                        print(f'''File saved to:\n{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''')
+                    logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
             else:
-                if debug:
-                    print('CANNOT find the unzipped fasta')
-    if debug:
-        print('Entry Function Finished')
+                logging.debug('Cannot find unzipped file')
+                sys.exit(0)
+
+        else:
+            logging.debug('File extension is not .all.MOD.fa or .fa, still zipped maybe?')
+            sys.exit(0)
+
+    logging.debug('Entry Function finished')
 
 
-def massage(name, data_type, debug=False):
+def massage(name, data_type):
     """
     A function to 'massage' the sequence headers into a more human readable
      style
     """
-
+    logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'dna':
-        if debug:
-            print(f'This sequence is {data_type} from ensembl.')
+        logging.info(f'This sequence is {data_type} from ensembl.')
 
         if name.startswith('>'):
             gene_symbol = re.search(r'symbol:(\w+\S+)', name)
@@ -499,28 +513,22 @@ def massage(name, data_type, debug=False):
             else:
                 gene_symbol = 'MissingInfo'
 
-
             if ens_code:
                 ens_code = ens_code.group(0)
-                if debug:
-                    print(ens_code)
+
             else:
                 ens_code = 'NoEnsCode'
 
             name = f'>{gene_symbol}({ens_code})'
 
     elif data_type == 'ncrna':
-        if debug:
-            print('This is a RefSeq ncRNA sequecne, not coded for that yet.')
+        logging.info('This is a RefSeq ncRNA sequecne, not coded for that yet.')
 
     else:
-        if debug:
-            print('Some how you\'ve got to this point with an incorrect data type')
+        logging.debug('Some how you\'ve got to this point with an incorrect data type')
         sys.exit(0)
 
-    if debug:
-        print(name)
-
+    logging.debug('Massage finished')
     return name
 
 
@@ -529,12 +537,14 @@ BEYOND THIS POINT IS NOT COMPLETED AND MAY NOT RUN AT ALL
 """
 
 
-def seqclean(seq, data_type, debug=False):
+def seqclean(seq, data_type):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
     requires correcting.
     """
+
+    logging.debug('Seqclean called')
 
     seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
     run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
@@ -545,42 +555,40 @@ def seqclean(seq, data_type, debug=False):
 
     if data_type == 'cdna':
         if os.path.exists(path):
-            if debug:
-                print('Path to files found')
+            logging.info('Path to files found')
             for file in os.listdir(path):
-                if file.endswith(f'{data_type}.all.MOD.fa')
+                if file.endswith(f'{data_type}.all.MOD.fa'):
                     try:
                         set_script = os.popen(f'''bsub -o cleanplease.out
                          -M500 -R\'select[mem>500] rusage[mem=500]
                          \' \\ ~wc2/tools/seqclean/seqclean {file}''')
                     except IOError:
-                        if debug:
-                            print('Command or files are incorrect')
+                        logging.debug('Command or files are incorrect')
 
                 result = set_script.read()
                 result.close()
-                if debug:
-                    print(f'Finished: {result}')
-                # The above should start the perl script and then check to
-                # see if the script runs and finishes for each of the fiules
-                # passed onto it and then print the file it has finihsed
-                # working on
+                logging.debug(f'Finished: {result}')
+            # The above should start the perl script and then check to
+            # see if the script runs and finishes for each of the fiules
+            # passed onto it and then print the file it has finihsed
+            # working on
         else:
-            if debug:
-                print('File paths not found')
+            logging.critical('File paths not found')
             sys.exit(0)
 
     else:
-        if debug:
-            print('Seq clean skipped, only for DNA')
+        logging.debug('Seq clean skipped, only for DNA')
+        sys.exit(0)
 
+    logging.debug('seqclean finished')
     return seq
 
 
-def rm_redundants(save, debug=False):
+def rm_redundants(save):
     """
     A function to remove all redunant files, an optional.
     """
+    logging.debug('rm_redundants called')
     directlist = ['/cleaning_data/downloaded', '/cleaning_data/logs']
 
     extensions = ['.log', '.cidx', '.cln', 'outparts']
@@ -593,16 +601,14 @@ def rm_redundants(save, debug=False):
             for extension in extensions:
                 if file.endswith('.clean'):
                     mv_clean = os.popen(f'''mv {save}{direct}{file}
-                                         {save}/cleaning_data/cleaned/''')
-                    if debug:
-                        print(f'File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/')
+                                        {save}/cleaning_data/cleaned/''')
+                    logging.debug(f'File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/')
                 else:
                     clean_out = os.popen(f'rm -rf {path}')
-                    if debug:
-                        print(f'Up for deletion is:\n{path}')
+                    logging.debug(f'Up for deletion is:\n{path}')
 
     rm_original_dl = os.popen(f'rm ./*.gz')
-
+    logging.debug('rm_redundants removed')
 
 if __name__ == '__main__':
     main()
