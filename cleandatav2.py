@@ -7,11 +7,10 @@ PRINT_ERROR = '''Does not exist\n
 
 try:
     import sys
-
-    if sys.version_info[0] < 3 and sys.version_info[1] < 7:
+    if sys.version_info[0] < 3 and sys.version_info[1] < 6:
         raise Exception("""Must be using Python 3.7 for the full
                         functionality of this script""")
-    if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+    if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
         print('Your using at least Version 3.7, You are good to go...')
 except ImportError:
     print(f'sys not imported \n {PRINT_ERROR}')
@@ -19,7 +18,6 @@ except ImportError:
 
 try:
     import argparse
-
     print('argparse imported')
 except ImportError:
     print(f'argparse not imported \n {PRINT_ERROR}')
@@ -27,7 +25,6 @@ except ImportError:
 
 try:
     import os
-
     print('os imported')
 except ImportError:
     print(f'os not imported \n {PRINT_ERROR}')
@@ -35,7 +32,6 @@ except ImportError:
 
 try:
     import re
-
     print('regex imported')
 except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
@@ -43,7 +39,6 @@ except ImportError:
 
 try:
     import logging
-
     print('logging imported')
 except ImportError:
     print(f'logging not imported \n {PRINT_ERROR}')
@@ -59,7 +54,7 @@ DOCSTRING = """
         Updated from wc2's clean_gEVALsupport_data.sh
 -------------------------------------------------------------
             IMPORTANT NOTES BEOFRE CARRYING ON
-        This script is written in for python3.7
+        This script is written in for python3.6
 
                     IMPORT MODULES
 
@@ -143,6 +138,7 @@ def parse_command_args(args=None):
     to the rest of the script.
     """
     descformat = argparse.RawDescriptionHelpFormatter
+
     parser = argparse.ArgumentParser(prog='Clean the gEVAL Supporting DATA',
                                      formatter_class=descformat,
                                      description=DOCSTRING)
@@ -232,20 +228,20 @@ def main():
             logging.info('Args accepted - Lets do stuff')
             org = downandsave(option.o, option.t)
 
-            try:
-                move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
-            except:
-                logging.info('No zipped file found, in current directory')
-
-            try:
-                move_fa_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
-            except:
-                logging.info('No unzipped file found, in current directory')
-
-            try:
-                rm_excess_gza = os.popen(f'rm *.fa.gz*')
-            except:
-                logging.info('Removing excess fa.gz.* files')
+            # try:
+            #     move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
+            # except:
+            #     logging.info('No zipped file found, in current directory')
+            #
+            # try:
+            #     move_fa_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
+            # except:
+            #     logging.info('No unzipped file found, in current directory')
+            #
+            # try:
+            #     rm_excess_gza = os.popen(f'rm *.fa.gz*')
+            # except:
+            #     logging.info('Removing excess fa.gz.* files')
 
             decompress(option.s)
 
