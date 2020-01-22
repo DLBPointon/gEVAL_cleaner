@@ -233,13 +233,13 @@ def main():
             org = downandsave(option.o, option.t)
 
             try:
-                move_gz_to_direct = os.popen(f'mv *.fa.gz* {downloadloc}')
+                move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
             except:
                 logging.critical('No zipped file found')
                 sys.exit(0)
 
             try:
-                move_fa_to_direct = os.popen(f'mv *.fa* {downloadloc}')
+                move_fa_to_direct = os.popen(f'mv *.fa {downloadloc}')
             except:
                 logging.critical('No unzipped file found')
                 sys.exit(0)
