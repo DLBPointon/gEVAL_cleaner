@@ -235,14 +235,17 @@ def main():
             try:
                 move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
             except:
-                logging.critical('No zipped file found')
-                sys.exit(0)
+                logging.info('No zipped file found, in current directory')
 
             try:
                 move_fa_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
             except:
-                logging.critical('No unzipped file found')
-                sys.exit(0)
+                logging.info('No unzipped file found, in current directory')
+
+            try:
+                rm_excess_gza = os.popen(f'rm *.fa.gz*')
+            except:
+                logging.info('Removing excess fa.gz.* files')
 
             decompress(option.s)
 
