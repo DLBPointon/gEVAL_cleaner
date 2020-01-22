@@ -341,7 +341,6 @@ def decompress(save):
 
         else:
             logging.critical('File to decompress not found')
-            sys.exit(0)
 
     logging.debug('Decompression finished')
 
