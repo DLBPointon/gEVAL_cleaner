@@ -364,7 +364,7 @@ def read_fasta(filetoparse):
 
     if name:
         yield (name, ''.join(seq))
-    logging.info('Entery produced')
+    logging.info('Entry produced')
 
 
 def entryfunction(org, save, data_type, entryper=1):
@@ -403,8 +403,9 @@ def entryfunction(org, save, data_type, entryper=1):
                     org = org_split[10]
                     org_split2 = org.split('_')
                     org = org_split2[1:].join('')
+        else:
+            logging.info('Standard latin name provided')
     else:
-        logging.info('Standard latin name provided')
         file_uncomp = '.all.fa'
         file_ex = '.fa'
 
@@ -501,9 +502,9 @@ def massage(name, data_type):
     """
     logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'dna':
-        logging.info(f'This sequence is {data_type} from ensembl.')
 
         if name.startswith('>'):
+            logging.info('Renaming headers')
             gene_symbol = re.search(r'symbol:(\w+\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
@@ -523,6 +524,8 @@ def massage(name, data_type):
             else:
                 ens_code = 'NoEnsCode'
 
+            logging.info(f'Gene Symbol found as: {gene_symbol}')
+            logging.info(f'Ens Code found as: {ens_code}')
             name = f'>{gene_symbol}({ens_code})'
 
     elif data_type == 'ncrna':
