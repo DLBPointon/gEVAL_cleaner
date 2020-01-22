@@ -230,12 +230,21 @@ def main():
 
             try:
                 logging.critical('Moving downloaded file to /cleaning_data/downloaded')
-                os.popen(f'mv *.fa.gz {downloadloc}')
+                os.popen(f'mv -f *.fa.gz {downloadloc}')
             except:
                 logging.critical('Could not move downloaded zipped file')
 
-            # except:
-            #     logging.info('No zipped file found, in current directory')
+            for file in os.listdir(downloadloc):
+                if file.endswith('.fa.gz')
+                    try:
+                        logging.critical('Unzipping the downloaded file in the /cleaning_data/downloaded file')
+                        os.popen(f'gunzip -fd {downloadloc}*.fa.gz')
+                    except:
+                        logging.critical('Failed to Unzip the file - Is it there?')
+                else:
+                    logging.debug('Zipped file not found in downloaded folder')
+
+
             #
             # try:
             #     move_fa_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
@@ -246,8 +255,6 @@ def main():
             #     rm_excess_gza = os.popen(f'rm *.fa.gz*')
             # except:
             #     logging.info('Removing excess fa.gz.* files')
-
-            decompress(option.s)
 
             if option.t == 'cdna':
                 logging.info('First run of entry funtion will clean headers and produce a singular file for seqclean')
@@ -272,6 +279,8 @@ def main():
 
         if option.c:
             rm_redundants(option.s)
+
+        print('Script Done')
 
 
 def downandsave(org, data_type):
@@ -310,39 +319,13 @@ def downandsave(org, data_type):
              ftp://ftp.ensembl.org/pub/release-98/fasta/
              {org}/{data_type}/*{data_type}{file_end}''')
             logging.info('Download complete')
+
         except:
             logging.critical('Download NOT performed, error in org name is most likely.')
             sys.exit(0)
 
     logging.debug('Downandsave finished')
     return org
-
-
-def decompress(save):
-    """
-    A function to decompress the downloaded file from downandsave().
-    """
-    logging.debug('Decompress called')
-    file_end = '.fa.gz'
-
-    directory = f'{save}/cleaning_data/downloaded/'
-    filefinder = os.listdir(directory)
-
-    for file in filefinder:
-
-        if file.endswith(file_end):
-            logging.debug('File to unzip Found')
-            try:
-                logging.info(f'Starting Decompression of {file}')
-                os.popen(f'gunzip {directory}{file}*')
-                logging.info('Decompression Complete')
-            except:
-                logging.critical('Decompression cannot be completed, check the file?')
-
-        else:
-            logging.critical('File to decompress not found')
-
-    logging.debug('Decompression finished')
 
 
 def read_fasta(filetoparse):
