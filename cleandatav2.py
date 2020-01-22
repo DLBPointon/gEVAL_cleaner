@@ -228,8 +228,12 @@ def main():
             logging.info('Args accepted - Lets do stuff')
             org = downandsave(option.o, option.t)
 
-            # try:
-            #     move_gz_to_direct = os.popen(f'mv *.fa.gz {downloadloc}')
+            try:
+                logging.critical('Moving downloaded file to /cleaning_data/downloaded')
+                os.popen(f'mv *.fa.gz {downloadloc}')
+            except:
+                logging.critical('Could not move downloaded zipped file')
+
             # except:
             #     logging.info('No zipped file found, in current directory')
             #
