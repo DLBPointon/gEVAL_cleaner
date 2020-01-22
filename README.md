@@ -27,7 +27,12 @@ or
 ### 21/01/2020
 - Removed various errors in structure (too many spaces and gaps.
 - Changed Quotes so that doubles are used for doc_strings rather than singles.
-- Fixed an error with regex
+- Fixed an error with regex where too many MissingInfo's were being assigned.
+- Fixed an error where the final file produced by the entryfunction does not include any massaged headers.
+- Fixed an error where regex was assigning None to a new_name where length was 2 characters or less.
+- Fixed regex issue where the gene ens_code would be terminated too early in some cases.
+- Removal of redundant code.
+
 
 ### 17/01/2020
 - Removed excessive use of the "\n" character to match "house style".

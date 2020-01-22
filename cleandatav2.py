@@ -294,7 +294,7 @@ def downandsave(org, save, data_type, debug=False):
                  spelling and whether it exists''')
                 sys.exit(0)
 
-        org_from_name = re.search(r'fasta\/(\w+)', org)
+        org_from_name = re.search(r'fasta(\w+)', org)
         org = org_from_name.group(1)
 
     else:
@@ -492,8 +492,8 @@ def massage(name, data_type, debug=False):
             if gene_symbol:
                 gene_symbol = gene_symbol.group(1)
 
-            elif gene_symbol == None:
-                gene_symbol = re.search(r'ENS(\w+)G(\w+)', name)
+            elif gene_symbol is None:
+                gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
                 gene_symbol = gene_symbol.group(0)
 
             else:
@@ -548,13 +548,14 @@ def seqclean(seq, data_type, debug=False):
             if debug:
                 print('Path to files found')
             for file in os.listdir(path):
-                try:
-                    set_script = os.popen(f'''bsub -o cleanplease.out
-                     -M500 -R\'select[mem>500] rusage[mem=500]
-                     \' \\ ~wc2/tools/seqclean/seqclean {file}''')
-                except IOError:
-                    if debug:
-                        print('Command or files are incorrect')
+                if file.endswith(f'{data_type}.all.MOD.fa')
+                    try:
+                        set_script = os.popen(f'''bsub -o cleanplease.out
+                         -M500 -R\'select[mem>500] rusage[mem=500]
+                         \' \\ ~wc2/tools/seqclean/seqclean {file}''')
+                    except IOError:
+                        if debug:
+                            print('Command or files are incorrect')
 
                 result = set_script.read()
                 result.close()
@@ -591,7 +592,7 @@ def rm_redundants(save, debug=False):
         for file in os.listdir(path):
             for extension in extensions:
                 if file.endswith('.clean'):
-                    mv_clean = os.popen(f'''mv {save}{directlist}{file}
+                    mv_clean = os.popen(f'''mv {save}{direct}{file}
                                          {save}/cleaning_data/cleaned/''')
                     if debug:
                         print(f'File:\n{file}\nBeing moved to:\n{save}/cleaning_data/cleaned/')
