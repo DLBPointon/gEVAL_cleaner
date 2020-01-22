@@ -120,10 +120,20 @@ def main():
                                 filename='gEVAL_clean.log')
 
     print(option.FTP)
-    directory = file_jenny(option.FTP, option.s)
+    org, directory = file_jenny(option.FTP, option.s)
 
     downandsave(option.FTP, directory)
 
+    if option.t == 'cdna':
+        entryfunction(org, directory, option.t, entryper=100000000000)
+
+        entryfunction(org, directory, option.t, entryper=5000)
+
+    elif option.t == 'pep':
+        entryfunction(org, directory, option.t, entryper=2000)
+
+    else:
+        entryfunction(org, directory, option.t, entryper=3000)
 
 
 
@@ -153,7 +163,7 @@ def file_jenny(ftp, save):
                 logging.info(f'''Successfully created the directory path at:
                                      {path}''')
 
-    return directory_naming
+    return org, directory_naming
 
 
 def downandsave(ftp, directory):
@@ -197,7 +207,7 @@ def read_fasta(filetoparse):
     logging.info('Entry produced')
 
 
-def entryfunction(org, save, data_type, entryper=1):
+def entryfunction(org, directory, data_type, entryper=1):
     """
     The entryfunction function splits a FASTA file into a defined
     number of entries per file, pep == 2000 enteries and everything
@@ -209,55 +219,26 @@ def entryfunction(org, save, data_type, entryper=1):
     filecounter = 0
     entry = []
 
-    filesavedto = f'{save}/cleaning_data/entries/'
-    directory = f'{save}/cleaning_data/downloaded/'
+    filesavedto = f'./{directory[1]}/{data_type}'
 
-    if data_type == 'ncrna':
-        logging.info('ncrna data type used')
-        file_uncomp = '.fa'
-        file_ex = '.fna'
-        if org.startswith('ftp://'):
-
-            if 'GCF' in org:
-                logging.info('FTP address being split to find the organism name (GCF name)')
-                org = re.search(r'GC\w+...(\w+\S\d.\d.\d\S){3}', org)
-                org = org.group(1)
-            elif 'GCA' in org:
-                logging.info('FTP address being split to find the organism name (GCA name)')
-                org = re.search(r'GC\w+...(\w+){3}', org)
-                org = org.group(1)
-            else:
-                if org == None:
-                    logging.info('Regex cannot find org name in FTP address, using simpler method.')
-                    org_split = org.split('/')
-                    org = org_split[10]
-                    org_split2 = org.split('_')
-                    org = org_split2[1:].join('')
-        else:
-            logging.info('Standard latin name provided')
-    else:
-        file_uncomp = '.all.fa'
-        file_ex = '.fa'
+    file_uncomp = '.all.fa'
+    file_ex = '.fa'
 
     if entryper >= 10000000000:
         logging.info('cDNA file supplied - First run to return a complete multi-fasta')
         allmod = '.all.MOD'
     else:
-        if data_type == 'ncrna':
-            logging.info('ncRNA supplied')
-            allmod = ''
-        else:
-            logging.info(f'Supplied data is not ncRNA - it is {data_type}')
-            allmod = '.MOD'
+        logging.info(f'Supplied data is {data_type}')
+        allmod = '.MOD'
 
     for file in os.listdir(directory):
         # This is for the DNA post seqclean file
         if file.endswith('.all.MOD.fa.clean'):
-            unzipped = f'{directory}{file}'
+            unzipped = f'./{file}'
             logging.debug(f'File to be used: {unzipped}')
         # All other files
         elif file.endswith('.fa'):
-            unzipped = f'{directory}{file}'
+            unzipped = f'./{file}'
             logging.debug(f'File to be used: {unzipped}')
 
             if os.path.exists(unzipped):
@@ -280,12 +261,9 @@ def entryfunction(org, save, data_type, entryper=1):
                                 logging.debug('Second round of cDNA through Massage')
                                 new_name = massage(name, data_type)
 
-                        elif data_type == 'cds' or 'ncrna' or 'pep':
+                        elif data_type == 'cds' or 'pep':
                             logging.debug(f'{data_type} being used')
                             new_name = massage(name, data_type)
-                            if data_type == 'ncra':
-                                data_type = ''
-                                allmod = ''
 
                         else:
                             logging.critical(f'Data type of {data_type} not recognised.')
@@ -297,7 +275,7 @@ def entryfunction(org, save, data_type, entryper=1):
 
                         if count == entryper:
                             filecounter += 1
-                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}.fa''', 'w') as done:
+                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
                                 for name, seq in entry:
                                     done.write(f'{name}\n{seq} \n')
 
@@ -358,8 +336,9 @@ def massage(name, data_type):
             logging.info(f'Ens Code found as: {ens_code}')
             name = f'>{gene_symbol}({ens_code})'
 
-    elif data_type == 'ncrna':
-        logging.info('This is a RefSeq ncRNA sequecne, not coded for that yet.')
+        else:
+            logging.debug('Somethings gone wrongs, headers are corrupt')
+            sys.exit(0)
 
     else:
         logging.debug('Some how you\'ve got to this point with an incorrect data type')
