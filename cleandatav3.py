@@ -132,16 +132,18 @@ def main():
 
     downandsave(option.FTP, directory)
 
-    if option.t == 'cdna':
-        entryfunction(org, directory, option.t, entryper=100000000000)
+    unzippedfile = filefinder(option.s)
 
-        entryfunction(org, directory, option.t, entryper=5000)
+    if option.t == 'cdna':
+        entryfunction(org, directory, option.t, unzippedfile, entryper=100000000000)
+
+        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
     elif option.t == 'pep':
-        entryfunction(org, directory, option.t, entryper=2000)
+        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
 
     else:
-        entryfunction(org, directory, option.t, entryper=3000)
+        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
 
 def file_jenny(ftp, save):
@@ -213,8 +215,21 @@ def read_fasta(filetoparse):
         yield (name, ''.join(seq))
     logging.info('Entry produced')
 
+def filefinder(save):
+    cwd = os.getcwd()
+    for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
+        # Indexing not working after the first run (DNA is set up for two runs)
+        # files = str(files).strip('[]\'\'')
 
-def entryfunction(org, directory, data_type, entryper=1):
+        files = files[0]
+
+        print(files)
+        unzippedfile = f'{option.s}/{files}'
+        print(unzippedfile)
+        return unzippedfile
+
+
+def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     """
     The entryfunction function splits a FASTA file into a defined
     number of entries per file, pep == 2000 enteries and everything
@@ -239,16 +254,16 @@ def entryfunction(org, directory, data_type, entryper=1):
         logging.info(f'Supplied data is {data_type}')
         allmod = '.MOD'
 
-    cwd = os.getcwd()
-    for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
-        # Indexing not working after the first run (DNA is set up for two runs)
-        # files = str(files).strip('[]\'\'')
-
-        files = files[0]
-
-        print(files)
-        unzippedfile = f'{option.s}/{files}'
-        print(unzippedfile)
+    # cwd = os.getcwd()
+    # for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
+    #     # Indexing not working after the first run (DNA is set up for two runs)
+    #     # files = str(files).strip('[]\'\'')
+    #
+    #     files = files[0]
+    #
+    #     print(files)
+    #     unzippedfile = f'{option.s}/{files}'
+    #     print(unzippedfile)
 
     if unzippedfile.endswith('.fa'):
         logging.debug(f'File to be used: {unzippedfile}')
