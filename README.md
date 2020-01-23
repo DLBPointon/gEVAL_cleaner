@@ -24,7 +24,16 @@ or
 --------------
 ### 23/01/2020
 - Entries now being produced for v3 script.
-- 
+- Place holder terms for testing have been changed to widely useful terms.
+- Added FTP argument for full FTP address input.
+- Added function Doc Strings.
+- Added globally controlled logging statements to minimise duplicate script.
+- Added argument dest.
+- Added placeholder for Seqclean.
+- Added cleaning function.
+- Added comment to explain regex use.
+- Addition of Logging statements for debugging rather than innumerable print functions.
+- Expanded on os.popen blocks - gunzip - mv and rm.
 
 ### 22/01/2020
 - Changing save structure to align with house style.

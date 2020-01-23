@@ -500,7 +500,50 @@ def massage(name, data_type):
 
 
 def seqclean():
-    print('send the all.MOD.fa file off to wc2\'s seqclean perl script')
+    """
+    A function to sent entry split files to the seqclean perl script,
+    this script will clean the sequence to ensure there is nothing that
+    requires correcting.
+    """
+
+    logging.debug('Seqclean called')
+
+    seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
+    run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
+    else_run = os.popen('''bsub -o cleanplease.out -K /nfs/users/nfs_w/
+                            wc2/tools/seqclean''')
+    option = parse_command_args()
+    path = f'{option.s}/cleaning_data/enteries'
+
+    if data_type == 'cdna':
+        if os.path.exists(path):
+            logging.info('Path to files found')
+            for file in os.listdir(path):
+                if file.endswith(f'{data_type}.all.MOD.fa'):
+                    try:
+                        set_script = os.popen(f'''bsub -o cleanplease.out
+                         -M500 -R\'select[mem>500] rusage[mem=500]
+                         \' \\ ~wc2/tools/seqclean/seqclean {file}''')
+                    except IOError:
+                        logging.debug('Command or files are incorrect')
+
+                result = set_script.read()
+                result.close()
+                logging.debug(f'Finished: {result}')
+            # The above should start the perl script and then check to
+            # see if the script runs and finishes for each of the files
+            # passed onto it and then print the file it has finished
+            # working on
+        else:
+            logging.critical('File paths not found')
+            sys.exit(0)
+
+    else:
+        logging.debug('Seq clean skipped, only for DNA')
+        sys.exit(0)
+
+    logging.debug('seqclean finished')
+    return seq
 
 
 def clean_file_system(directory, save):
