@@ -239,69 +239,71 @@ def entryfunction(org, directory, data_type, entryper=1):
         logging.info(f'Supplied data is {data_type}')
         allmod = '.MOD'
 
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            print(file)
-            if file.endswith('.fa'):
-                unzipped = f'{file}'
-                print(unzipped)
-                logging.debug(f'File to be used: {unzipped}')
+    cwd = os.getcwd()
+    for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
+        print(files)
+        unzippedfile = f'{option.s}/{files[0]}'
+        print(unzippedfile)
+        if unzippedfile.endswith('.fa'):
+            unzipped = f'{fullpath}'
+            print(unzipped)
+            logging.debug(f'File to be used: {unzipped}')
 
-                if os.path.exists(unzipped):
-                    logging.info(f'File found at {unzipped}')
+            if os.path.exists(unzipped):
+                logging.info(f'File found at {unzipped}')
 
-                    with open(unzipped, 'r') as filetoparse:
-                        for name, seq in read_fasta(filetoparse):
+                with open(unzipped, 'r') as filetoparse:
+                    for name, seq in read_fasta(filetoparse):
 
-                            # This block controlls cDNA files, the first run
-                            # through this would allow massage to modify the
-                            # headers, the second run through (to split the
-                            # file), massage would be excluded to stop any
-                            # possible errors.
-                            if data_type == 'cdna':
-                                if entryper >= 10000000000:
-                                    logging.debug('First round of cleaning for cDNA file in Massage')
-                                    new_name = massage(name, data_type)
-
-                                else:
-                                    logging.debug('Second round of cDNA through Massage')
-                                    new_name = massage(name, data_type)
-
-                            elif data_type == 'cds' or 'pep':
-                                logging.debug(f'{data_type} being used')
+                        # This block controlls cDNA files, the first run
+                        # through this would allow massage to modify the
+                        # headers, the second run through (to split the
+                        # file), massage would be excluded to stop any
+                        # possible errors.
+                        if data_type == 'cdna':
+                            if entryper >= 10000000000:
+                                logging.debug('First round of cleaning for cDNA file in Massage')
                                 new_name = massage(name, data_type)
 
                             else:
-                                logging.critical(f'Data type of {data_type} not recognised.')
-                                sys.exit(0)
+                                logging.debug('Second round of cDNA through Massage')
+                                new_name = massage(name, data_type)
 
-                            nameseq = new_name, seq
-                            entry.append(nameseq)
-                            count += 1
+                        elif data_type == 'cds' or 'pep':
+                            logging.debug(f'{data_type} being used')
+                            new_name = massage(name, data_type)
 
-                            if count == entryper:
-                                filecounter += 1
-                                with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                                    for name, seq in entry:
-                                        done.write(f'{name}\n{seq} \n')
+                        else:
+                            logging.critical(f'Data type of {data_type} not recognised.')
+                            sys.exit(0)
 
-                                    count = 0
-                                    entry = []
+                        nameseq = new_name, seq
+                        entry.append(nameseq)
+                        count += 1
 
-                                logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
-
+                        if count == entryper:
                             filecounter += 1
-                        with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                            for name, seq in entry:
-                                done.write(f'{name}\n{seq} \n')
+                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                                for name, seq in entry:
+                                    done.write(f'{name}\n{seq} \n')
 
-                            entry = []
+                                count = 0
+                                entry = []
 
-                        logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
-                else:
-                    print('Nope not found')
-                    logging.debug('Cannot find unzipped file')
-                    sys.exit(0)
+                            logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+
+                        filecounter += 1
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                        for name, seq in entry:
+                            done.write(f'{name}\n{seq} \n')
+
+                        entry = []
+
+                    logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+            else:
+                print('Nope not found')
+                logging.debug('Cannot find unzipped file')
+                sys.exit(0)
 
         else:
             logging.debug('File extension is not .fa, still zipped maybe?')
