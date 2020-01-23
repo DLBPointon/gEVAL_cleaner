@@ -21,16 +21,16 @@ or
 
 ### To-Do list
 - SeqClean Function
-- rm_redundants function
-- Replace the large number of print (debug) with logging module debugs.
 --------------
 ### 23/01/2020
+- Entries now being produced for v3 script.
 - 
 
 ### 22/01/2020
-- Changing save structure to allign with house style.
+- Changing save structure to align with house style.
 - More use of regex to accomplish individualised file structure for each organism.
-- Start on cleandatav3.py - recycling much of v2
+- Start on cleandatav3.py - recycling much of v2.
+- Implemented the logging module for easier debugging management.
 
 ### 21/01/2020
 - Removed various errors in structure (too many spaces and gaps.

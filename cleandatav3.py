@@ -1,9 +1,96 @@
+#!/usr/bin/env python3
+
 """
 Version 3 of cleaningdata.py
 """
 
-DOCSTRING = """Bollocks"""
-# !/usr/bin/env python3
+DOCSTRING = """
+-------------------------------------------------------------
+                        cleandatav3.py
+-------------------------------------------------------------
+                Cleaning gEVAL supporting DATA
+                          By dp24
+        Updated from wc2's clean_gEVALsupport_data.sh
+-------------------------------------------------------------
+            IMPORTANT NOTES BEFORE CARRYING ON
+        This script is written in for python3.6
+
+                    IMPORT MODULES
+
+            argparse - for command interface
+            os       - for os interface
+            sys      - for system interfacing
+            re       - for regex usage
+            logging  - for debug logging
+-------------------------------------------------------------
+USE CASE FOR THE SCRIPT
+1, The aim of this script is to take an input FASTA file
+(whether cdna, cds or pep) from ensembl.
+
+2, Next the headers will be massaged into a standardised
+format.
+
+3, Sequence will be split into entries and data_type defined
+number of entries per file.
+For DNA an '.all.MOD.fa' will also be produced for later
+seqclean usage.
+
+4, Sequences are then trimmed and modfied by Seqclean
+(not finished).
+
+5, Finally folders can be cleaned and debug can be read if
+needed.
+-------------------------------------------------------------
+USAGE INSTRUCTIONS
+
+./cleandata.py -TYPE cdna -FTP ftp://ftp.ensembl.org/pub/
+release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
+MesAur1.0.cdna.all.fa.gz -SAVE ./test
+
+Optionals include --clean and/or --debug
+-------------------------------------------------------------
+ARGUMENTS
+ - SAVE - ./test
+
+ - FTP - The full FTP address for the file in question.
+
+ - TYPE - will be a choice between cdna/cds/pep/rna.
+
+ --PRE - Prefix - will be the user defined naming scheme
+    NOT IN USE.
+  
+ --ORG - Organism Name - the name of the organism as it looks
+  in the respective database.
+  
+ --clean - and optional argument to remove parent files.
+
+ --debug - Used to diagnose issues with the running of the
+  script.
+-------------------------------------------------------------
+FUTURE CHANGES
+    - Add Seqclean 
+    - MissingGene Counter
+        - General counters and Stats
+-------------------------------------------------------------
+CONTACT
+    - dp24@sanger.ac.uk 
+            or
+    - grit@sanger.ac.uk
+-------------------------------------------------------------
+FILE STRUCTURE
+                        Organism Name
+                        -------------
+                              |
+                              |
+                Organism Name + Accession No.
+                              |
+                              |
+                    ---------------------
+                    |         |         |
+                    cDNA   Peptide     CDS
+--------------------------------------------------------------
+"""
+
 
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
@@ -13,17 +100,16 @@ try:
     import sys
 
     if sys.version_info[0] < 3 and sys.version_info[1] < 6:
-        raise Exception("""Must be using Python 3.7 for the full
+        raise Exception("""Must be using Python 3.6 for the full
                         functionality of this script""")
     if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
-        print('Your using at least Version 3.7, You are good to go...')
+        print('Your using at least Version 3.6, You are good to go...')
 except ImportError:
     print(f'sys not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
 try:
     import argparse
-
     print('argparse imported')
 except ImportError:
     print(f'argparse not imported \n {PRINT_ERROR}')
@@ -31,7 +117,6 @@ except ImportError:
 
 try:
     import os
-
     print('os imported')
 except ImportError:
     print(f'os not imported \n {PRINT_ERROR}')
@@ -39,7 +124,6 @@ except ImportError:
 
 try:
     import re
-
     print('regex imported')
 except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
@@ -47,15 +131,11 @@ except ImportError:
 
 try:
     import logging
-
     print('logging imported')
 except ImportError:
     print(f'logging not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
-
-# input -ftp of full FTP address
-# save remains the same
 
 def parse_command_args(args=None):
     """
@@ -88,8 +168,8 @@ def parse_command_args(args=None):
                         type=str,
                         action='store',
                         help='''The Organism under scrutiny
-                                   (use how the name would appear in ensembl
-                                   to make life easier, long name)''',
+                            (use how the name would appear in ensembl
+                            to make life easier, long name)''',
                         dest='o')
 
     parser.add_argument('-SAVE',
@@ -101,55 +181,85 @@ def parse_command_args(args=None):
     parser.add_argument('--clean',
                         action='store_true',
                         help='''Specifying this argument allows the
-                         script to clean all un-nessasery files after
-                         use''',
+                            script to clean all un-nessasery files after
+                            use''',
                         dest='c')
 
     parser.add_argument('--debug',
                         action='store_true',
                         help='''Specifying this argument allows debug
-                         prints to work and show everything the script is
-                         doing''',
+                            prints to work and show everything the script is
+                            doing''',
                         dest='d')
 
     parser.add_argument('-FTP',
                         action='store',
-                        type=str)
+                        help='''This argument is to be used when using an 
+                            ftp address for this script''',
+                        type=str,
+                        dest='f')
+
+    parser.add_argument('--SEQ',
+                        action='store_true',
+                        help='''This argument is to be used when sequence
+                         cleaning of the cDNA is needed''',
+                        dest='q')
 
     option = parser.parse_args(args)
     return option
 
 
 def main():
+    """
+    The Main function which controls the logic for the script
+    """
     option = parse_command_args()
+    logging.debug('Main function has been called')
 
-    if option.d:
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
-                            filename='gEVAL_clean.log')
+    if option.f and option.s and option.t:
+        if option.d:
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
+                                filename='gEVAL_clean.log')
 
-    print(option.FTP)
-    org, directory = file_jenny(option.FTP, option.s)
+        org, directory = file_jenny(option.f, option.s)
 
-    downandsave(option.FTP, directory)
+        downandsave(option.f, option.s)
 
-    unzippedfile = filefinder(option.s)
+        unzippedfile = filefinder(option.s)
 
-    if option.t == 'cdna':
-        entryfunction(org, directory, option.t, unzippedfile, entryper=100000000000)
+        if option.t == 'cdna':
+            entryfunction(org, directory, option.t, unzippedfile, entryper=100000000000)
 
-        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
-    elif option.t == 'pep':
-        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+        elif option.t == 'pep':
+            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
 
-    else:
-        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+        else:
+            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+
+        if option.sc:
+            logging.debug('Seq Clean Called')
+            # seq_clean()
+
+        if option.c:
+            logging.debug('Cleaning Called')
+            clean_file_system(option.s, directory)
+
+    logging.debug('Main function finished')
 
 
 def file_jenny(ftp, save):
-    option = parse_command_args()
+    """
+    A function to generate the folders to be used through out the script.
+    Will use the FTP to generate a naming scheme.
+    """
+    logging.debug('Folder generator called')
     accessrights = 0o755
 
+    # These are not redundant escapes, they are there due to the structure
+    # of the string they are regexing.
+    # noinspection RegExpRedundantEscape
     org_from_name = re.search(r'fasta\/\w+\/\w+\/(\w+)\S(\w+)', ftp)
     org = org_from_name.group(1)
     accession = org_from_name.group(2)
@@ -160,9 +270,9 @@ def file_jenny(ftp, save):
                         f'/{org}/{org_ass}/cds']
 
     for direct in directory_naming:
-        path = option.s + direct
+        path = save + direct
         if os.path.exists(path):
-            print(f'Path: {path} :already exists')
+            logging.info(f'Path: {path} :already exists')
         else:
             try:
                 os.makedirs(path, accessrights)
@@ -172,26 +282,47 @@ def file_jenny(ftp, save):
                 logging.info(f'''Successfully created the directory path at:
                                      {path}''')
 
+    logging.debug('Folder generator finished')
     return org, directory_naming
 
 
-def downandsave(ftp, directory):
-    option = parse_command_args()
-
-    if option.FTP:
+def downandsave(ftp, save):
+    """
+    A function to download, save and
+    """
+    logging.debug('Down and save function called')
+    if ftp:
+        logging.debug('FTP address given as argument')
         try:
-            logging.info(f'Starting Download of {option.FTP}')
-            os.popen(f'wget -q -o /dev/null {option.FTP}')
+            logging.info(f'Starting Download of {ftp}')
+            os.popen(f'wget -q -o /dev/null {ftp}')
             logging.info('Download finished')
         except:
             logging.critical('File NOT Downloaded')
             sys.exit(0)
+    else:
+        logging.debug('FTP address not given (using just the org name will be coded soon)')
+
 
         for file in os.listdir('./'):
             if file.endswith('.fa.gz'):
-                os.popen(f'gunzip -fd {file}')
+                try:
+                    os.popen(f'gunzip -fd {file}')
+                except:
+                    logging.critical('Gunzip failed to unzip file')
             else:
-                logging.critical('Bollocks-1')
+                logging.critical('No file to unzip found')
+
+        for file in os.listdir('./'):
+            if file.endswith('.fa'):
+                try:
+                    os.popen(f'mv -f {file} {save}')
+                except:
+                    logging.critical('Moving of file to the save location failed')
+            else:
+                logging.critical('No file with .fa --suffix found')
+
+        logging.debug('Down and save function finished')
 
 
 def read_fasta(filetoparse):
@@ -215,17 +346,20 @@ def read_fasta(filetoparse):
         yield (name, ''.join(seq))
     logging.info('Entry produced')
 
+
 def filefinder(save):
+    """
+    A function to file the unzipped downloaded file from the ensemble FTP servers
+    """
+    logging.debug('File finder called')
+    option = parse_command_args()
     cwd = os.getcwd()
     for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
-        # Indexing not working after the first run (DNA is set up for two runs)
-        # files = str(files).strip('[]\'\'')
-
         files = files[0]
-
-        print(files)
         unzippedfile = f'{option.s}/{files}'
-        print(unzippedfile)
+
+        logging.debug('File finder finished')
+
         return unzippedfile
 
 
@@ -240,10 +374,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     count = 0
     filecounter = 0
     entry = []
-
     filesavedto = f'{directory[1]}/{data_type}/'
-    print(filesavedto)
-
     file_uncomp = '.all.fa'
     file_ex = '.fa'
 
@@ -254,16 +385,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
         logging.info(f'Supplied data is {data_type}')
         allmod = '.MOD'
 
-    # cwd = os.getcwd()
-    # for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
-    #     # Indexing not working after the first run (DNA is set up for two runs)
-    #     # files = str(files).strip('[]\'\'')
-    #
-    #     files = files[0]
-    #
-    #     print(files)
-    #     unzippedfile = f'{option.s}/{files}'
-    #     print(unzippedfile)
+    # KEPT HERE JUST IN CASE OF MONUMENTAL FUCK UP
+    # place holder for the contents of the filefinder function
 
     if unzippedfile.endswith('.fa'):
         logging.debug(f'File to be used: {unzippedfile}')
@@ -274,7 +397,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
             with open(unzippedfile, 'r') as filetoparse:
                 for name, seq in read_fasta(filetoparse):
 
-                    # This block controlls cDNA files, the first run
+                    # This block controls cDNA files, the first run
                     # through this would allow massage to modify the
                     # headers, the second run through (to split the
                     # file), massage would be excluded to stop any
@@ -374,6 +497,36 @@ def massage(name, data_type):
 
     logging.debug('Massage finished')
     return name
+
+
+def seqclean():
+    print('send the all.MOD.fa file off to wc2\'s seqclean perl script')
+
+
+def clean_file_system(directory, save):
+    """
+    A function to clean the stray files that appear in the process of this script
+    """
+    logging.debug('Cleaning File System')
+
+    # To delete the misc files in child folders if any.
+    for folder in directory:
+        path = f'{save}{folder}'
+        for file in os.listdir(path):
+            if not file.endswith('.fa'):
+                os.popen(f'rm {file}')
+                logging.debug(f'File to be removed: {file}')
+
+    # To delete the downloaded and unzipped original file.
+    for file in os.listdir(save):
+        if file.endswith('.fa'):
+            os.popen(f'File to be removed: {file}')
+
+    for file in os.getcwd():
+        if file.endswith('.log'):
+            os.popen(f'Log file to be removed: {file}')
+
+    logging.debug('Cleaning File System finished')
 
 
 if __name__ == '__main__':
