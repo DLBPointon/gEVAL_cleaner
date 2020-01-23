@@ -313,7 +313,7 @@ def downandsave(ftp, save):
         for file in os.listdir('./'):
             if file.endswith('.fa.gz'):
                 try:
-                    os.popen(f'gunzip -fd {file}')
+                    shutil.unpack_archive(f'./{file}', f'./{save}/{org}_FILE_TO_USE.fa')
                 except:
                     logging.critical('Gunzip failed to unzip file')
             else:
@@ -322,7 +322,7 @@ def downandsave(ftp, save):
         for file in os.listdir('./'):
             if file.endswith('.fa'):
                 try:
-                    shutil.move(f'{file}', f'{save}')
+                    shutil.move(f'{file}', f'{save}π')
                 except:
                     logging.critical('Moving of file to the save location failed')
             else:
