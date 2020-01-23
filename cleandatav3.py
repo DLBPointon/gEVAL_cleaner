@@ -313,7 +313,7 @@ def downandsave(ftp, save):
         for file in os.listdir('./'):
             if file.endswith('.fa.gz'):
                 try:
-                    shutil.unpack_archive(f'./{file}', f'./{save}/{org}_FILE_TO_USE.fa')
+                    shutil.unpack_archive(f'./{file}', f'{save}/{org}_FILE_TO_USE.fa')
                 except:
                     logging.critical('Gunzip failed to unzip file')
             else:
