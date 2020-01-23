@@ -245,14 +245,12 @@ def entryfunction(org, directory, data_type, entryper=1):
         unzippedfile = f'{option.s}/{files[0]}'
         print(unzippedfile)
         if unzippedfile.endswith('.fa'):
-            unzipped = f'{unzippedfile}'
-            print(unzipped)
-            logging.debug(f'File to be used: {unzipped}')
+            logging.debug(f'File to be used: {unzippedfile}')
 
             if os.path.exists(unzipped):
-                logging.info(f'File found at {unzipped}')
+                logging.info(f'File found at {unzippedfile}')
 
-                with open(unzipped, 'r') as filetoparse:
+                with open(unzippedfile, 'r') as filetoparse:
                     for name, seq in read_fasta(filetoparse):
 
                         # This block controlls cDNA files, the first run
