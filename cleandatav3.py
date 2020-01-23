@@ -309,16 +309,13 @@ def downandsave(ftp):
     else:
         logging.debug('FTP address not given (using just the org name will be coded soon)')
 
-        cwd = os.getcwd()
-        for root, dirs, files in os.walk(f'{cwd}/'):
-            for file in files:
-                if file.endswith('.fa.gz'):
-                    try:
-                        os.popen(f'gunzip {file}')
-                    except:
-                        logging.critical('Gunzip failed to unzip file')
-                else:
-                    logging.critical('No file to unzip found')
+    cwd = os.getcwd()
+    for file in os.listdir(f'{cwd}/'):
+        if file.endswith('.fa.gz'):
+            try:
+                os.popen(f'gunzip -fd {file}')
+            except:
+                logging.critical('Gunzip failed to unzip file')
 
 
 def read_fasta(filetoparse):
@@ -350,17 +347,12 @@ def filefinder(save):
     logging.debug('File finder called')
     option = parse_command_args()
     cwd = os.getcwd()
-    for root, dirs, files in os.walk(f'{cwd}/'):
-        for file in files:
-            if file.endswith('.fa'):
-                unzippedfile = f'{cwd}/{file}'
-            else:
-                logging.debug('No Unzipped file found')
-                sys.exit(0)
+    for file in os.listdir(f'{cwd}/'):
+        if file.endswith('.fa'):
+            unzippedfile = file
+            logging.debug('File finder finished')
 
-        logging.debug('File finder finished')
-
-        return unzippedfile
+            return unzippedfile
 
 
 def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
