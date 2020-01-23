@@ -246,7 +246,7 @@ def main():
 
         if option.sc:
             logging.debug('Seq Clean Called')
-            # seq_clean()
+            seqclean(option.s, option.d, org)
 
         if option.c:
             logging.debug('Cleaning Called')
@@ -319,17 +319,6 @@ def downandsave(ftp, save):
             else:
                 logging.critical('No file to unzip found')
 
-        for file in os.listdir('./'):
-            if file.endswith('.fa'):
-                try:
-                    shutil.move(f'{file}', f'{save}π')
-                except:
-                    logging.critical('Moving of file to the save location failed')
-            else:
-                logging.critical('No file with .fa --suffix found')
-
-        logging.debug('Down and save function finished')
-
 
 def read_fasta(filetoparse):
     """
@@ -360,9 +349,11 @@ def filefinder(save):
     logging.debug('File finder called')
     option = parse_command_args()
     cwd = os.getcwd()
-    for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
+    for root, dirs, files in os.walk(f'{cwd}/'):
+        print(files)
         files = files[0]
-        unzippedfile = f'{option.s}/{files}'
+
+        unzippedfile = f'{cwd}/{files}'
 
         logging.debug('File finder finished')
 
@@ -505,7 +496,7 @@ def massage(name, data_type):
     return name
 
 
-def seqclean():
+def seqclean(save, data_type, org):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
@@ -515,11 +506,10 @@ def seqclean():
     logging.debug('Seqclean called')
 
     seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
-    run_seqclean = os.popen('bsub -o cleanplease.out -K seqlean')
-    else_run = os.popen('''bsub -o cleanplease.out -K /nfs/users/nfs_w/
-                            wc2/tools/seqclean''')
+    run_seqclean = os.popen(f'seqclean {fasta_file}')
+    else_run = os.popen('''/nfs/users/nfs_w/wc2/tools/seqclean {fasta_file}''')
     option = parse_command_args()
-    path = f'{option.s}/cleaning_data/enteries'
+    path = f'{save}/{org}/{data_type}'
 
     if data_type == 'cdna':
         if os.path.exists(path):
@@ -527,14 +517,16 @@ def seqclean():
             for file in os.listdir(path):
                 if file.endswith(f'{data_type}.all.MOD.fa'):
                     try:
-                        set_script = os.popen(f'''bsub -o cleanplease.out
-                         -M500 -R\'select[mem>500] rusage[mem=500]
-                         \' \\ ~wc2/tools/seqclean/seqclean {file}''')
-                    except IOError:
-                        logging.debug('Command or files are incorrect')
+                        logging.info('Running Seq_clean script')
+                        run_seqclean
 
-                result = set_script.read()
-                result.close()
+                    except:
+                        logging.info('Running alt Seq_clean at wc2/tools/')
+                        else_run
+
+                    else:
+                        logging.debug('Seqclean locations are wrong')
+
                 logging.debug(f'Finished: {result}')
             # The above should start the perl script and then check to
             # see if the script runs and finishes for each of the files
