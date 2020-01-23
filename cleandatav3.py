@@ -3,7 +3,7 @@ Version 3 of cleaningdata.py
 """
 
 DOCSTRING = """Bollocks"""
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
@@ -11,6 +11,7 @@ PRINT_ERROR = '''Does not exist\n
 
 try:
     import sys
+
     if sys.version_info[0] < 3 and sys.version_info[1] < 6:
         raise Exception("""Must be using Python 3.7 for the full
                         functionality of this script""")
@@ -22,6 +23,7 @@ except ImportError:
 
 try:
     import argparse
+
     print('argparse imported')
 except ImportError:
     print(f'argparse not imported \n {PRINT_ERROR}')
@@ -29,6 +31,7 @@ except ImportError:
 
 try:
     import os
+
     print('os imported')
 except ImportError:
     print(f'os not imported \n {PRINT_ERROR}')
@@ -36,6 +39,7 @@ except ImportError:
 
 try:
     import re
+
     print('regex imported')
 except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
@@ -43,10 +47,13 @@ except ImportError:
 
 try:
     import logging
+
     print('logging imported')
 except ImportError:
     print(f'logging not imported \n {PRINT_ERROR}')
     sys.exit(0)
+
+
 # input -ftp of full FTP address
 # save remains the same
 
@@ -112,12 +119,13 @@ def parse_command_args(args=None):
     option = parser.parse_args(args)
     return option
 
+
 def main():
     option = parse_command_args()
 
     if option.d:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
-                                filename='gEVAL_clean.log')
+                            filename='gEVAL_clean.log')
 
     print(option.FTP)
     org, directory = file_jenny(option.FTP, option.s)
@@ -136,8 +144,6 @@ def main():
         entryfunction(org, directory, option.t, entryper=3000)
 
 
-
-
 def file_jenny(ftp, save):
     option = parse_command_args()
     accessrights = 0o755
@@ -148,7 +154,8 @@ def file_jenny(ftp, save):
 
     org_ass = f'{org}.{accession}'
 
-    directory_naming = [f'/{org}', f'/{org}/{org_ass}', f'/{org}/{org_ass}/cdna', f'/{org}/{org_ass}/pep', f'/{org}/{org_ass}/cds']
+    directory_naming = [f'/{org}', f'/{org}/{org_ass}', f'/{org}/{org_ass}/cdna', f'/{org}/{org_ass}/pep',
+                        f'/{org}/{org_ass}/cds']
 
     for direct in directory_naming:
         path = option.s + direct
@@ -232,72 +239,71 @@ def entryfunction(org, directory, data_type, entryper=1):
         logging.info(f'Supplied data is {data_type}')
         allmod = '.MOD'
 
-    for files in os.walk('./'):
-        # This is for the DNA post seqclean file
-        for file in files:
-            if file.endswith('.fa'):
-                unzipped = f'./{file}'
+    cwd_string = os.getcwd()
+    for file in cwd_string:
+        if file.endswith('.fa'):
+            unzipped = f'./{file}'
 
-                logging.debug(f'File to be used: {unzipped}')
+            logging.debug(f'File to be used: {unzipped}')
 
-                if os.path.exists(unzipped):
-                    logging.info(f'File found at {unzipped}')
+            if os.path.exists(unzipped):
+                logging.info(f'File found at {unzipped}')
 
-                    with open(unzipped, 'r') as filetoparse:
-                        for name, seq in read_fasta(filetoparse):
+                with open(unzipped, 'r') as filetoparse:
+                    for name, seq in read_fasta(filetoparse):
 
-                            # This block controlls cDNA files, the first run
-                            # through this would allow massage to modify the
-                            # headers, the second run through (to split the
-                            # file), massage would be excluded to stop any
-                            # possible errors.
-                            if data_type == 'cdna':
-                                if entryper >= 10000000000:
-                                    logging.debug('First round of cleaning for cDNA file in Massage')
-                                    new_name = massage(name, data_type)
-
-                                else:
-                                    logging.debug('Second round of cDNA through Massage')
-                                    new_name = massage(name, data_type)
-
-                            elif data_type == 'cds' or 'pep':
-                                logging.debug(f'{data_type} being used')
+                        # This block controlls cDNA files, the first run
+                        # through this would allow massage to modify the
+                        # headers, the second run through (to split the
+                        # file), massage would be excluded to stop any
+                        # possible errors.
+                        if data_type == 'cdna':
+                            if entryper >= 10000000000:
+                                logging.debug('First round of cleaning for cDNA file in Massage')
                                 new_name = massage(name, data_type)
 
                             else:
-                                logging.critical(f'Data type of {data_type} not recognised.')
-                                sys.exit(0)
+                                logging.debug('Second round of cDNA through Massage')
+                                new_name = massage(name, data_type)
 
-                            nameseq = new_name, seq
-                            entry.append(nameseq)
-                            count += 1
+                        elif data_type == 'cds' or 'pep':
+                            logging.debug(f'{data_type} being used')
+                            new_name = massage(name, data_type)
 
-                            if count == entryper:
-                                filecounter += 1
-                                with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                                    for name, seq in entry:
-                                        done.write(f'{name}\n{seq} \n')
+                        else:
+                            logging.critical(f'Data type of {data_type} not recognised.')
+                            sys.exit(0)
 
-                                    count = 0
-                                    entry = []
+                        nameseq = new_name, seq
+                        entry.append(nameseq)
+                        count += 1
 
-                                logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
-
+                        if count == entryper:
                             filecounter += 1
-                        with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                            for name, seq in entry:
-                                done.write(f'{name}\n{seq} \n')
+                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                                for name, seq in entry:
+                                    done.write(f'{name}\n{seq} \n')
 
-                            entry = []
+                                count = 0
+                                entry = []
 
-                        logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
-                else:
-                    logging.debug('Cannot find unzipped file')
-                    sys.exit(0)
+                            logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
 
+                        filecounter += 1
+                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                        for name, seq in entry:
+                            done.write(f'{name}\n{seq} \n')
+
+                        entry = []
+
+                    logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
             else:
-                logging.debug('File extension is not .fa, still zipped maybe?')
+                logging.debug('Cannot find unzipped file')
                 sys.exit(0)
+
+        else:
+            logging.debug('File extension is not .fa, still zipped maybe?')
+            sys.exit(0)
 
     logging.debug('Entry Function finished')
 
@@ -345,6 +351,7 @@ def massage(name, data_type):
 
     logging.debug('Massage finished')
     return name
+
 
 if __name__ == '__main__':
     main()
