@@ -350,10 +350,9 @@ def filefinder(save):
     option = parse_command_args()
     cwd = os.getcwd()
     for root, dirs, files in os.walk(f'{cwd}/'):
-        print(files)
-        files = files[0]
-
-        unzippedfile = f'{cwd}/{files}'
+        for file in files:
+            if file.endswith('.fa.gz'):
+                unzippedfile = f'{cwd}/{file}'
 
         logging.debug('File finder finished')
 
