@@ -203,7 +203,7 @@ def parse_command_args(args=None):
                         action='store_true',
                         help='''This argument is to be used when sequence
                          cleaning of the cDNA is needed''',
-                        dest='q')
+                        dest='sc')
 
     option = parser.parse_args(args)
     return option
