@@ -247,7 +247,7 @@ def entryfunction(org, directory, data_type, entryper=1):
         if unzippedfile.endswith('.fa'):
             logging.debug(f'File to be used: {unzippedfile}')
 
-            if os.path.exists(unzipped):
+            if os.path.exists(unzippedfile):
                 logging.info(f'File found at {unzippedfile}')
 
                 with open(unzippedfile, 'r') as filetoparse:
