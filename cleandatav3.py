@@ -136,6 +136,12 @@ except ImportError:
     print(f'logging not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
+try:
+    import shutil
+    print('Shutil imported')
+except:
+    print(f'Shutil not imported \n {PRINT_ERROR}')
+
 
 def parse_command_args(args=None):
     """
@@ -316,7 +322,7 @@ def downandsave(ftp, save):
         for file in os.listdir('./'):
             if file.endswith('.fa'):
                 try:
-                    os.popen(f'mv -f {file} {save}')
+                    shutil.move(f'file', f'save')
                 except:
                     logging.critical('Moving of file to the save location failed')
             else:
