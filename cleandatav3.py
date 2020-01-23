@@ -226,7 +226,7 @@ def entryfunction(org, directory, data_type, entryper=1):
     filecounter = 0
     entry = []
 
-    filesavedto = f'.{directory[1]}/{data_type}/'
+    filesavedto = f'{directory[1]}/{data_type}/'
     print(filesavedto)
 
     file_uncomp = '.all.fa'
@@ -283,23 +283,23 @@ def entryfunction(org, directory, data_type, entryper=1):
 
                         if count == entryper:
                             filecounter += 1
-                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                            with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
                                 for name, seq in entry:
                                     done.write(f'{name}\n{seq} \n')
 
                                 count = 0
                                 entry = []
 
-                            logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+                            logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
 
                         filecounter += 1
-                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                    with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
                         for name, seq in entry:
                             done.write(f'{name}\n{seq} \n')
 
                         entry = []
 
-                    logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+                    logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
             else:
                 print('Nope not found')
                 logging.debug('Cannot find unzipped file')
