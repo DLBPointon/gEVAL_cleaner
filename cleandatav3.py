@@ -322,7 +322,7 @@ def downandsave(ftp, save):
         for file in os.listdir('./'):
             if file.endswith('.fa'):
                 try:
-                    shutil.move(f'file', f'save')
+                    shutil.move(f'{file}', f'{save}')
                 except:
                     logging.critical('Moving of file to the save location failed')
             else:
