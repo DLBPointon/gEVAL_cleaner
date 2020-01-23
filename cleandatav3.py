@@ -219,7 +219,8 @@ def entryfunction(org, directory, data_type, entryper=1):
     filecounter = 0
     entry = []
 
-    filesavedto = f'./{directory[1]}/{data_type}'
+    filesavedto = f'.{directory[1]}/{data_type}'
+    print(filesavedto)
 
     file_uncomp = '.all.fa'
     file_ex = '.fa'
@@ -231,74 +232,72 @@ def entryfunction(org, directory, data_type, entryper=1):
         logging.info(f'Supplied data is {data_type}')
         allmod = '.MOD'
 
-    for file in os.listdir(directory):
+    for files in os.walk('./'):
         # This is for the DNA post seqclean file
-        if file.endswith('.all.MOD.fa.clean'):
-            unzipped = f'./{file}'
-            logging.debug(f'File to be used: {unzipped}')
-        # All other files
-        elif file.endswith('.fa'):
-            unzipped = f'./{file}'
-            logging.debug(f'File to be used: {unzipped}')
+        for file in files:
+            if file.endswith('.fa'):
+                unzipped = f'./{file}'
 
-            if os.path.exists(unzipped):
-                logging.info(f'File found at {unzipped}')
+                logging.debug(f'File to be used: {unzipped}')
 
-                with open(unzipped, 'r') as filetoparse:
-                    for name, seq in read_fasta(filetoparse):
+                if os.path.exists(unzipped):
+                    logging.info(f'File found at {unzipped}')
 
-                        # This block controlls cDNA files, the first run
-                        # through this would allow massage to modify the
-                        # headers, the second run through (to split the
-                        # file), massage would be excluded to stop any
-                        # possible errors.
-                        if data_type == 'cdna':
-                            if entryper >= 10000000000:
-                                logging.debug('First round of cleaning for cDNA file in Massage')
+                    with open(unzipped, 'r') as filetoparse:
+                        for name, seq in read_fasta(filetoparse):
+
+                            # This block controlls cDNA files, the first run
+                            # through this would allow massage to modify the
+                            # headers, the second run through (to split the
+                            # file), massage would be excluded to stop any
+                            # possible errors.
+                            if data_type == 'cdna':
+                                if entryper >= 10000000000:
+                                    logging.debug('First round of cleaning for cDNA file in Massage')
+                                    new_name = massage(name, data_type)
+
+                                else:
+                                    logging.debug('Second round of cDNA through Massage')
+                                    new_name = massage(name, data_type)
+
+                            elif data_type == 'cds' or 'pep':
+                                logging.debug(f'{data_type} being used')
                                 new_name = massage(name, data_type)
 
                             else:
-                                logging.debug('Second round of cDNA through Massage')
-                                new_name = massage(name, data_type)
+                                logging.critical(f'Data type of {data_type} not recognised.')
+                                sys.exit(0)
 
-                        elif data_type == 'cds' or 'pep':
-                            logging.debug(f'{data_type} being used')
-                            new_name = massage(name, data_type)
+                            nameseq = new_name, seq
+                            entry.append(nameseq)
+                            count += 1
 
-                        else:
-                            logging.critical(f'Data type of {data_type} not recognised.')
-                            sys.exit(0)
+                            if count == entryper:
+                                filecounter += 1
+                                with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                                    for name, seq in entry:
+                                        done.write(f'{name}\n{seq} \n')
 
-                        nameseq = new_name, seq
-                        entry.append(nameseq)
-                        count += 1
+                                    count = 0
+                                    entry = []
 
-                        if count == entryper:
+                                logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+
                             filecounter += 1
-                            with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                                for name, seq in entry:
-                                    done.write(f'{name}\n{seq} \n')
+                        with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                            for name, seq in entry:
+                                done.write(f'{name}\n{seq} \n')
 
-                                count = 0
-                                entry = []
+                            entry = []
 
-                            logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+                        logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+                else:
+                    logging.debug('Cannot find unzipped file')
+                    sys.exit(0)
 
-                        filecounter += 1
-                    with open(f'''{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
-                        for name, seq in entry:
-                            done.write(f'{name}\n{seq} \n')
-
-                        entry = []
-
-                    logging.debug(f'File saved:\n{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
             else:
-                logging.debug('Cannot find unzipped file')
+                logging.debug('File extension is not .fa, still zipped maybe?')
                 sys.exit(0)
-
-        else:
-            logging.debug('File extension is not .all.MOD.fa or .fa, still zipped maybe?')
-            sys.exit(0)
 
     logging.debug('Entry Function finished')
 
