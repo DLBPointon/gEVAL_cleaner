@@ -241,8 +241,9 @@ def entryfunction(org, directory, data_type, entryper=1):
 
     cwd = os.getcwd()
     for root, dirs, files in os.walk(f'{cwd}/{option.s}/'):
+        files = str(files).strip('[]\'\'')
         print(files)
-        unzippedfile = f'{option.s}/{files[0]}'
+        unzippedfile = f'{option.s}/{files}'
         print(unzippedfile)
         if unzippedfile.endswith('.fa'):
             logging.debug(f'File to be used: {unzippedfile}')
