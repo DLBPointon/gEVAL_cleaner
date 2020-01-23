@@ -229,7 +229,7 @@ def main():
 
         org, directory = file_jenny(option.f, option.s)
 
-        downandsave(option.f, option.s)
+        downandsave(option.f)
 
         unzippedfile = filefinder(option.s)
 
@@ -292,9 +292,9 @@ def file_jenny(ftp, save):
     return org, directory_naming
 
 
-def downandsave(ftp, save):
+def downandsave(ftp):
     """
-    A function to download, save and
+    A function to download, save and unzip a file
     """
     logging.debug('Down and save function called')
     if ftp:
@@ -309,15 +309,16 @@ def downandsave(ftp, save):
     else:
         logging.debug('FTP address not given (using just the org name will be coded soon)')
 
-
-        for file in os.listdir('./'):
-            if file.endswith('.fa.gz'):
-                try:
-                    shutil.unpack_archive(f'./{file}', f'{save}/{org}_FILE_TO_USE.fa')
-                except:
-                    logging.critical('Gunzip failed to unzip file')
-            else:
-                logging.critical('No file to unzip found')
+        cwd = os.getcwd()
+        for root, dirs, files in os.walk(f'{cwd}/'):
+            for file in files:
+                if file.endswith('.fa.gz'):
+                    try:
+                        os.popen(f'gunzip {file}')
+                    except:
+                        logging.critical('Gunzip failed to unzip file')
+                else:
+                    logging.critical('No file to unzip found')
 
 
 def read_fasta(filetoparse):
@@ -351,8 +352,11 @@ def filefinder(save):
     cwd = os.getcwd()
     for root, dirs, files in os.walk(f'{cwd}/'):
         for file in files:
-            if file.endswith('.fa.gz'):
+            if file.endswith('.fa'):
                 unzippedfile = f'{cwd}/{file}'
+            else:
+                logging.debug('No Unzipped file found')
+                sys.exit(0)
 
         logging.debug('File finder finished')
 
