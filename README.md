@@ -25,7 +25,9 @@ or
 - Replace the large number of print (debug) with logging module debugs.
 --------------
 ### 22/01/2020
-- 
+- Changing save structure to allign with house style.
+- More use of regex to accomplish individualised file structure for each organism.
+- Start on cleandatav3.py - recycling much of v2
 
 ### 21/01/2020
 - Removed various errors in structure (too many spaces and gaps.

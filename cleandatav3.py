@@ -221,7 +221,7 @@ def entryfunction(org, directory, data_type, entryper=1):
     else is split into 5000 enteries.
     """
     logging.debug('Entryfunction called')
-
+    option = parse_command_args()
     count = 0
     filecounter = 0
     entry = []
@@ -245,7 +245,7 @@ def entryfunction(org, directory, data_type, entryper=1):
         unzippedfile = f'{option.s}/{files[0]}'
         print(unzippedfile)
         if unzippedfile.endswith('.fa'):
-            unzipped = f'{fullpath}'
+            unzipped = f'{unzippedfile}'
             print(unzipped)
             logging.debug(f'File to be used: {unzipped}')
 
