@@ -222,6 +222,7 @@ def main():
     """
     option = parse_command_args()
     logging.debug('Main function has been called')
+    cwd = os.getcwd()
 
     if option.f and option.s and option.t:
         if option.d:
@@ -233,11 +234,9 @@ def main():
         downandsave(option.f)
         unzippedfile = filefinder()
         if option.sc:
-            seqclean(option.s)
+            seqclean()
 
-
-
-            for file in os.listdir('./'):
+            for file in os.listdir(cwd):
                 if file.endswith('.fa.clean'):
                     unzippedfile = file
                     entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
@@ -247,10 +246,6 @@ def main():
 
         else:
             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-
-        if option.sc:
-            logging.debug('Seq Clean Called')
-            seqclean(option.s, option.d, org)
 
         if option.c:
             logging.debug('Cleaning Called')
@@ -485,7 +480,7 @@ def massage(name, data_type):
     return name
 
 
-def seqclean(data_type):
+def seqclean():
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
