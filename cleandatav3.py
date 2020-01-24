@@ -232,22 +232,30 @@ def main():
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
-        unzippedfile = filefinder()
 
-        if option.t == 'cdna':
-            if option.sc:
-                seqclean()
-
-                for file in os.listdir(cwd):
+        for file in os.listdir(cwd):
+            if option.t == 'cdna':
+                if file.endswith('.fa'):
+                    seqclean()
                     if file.endswith('.fa.clean'):
                         unzippedfile = file
                         entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                    else:
+                        logging.debug('seqclean didn\'t run')
+                else:
+                    logging.debug('No unzipped .fa files found')
 
-        elif option.t == 'pep':
-            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+            elif option.t == 'pep':
+                if file.endswith('.fa'):
+                    unzippedfile = file
+                    entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
 
-        else:
-            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+            elif option.t == 'cds':
+                    unzippedfile = file
+                    entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+
+            else:
+                logging.critical('data type not recognised')
 
         if option.c:
             logging.debug('Cleaning Called')
@@ -339,20 +347,6 @@ def read_fasta(filetoparse):
     if name:
         yield name, ''.join(seq)
     logging.info('Entry produced')
-
-
-def filefinder():
-    """
-    A function to file the unzipped downloaded file from the ensemble FTP servers
-    """
-    logging.debug('File finder called')
-    cwd = os.getcwd()
-    for file in os.listdir(f'{cwd}/'):
-        if file.endswith('.fa'):
-            unzippedfile = file
-            logging.debug('File finder finished')
-
-            return unzippedfile
 
 
 def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
