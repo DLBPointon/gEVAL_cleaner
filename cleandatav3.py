@@ -496,6 +496,7 @@ def seqclean(data_type):
     if data_type == 'cdna':
         logging.info('Path to files found')
         for file in os.listdir('./'):
+            print(file)
             if file.endswith('.fa'):
                 fasta_file = file
                 try:
