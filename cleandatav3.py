@@ -371,7 +371,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     filesavedto = f'{directory[1]}/{data_type}/'
     logging.info(f'Supplied data is {data_type}')
 
-    if os.path.exists(unzippedfile) and unzippedfile.endswith('.clean'):
+    if os.path.exists(unzippedfile):
         logging.info(f'File found at {unzippedfile}')
         print(unzippedfile)
         with open(unzippedfile, 'r') as filetoparse:
