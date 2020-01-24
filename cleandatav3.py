@@ -512,6 +512,7 @@ def seqclean(save, data_type, org):
                 fasta_file = file
                 try:
                     logging.info('Running Seq_clean script')
+                    os.popen(f'./seqclean/seqclean {path}/{fasta_file}')
                     logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
                     print('dp24 seqclean site')
 
