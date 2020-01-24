@@ -237,10 +237,14 @@ def main():
             for file in os.listdir(cwd):
                 if option.t == 'cdna':
                     if file.endswith('.fa'):
-                        seqclean()
-                        if file.endswith('.fa.clean'):
-                            unzippedfile = './' + file
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                        unzippedfile = './' + file
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                        for file in os.listdir(f'{option.s}{directory[2]}'):
+                            path = f'{option.s}{directory[2]}/{file}'
+                            if file.startswith(f'{org}') and file.endswith('.fa'):
+                                seqclean(path)
+                            else:
+                                logging.debug('file doesn\'t start with {org} or end with \'fa')
                         else:
                             logging.debug('seqclean didn\'t run')
                     else:
@@ -467,31 +471,28 @@ def massage(name, data_type):
     return name
 
 
-def seqclean():
+def seqclean(path):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
     requires correcting.
     """
     logging.debug('Seqclean called')
-    cwd = os.getcwd()
-    for file in os.listdir(cwd):
-        if file.endswith('.fa'):
-            logging.info('Running Seq_clean script')
-            os.popen(f'./seqclean/seqclean {file}')
-            logging.debug(f'Finished, Your file is here: {file}.clean')
-            print('dp24 seqclean site')
 
-        else:
-            logging.info('Running alt Seq_clean at wc2/tools/')
-            os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {file}')
-            logging.debug(f'Finished, Your file is here: {file}.clean')
-            print('wc2 seqclean site')
+    try:
+        logging.info('Running Seq_clean script')
+        os.popen(f'./seqclean/seqclean {path}')
+        logging.debug(f'Finished, Your file is here: {path}.clean')
+        print('dp24 seqclean site')
 
-    # The above should start the perl script and then check to
-    # see if the script runs and finishes for each of the files
-    # passed onto it and then print the file it has finished
-    # working on
+    except:
+        logging.info('Running alt Seq_clean at wc2/tools/')
+        os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {path}')
+        logging.debug(f'Finished, Your file is here: {path}.clean')
+        print('wc2 seqclean site')
+
+    else:
+        logging.debug('Seqclean locations are wrong')
 
     logging.debug('seqclean finished')
 
