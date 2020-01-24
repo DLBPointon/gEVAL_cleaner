@@ -233,29 +233,33 @@ def main():
 
         downandsave(option.f)
 
-        for file in os.listdir(cwd):
-            if option.t == 'cdna':
-                if file.endswith('.fa'):
-                    seqclean()
-                    if file.endswith('.fa.clean'):
-                        unzippedfile = file
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+        if option.t:
+            for file in os.listdir(cwd):
+                if option.t == 'cdna':
+                    if file.endswith('.fa'):
+                        seqclean()
+                        if file.endswith('.fa.clean'):
+                            unzippedfile = file
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                        else:
+                            logging.debug('seqclean didn\'t run')
                     else:
-                        logging.debug('seqclean didn\'t run')
+                        logging.debug('No unzipped .fa files found')
+
+                elif option.t == 'pep':
+                    if file.endswith('.fa'):
+                        unzippedfile = file
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+
+                elif option.t == 'cds':
+                        unzippedfile = file
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+
                 else:
-                    logging.debug('No unzipped .fa files found')
-
-            elif option.t == 'pep':
-                if file.endswith('.fa'):
-                    unzippedfile = file
-                    entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
-
-            elif option.t == 'cds':
-                    unzippedfile = file
-                    entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-
-            else:
-                logging.critical('data type not recognised')
+                    logging.critical('data type not recognised')
+        else:
+            logging.critical('No valid data type')
+            sys.exit(0)
 
         if option.c:
             logging.debug('Cleaning Called')
