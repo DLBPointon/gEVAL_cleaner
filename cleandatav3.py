@@ -477,7 +477,6 @@ def seqclean():
     cwd = os.getcwd()
     for file in os.listdir(cwd):
         if file.endswith('.fa'):
-            fasta_file = file
             logging.info('Running Seq_clean script')
             os.popen(f'./seqclean/seqclean {file}')
             logging.debug(f'Finished, Your file is here: {file}.clean')
@@ -485,8 +484,8 @@ def seqclean():
 
         else:
             logging.info('Running alt Seq_clean at wc2/tools/')
-            os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {fasta_file}')
-            logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
+            os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {file}')
+            logging.debug(f'Finished, Your file is here: {file}.clean')
             print('wc2 seqclean site')
 
     # The above should start the perl script and then check to
