@@ -365,9 +365,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     filecounter = 0
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
-    file_ex = '.fa'
     logging.info(f'Supplied data is {data_type}')
-    allmod = '.MOD'
 
     if os.path.exists(unzippedfile) and unzippedfile.endswith('.clean'):
         logging.info(f'File found at {unzippedfile}')
@@ -399,23 +397,23 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
 
                 if count == entryper:
                     filecounter += 1
-                    with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+                    with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
                         for name, seq in entry:
-                            done.write(f'{name}\n{seq} \n')
+                            done.write(f'{name}\n{seq}\n')
 
                         count = 0
                         entry = []
 
-                    logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+                    logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa')
 
                 filecounter += 1
-            with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}''', 'w') as done:
+            with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
                 for name, seq in entry:
-                    done.write(f'{name}\n{seq} \n')
+                    done.write(f'{name}\n{seq}\n')
 
                 entry = []
 
-            logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}{allmod}{file_ex}')
+            logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa')
     else:
         print('Nope not found')
         logging.debug('Cannot find unzipped file')
@@ -478,9 +476,7 @@ def seqclean():
     logging.debug('Seqclean called')
     cwd = os.getcwd()
     for file in os.listdir(cwd):
-        print(file)
         if file.endswith('.fa'):
-            print(file)
             fasta_file = file
             try:
                 logging.info('Running Seq_clean script')
