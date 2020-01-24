@@ -513,7 +513,6 @@ def seqclean(save, data_type, org):
                 fasta_file = file
                 try:
                     logging.info('Running Seq_clean script')
-                    os.popen(f'./nfs/users/nfs_d/dp24/gritprojects/gEVAL_cleaner/seqclean/seqclean {fasta_file}')
                     logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
                     print('dp24 seqclean site')
 
