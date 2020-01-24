@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Version 3 of cleaningdata.py
+cleaningdatav3.py
 """
 
 DOCSTRING = """
@@ -35,7 +35,7 @@ number of entries per file.
 For DNA an '.all.MOD.fa' will also be produced for later
 seqclean usage.
 
-4, Sequences are then trimmed and modfied by Seqclean
+4, Sequences are then trimmed and modified by Seqclean
 (not finished).
 
 5, Finally folders can be cleaned and debug can be read if
@@ -43,7 +43,7 @@ needed.
 -------------------------------------------------------------
 USAGE INSTRUCTIONS
 
-./cleandata.py -TYPE cdna -FTP ftp://ftp.ensembl.org/pub/
+./cleandatav3.py -TYPE cdna -FTP ftp://ftp.ensembl.org/pub/
 release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
 MesAur1.0.cdna.all.fa.gz -SAVE ./test
 
@@ -188,7 +188,7 @@ def parse_command_args(args=None):
     parser.add_argument('--clean',
                         action='store_true',
                         help='''Specifying this argument allows the
-                            script to clean all un-nessasery files after
+                            script to clean all un-necessary files after
                             use''',
                         dest='c')
 
@@ -239,10 +239,18 @@ def main():
                     if file.endswith('.fa'):
                         unzippedfile = './' + file
                         entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                        for file in os.listdir(f'{option.s}{directory[2]}'):
-                            path = f'{option.s}{directory[2]}/{file}'
-                            if file.startswith(f'{org}') and file.endswith('.fa'):
-                                seqclean(path)
+                        for file2 in os.listdir(f'{option.s}{directory[2]}'):
+                            path = f'{option.s}{directory[2]}/{file2}'
+                            if file2.startswith(f'{org}') and file2.endswith('.fa'):
+                                try:
+                                    seqclean(path)
+                                    os.popen(f'mv *.clean {option.s}{directory[2]}')
+                                except:
+                                    logging.debug(f'FAILED @ {path}')
+                                    print(f'FAILED @ {path} + retrying?')
+                                    seqclean(path)
+                                else:
+                                    print(f'It ain\'t working {path}')
                             else:
                                 logging.debug('file doesn\'t start with {org} or end with \'fa')
                         else:
@@ -251,13 +259,12 @@ def main():
                         logging.debug('No unzipped .fa files found')
 
                 elif option.t == 'pep':
-                    if file.endswith('.fa'):
-                        unzippedfile = './' + file
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                    unzippedfile = './' + file
+                    entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
 
                 elif option.t == 'cds':
-                        unzippedfile = './' + file
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+                    unzippedfile = './' + file
+                    entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
                 else:
                     logging.critical('data type not recognised')
@@ -279,7 +286,7 @@ def file_jenny(ftp, save):
     Will use the FTP to generate a naming scheme.
     """
     logging.debug('Folder generator called')
-    accessrights = 0o755
+    access_rights = 0o755
 
     # These are not redundant escapes, they are there due to the structure
     # of the string they are regexing.
@@ -298,7 +305,7 @@ def file_jenny(ftp, save):
             logging.info(f'Path: {path} :already exists')
         else:
             try:
-                os.makedirs(path, accessrights)
+                os.makedirs(path, access_rights)
             except OSError:
                 logging.critical(f'Creation of directory has failed at: {path}')
             else:
@@ -402,8 +409,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                 if count == entryper:
                     filecounter += 1
                     with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
-                        for name, seq in entry:
-                            done.write(f'{name}\n{seq}\n')
+                        for head, body in entry:
+                            done.write(f'{head}\n{body}\n')
 
                         count = 0
                         entry = []
@@ -412,14 +419,14 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
 
                 filecounter += 1
             with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
-                for name, seq in entry:
-                    done.write(f'{name}\n{seq}\n')
+                for head, body in entry:
+                    done.write(f'{head}\n{body}\n')
 
                 entry = []
 
             logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa')
     else:
-        print('Nope not found')
+        print('Not found')
         logging.debug('Cannot find unzipped file')
         sys.exit(0)
 
