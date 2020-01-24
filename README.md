@@ -22,6 +22,10 @@ or
 ### To-Do list
 - SeqClean Function
 --------------
+### 24/01/2020
+- Begin work on implementing the seqclean function.
+
+
 ### 23/01/2020
 - Entries now being produced for v3 script.
 - Place holder terms for testing have been changed to widely useful terms.
@@ -88,7 +92,8 @@ or
 
 ### 14/01/2020
 - Fixed the renaming of enteries as master file is split.
-- Script now takes a ftp ensembl link as input as well as the organism name as it would appear on the website e.g. genus_species.
+- Script now takes a ftp ensembl link as input as well as the organism name as it would appear on the website
+e.g. genus_species.
 	- Uses Regex to pull out a organism name.
 - Fixed spelling and syntax errors.
 - Fixed Regex errors.

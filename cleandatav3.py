@@ -139,8 +139,9 @@ except ImportError:
 try:
     import shutil
     print('Shutil imported')
-except:
+except ImportError:
     print(f'Shutil not imported \n {PRINT_ERROR}')
+    sys.exit(0)
 
 
 def parse_command_args(args=None):
@@ -231,12 +232,17 @@ def main():
 
         downandsave(option.f)
 
-        unzippedfile = filefinder(option.s)
+        unzippedfile = filefinder()
 
         if option.t == 'cdna':
             entryfunction(org, directory, option.t, unzippedfile, entryper=100000000000)
 
-            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+            if option.sc:
+                seqclean(option.s, option.t, org)
+                for file in os.listdir(f'{option.s}/{org}/{option.t}'):
+                    if file.endswith('.fa.clean'):
+                        unzippedfile = file
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
         elif option.t == 'pep':
             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
@@ -252,6 +258,7 @@ def main():
             logging.debug('Cleaning Called')
             clean_file_system(option.s, directory)
 
+    print("Script is Done!")
     logging.debug('Main function finished')
 
 
@@ -265,7 +272,6 @@ def file_jenny(ftp, save):
 
     # These are not redundant escapes, they are there due to the structure
     # of the string they are regexing.
-    # noinspection RegExpRedundantEscape
     org_from_name = re.search(r'fasta\/\w+\/\w+\/(\w+)\S(\w+)', ftp)
     org = org_from_name.group(1)
     accession = org_from_name.group(2)
@@ -330,22 +336,21 @@ def read_fasta(filetoparse):
 
         if line.startswith(">"):
             if name:
-                yield (name, ''.join(seq))
+                yield name, ''.join(seq)
             name, seq = line, []
         else:
             seq.append(line)
 
     if name:
-        yield (name, ''.join(seq))
+        yield name, ''.join(seq)
     logging.info('Entry produced')
 
 
-def filefinder(save):
+def filefinder():
     """
     A function to file the unzipped downloaded file from the ensemble FTP servers
     """
     logging.debug('File finder called')
-    option = parse_command_args()
     cwd = os.getcwd()
     for file in os.listdir(f'{cwd}/'):
         if file.endswith('.fa'):
@@ -367,7 +372,6 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     filecounter = 0
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
-    file_uncomp = '.all.fa'
     file_ex = '.fa'
 
     if entryper >= 10000000000:
@@ -380,7 +384,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     # KEPT HERE JUST IN CASE OF MONUMENTAL FUCK UP
     # place holder for the contents of the filefinder function
 
-    if unzippedfile.endswith('.fa'):
+    if unzippedfile.endswith('.fa') or unzippedfile.endswith('.fa.clean'):
         logging.debug(f'File to be used: {unzippedfile}')
 
         if os.path.exists(unzippedfile):
@@ -412,6 +416,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                         sys.exit(0)
 
                     nameseq = new_name, seq
+
                     entry.append(nameseq)
                     count += 1
 
@@ -497,46 +502,41 @@ def seqclean(save, data_type, org):
     this script will clean the sequence to ensure there is nothing that
     requires correcting.
     """
-
     logging.debug('Seqclean called')
 
-    seqclean_v_check = '/nfs/users/nfs_w/wc2/tools/seqclean -v'
-    run_seqclean = os.popen(f'seqclean {fasta_file}')
-    else_run = os.popen('''/nfs/users/nfs_w/wc2/tools/seqclean {fasta_file}''')
-    option = parse_command_args()
     path = f'{save}/{org}/{data_type}'
 
-    if data_type == 'cdna':
-        if os.path.exists(path):
-            logging.info('Path to files found')
-            for file in os.listdir(path):
-                if file.endswith(f'{data_type}.all.MOD.fa'):
-                    try:
-                        logging.info('Running Seq_clean script')
-                        run_seqclean
+    if data_type == 'cdna' and os.path.exists(path):
+        logging.info('Path to files found')
+        for file in os.listdir(path):
+            if file.endswith(f'{data_type}.all.MOD.fa'):
+                fasta_file = file
+                try:
+                    logging.info('Running Seq_clean script')
+                    os.popen(f'./nfs/users/nfs_d/dp24/gritprojects/gEVAL_cleaner/seqclean/seqclean {fasta_file}')
+                    logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
+                    print('dp24 seqclean site')
 
-                    except:
-                        logging.info('Running alt Seq_clean at wc2/tools/')
-                        else_run
+                except:
+                    logging.info('Running alt Seq_clean at wc2/tools/')
+                    os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {fasta_file}')
+                    logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
+                    print('wc2 seqclean site')
 
-                    else:
-                        logging.debug('Seqclean locations are wrong')
+                else:
+                    logging.debug('Seqclean locations are wrong')
 
-                logging.debug(f'Finished: {result}')
-            # The above should start the perl script and then check to
-            # see if the script runs and finishes for each of the files
-            # passed onto it and then print the file it has finished
-            # working on
-        else:
-            logging.critical('File paths not found')
-            sys.exit(0)
-
+            else:
+                logging.debug('No suffix with .all.MOD.fa')
+        # The above should start the perl script and then check to
+        # see if the script runs and finishes for each of the files
+        # passed onto it and then print the file it has finished
+        # working on
     else:
-        logging.debug('Seq clean skipped, only for DNA')
+        logging.critical('File paths not found or data_type could be wrong')
         sys.exit(0)
 
     logging.debug('seqclean finished')
-    return seq
 
 
 def clean_file_system(directory, save):
@@ -545,22 +545,21 @@ def clean_file_system(directory, save):
     """
     logging.debug('Cleaning File System')
 
+    file_type_del = ['.log', '.cidx', '.sort', '.cln', '.fa', '.fa.gz', '.fa.gz.*']
+
     # To delete the misc files in child folders if any.
     for folder in directory:
         path = f'{save}{folder}'
         for file in os.listdir(path):
-            if not file.endswith('.fa'):
+            if not file.endswith('.fa') or file.endswith('.clean'):
                 os.popen(f'rm {file}')
                 logging.debug(f'File to be removed: {file}')
 
     # To delete the downloaded and unzipped original file.
     for file in os.listdir(save):
-        if file.endswith('.fa'):
-            os.popen(f'File to be removed: {file}')
-
-    for file in os.getcwd():
-        if file.endswith('.log'):
-            os.popen(f'Log file to be removed: {file}')
+        for ext in file_type_del:
+            if file.endswith(ext):
+                os.popen(f'rm {file}')
 
     logging.debug('Cleaning File System finished')
 
