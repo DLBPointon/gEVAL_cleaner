@@ -231,11 +231,11 @@ def main():
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
-
-        if options.sc:
+        unzippedfile = filefinder()
+        if option.sc:
             seqclean(option.s)
 
-            unzippedfile = filefinder()
+
 
             for file in os.listdir('./'):
                 if file.endswith('.fa.clean'):
