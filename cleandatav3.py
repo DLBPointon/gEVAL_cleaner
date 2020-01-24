@@ -478,23 +478,17 @@ def seqclean():
     for file in os.listdir(cwd):
         if file.endswith('.fa'):
             fasta_file = file
-            try:
-                logging.info('Running Seq_clean script')
-                os.popen(f'./seqclean/seqclean {file}')
-                logging.debug(f'Finished, Your file is here: {file}.clean')
-                print('dp24 seqclean site')
-
-            except:
-                logging.info('Running alt Seq_clean at wc2/tools/')
-                os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {fasta_file}')
-                logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
-                print('wc2 seqclean site')
-
-            else:
-                logging.debug('Seqclean locations are wrong')
+            logging.info('Running Seq_clean script')
+            os.popen(f'./seqclean/seqclean {file}')
+            logging.debug(f'Finished, Your file is here: {file}.clean')
+            print('dp24 seqclean site')
 
         else:
-            logging.debug('No suffix with .all.MOD.fa')
+            logging.info('Running alt Seq_clean at wc2/tools/')
+            os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {fasta_file}')
+            logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
+            print('wc2 seqclean site')
+
     # The above should start the perl script and then check to
     # see if the script runs and finishes for each of the files
     # passed onto it and then print the file it has finished
