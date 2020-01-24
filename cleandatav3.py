@@ -492,10 +492,10 @@ def seqclean(data_type):
     requires correcting.
     """
     logging.debug('Seqclean called')
-
+    cwd = os.getcwd()
     if data_type == 'cdna':
         logging.info('Path to files found')
-        for file in os.listdir('./'):
+        for file in os.listdir(cwd):
             print(file)
             if file.endswith('.fa'):
                 print(file)
