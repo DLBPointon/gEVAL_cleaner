@@ -503,7 +503,6 @@ def seqclean(save, data_type, org):
     requires correcting.
     """
     logging.debug('Seqclean called')
-
     path = f'{save}/{org}/{data_type}'
 
     if data_type == 'cdna' and os.path.exists(path):
