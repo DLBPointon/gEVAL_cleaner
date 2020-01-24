@@ -498,6 +498,7 @@ def seqclean(data_type):
         for file in os.listdir('./'):
             print(file)
             if file.endswith('.fa'):
+                print(file)
                 fasta_file = file
                 try:
                     logging.info('Running Seq_clean script')
