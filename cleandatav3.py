@@ -232,17 +232,15 @@ def main():
 
         downandsave(option.f)
 
-        unzippedfile = filefinder()
+        if options.sc:
+            seqclean(option.s)
 
-        if option.t == 'cdna':
-            entryfunction(org, directory, option.t, unzippedfile, entryper=100000000000)
+            unzippedfile = filefinder()
 
-            if option.sc:
-                seqclean(option.s, option.t, org)
-                for file in os.listdir(f'{option.s}/{org}/{option.t}'):
-                    if file.endswith('.fa.clean'):
-                        unzippedfile = file
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+            for file in os.listdir('./'):
+                if file.endswith('.fa.clean'):
+                    unzippedfile = file
+                    entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
         elif option.t == 'pep':
             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
@@ -373,13 +371,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
     file_ex = '.fa'
-
-    if entryper >= 10000000000:
-        logging.info('cDNA file supplied - First run to return a complete multi-fasta')
-        allmod = '.all.MOD'
-    else:
-        logging.info(f'Supplied data is {data_type}')
-        allmod = '.MOD'
+    logging.info(f'Supplied data is {data_type}')
+    allmod = '.MOD'
 
     # KEPT HERE JUST IN CASE OF MONUMENTAL FUCK UP
     # place holder for the contents of the filefinder function
@@ -399,13 +392,9 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                     # file), massage would be excluded to stop any
                     # possible errors.
                     if data_type == 'cdna':
-                        if entryper >= 10000000000:
-                            logging.debug('First round of cleaning for cDNA file in Massage')
-                            new_name = massage(name, data_type)
 
-                        else:
-                            logging.debug('Second round of cDNA through Massage')
-                            new_name = massage(name, data_type)
+                        logging.debug('cDBNA Massaging')
+                        new_name = massage(name, data_type)
 
                     elif data_type == 'cds' or 'pep':
                         logging.debug(f'{data_type} being used')
@@ -457,7 +446,7 @@ def massage(name, data_type):
      style
     """
     logging.debug('Massage started')
-    if data_type == 'pep' or 'cds' or 'dna':
+    if data_type == 'pep' or 'cds' or 'cdna':
 
         if name.startswith('>'):
             logging.info('Renaming headers')
@@ -496,24 +485,23 @@ def massage(name, data_type):
     return name
 
 
-def seqclean(save, data_type, org):
+def seqclean(data_type):
     """
     A function to sent entry split files to the seqclean perl script,
     this script will clean the sequence to ensure there is nothing that
     requires correcting.
     """
     logging.debug('Seqclean called')
-    path = f'{save}/{org}/{data_type}'
 
-    if data_type == 'cdna' and os.path.exists(path):
+    if data_type == 'cdna' and os.path.exists('./'):
         logging.info('Path to files found')
         for file in os.listdir(path):
-            if file.endswith(f'{data_type}.all.MOD.fa'):
+            if file.endswith('.fa'):
                 fasta_file = file
                 try:
                     logging.info('Running Seq_clean script')
-                    os.popen(f'./seqclean/seqclean {path}/{fasta_file}')
-                    logging.debug(f'Finished, Your file is here: {fasta_file}.clean')
+                    os.popen(f'./seqclean/seqclean {file}')
+                    logging.debug(f'Finished, Your file is here: {file}.clean')
                     print('dp24 seqclean site')
 
                 except:
