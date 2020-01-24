@@ -239,7 +239,7 @@ def main():
                     if file.endswith('.fa'):
                         seqclean()
                         if file.endswith('.fa.clean'):
-                            unzippedfile = file
+                            unzippedfile = './' + file
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
                         else:
                             logging.debug('seqclean didn\'t run')
@@ -248,11 +248,11 @@ def main():
 
                 elif option.t == 'pep':
                     if file.endswith('.fa'):
-                        unzippedfile = file
+                        unzippedfile = './' + file
                         entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
 
                 elif option.t == 'cds':
-                        unzippedfile = file
+                        unzippedfile = './' + file
                         entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
                 else:
