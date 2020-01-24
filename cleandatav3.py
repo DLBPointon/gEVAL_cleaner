@@ -233,13 +233,15 @@ def main():
 
         downandsave(option.f)
         unzippedfile = filefinder()
-        if option.sc:
-            seqclean()
 
-            for file in os.listdir(cwd):
-                if file.endswith('.fa.clean'):
-                    unzippedfile = file
-                    entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+        if option.t == 'cdna':
+            if option.sc:
+                seqclean()
+
+                for file in os.listdir(cwd):
+                    if file.endswith('.fa.clean'):
+                        unzippedfile = file
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
         elif option.t == 'pep':
             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
