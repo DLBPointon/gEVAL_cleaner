@@ -143,6 +143,13 @@ except ImportError:
     print(f'Shutil not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
+try:
+    import time
+    print('Time imported')
+except ImportError:
+    print(f'Time not imported \n {PRINT_ERROR}')
+    sys.exit(0)
+
 
 def parse_command_args(args=None):
     """
@@ -234,7 +241,24 @@ def main():
 
         downandsave(option.f)
 
-        seqclean(option.s)
+        for file in os.listdir('./'):
+            if file.endswith('.fa'):
+                seqclean(file)
+
+        time_counter = 0
+        time_to_wait = 10
+
+        while not file.endswith('.clean'):
+            time.sleep(1)
+            time_counter += 1
+            print('File not found')
+            if file.endswith('.clean'):
+                unzippedfile = file
+            elif time_counter > time_to_wait:
+                break
+
+        print(f'{file} Found')
+
 
         entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
