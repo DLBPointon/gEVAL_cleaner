@@ -229,48 +229,54 @@ def main():
             logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
                                 filename='gEVAL_clean.log')
 
+        unzippedfile ='./'
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
 
-        if option.t:
-            for file in os.listdir(cwd):
-                if option.t == 'cdna':
-                    if file.endswith('.fa'):
-                        unzippedfile = './' + file
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                        for file2 in os.listdir(f'{option.s}{directory[2]}'):
-                            path = f'{option.s}{directory[2]}/{file2}'
-                            if file2.startswith(f'{org}') and file2.endswith('.fa'):
-                                try:
-                                    seqclean(path)
-                                    os.popen(f'mv *.clean {option.s}{directory[2]}')
-                                except:
-                                    logging.debug(f'FAILED @ {path}')
-                                    print(f'FAILED @ {path} + retrying?')
-                                    seqclean(path)
-                                else:
-                                    print(f'It ain\'t working {path}')
-                            else:
-                                logging.debug('file doesn\'t start with {org} or end with \'fa')
-                        else:
-                            logging.debug('seqclean didn\'t run')
-                    else:
-                        logging.debug('No unzipped .fa files found')
+        seqclean(option.s)
 
-                elif option.t == 'pep':
-                    unzippedfile = './' + file
-                    entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
-                elif option.t == 'cds':
-                    unzippedfile = './' + file
-                    entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-
-                else:
-                    logging.critical('data type not recognised')
-        else:
-            logging.critical('No valid data type')
-            sys.exit(0)
+        # if option.t:
+        #     for file in os.listdir(cwd):
+        #         if option.t == 'cdna':
+        #             if file.endswith('.fa'):
+        #                 unzippedfile = './' + file
+        #                 entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+        #                 for file2 in os.listdir(f'{option.s}{directory[2]}'):
+        #                     path = f'{option.s}{directory[2]}/{file2}'
+        #                     if file2.startswith(f'{org}') and file2.endswith('.fa'):
+        #                         try:
+        #                             seqclean(path)
+        #                             os.popen(f'mv *.clean {option.s}{directory[2]}')
+        #                         except:
+        #                             logging.debug(f'FAILED @ {path}')
+        #                             print(f'FAILED @ {path} + retrying?')
+        #                             seqclean(path)
+        #                         else:
+        #                             print(f'It ain\'t working {path}')
+        #                         os.popen(f'mv *.clean {option.s}{directory[2]}')
+        #                     else:
+        #                         logging.debug('file doesn\'t start with {org} or end with \'fa')
+        #                 else:
+        #                     logging.debug('seqclean didn\'t run')
+        #             else:
+        #                 logging.debug('No unzipped .fa files found')
+        #
+        #         elif option.t == 'pep':
+        #             unzippedfile = './' + file
+        #             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+        #
+        #         elif option.t == 'cds':
+        #             unzippedfile = './' + file
+        #             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+        #
+        #         else:
+        #             logging.critical('data type not recognised')
+        # else:
+        #     logging.critical('No valid data type')
+        #     sys.exit(0)
 
         if option.c:
             logging.debug('Cleaning Called')
@@ -336,6 +342,11 @@ def downandsave(ftp):
     cwd = os.getcwd()
     for file in os.listdir(f'{cwd}/'):
         if file.endswith('.fa.gz'):
+            try:
+                os.popen(f'gunzip -fd {file}')
+            except:
+                logging.critical('Gunzip failed to unzip file')
+        elif file.endswith('.fa.gz.1'):
             try:
                 os.popen(f'gunzip -fd {file}')
             except:
