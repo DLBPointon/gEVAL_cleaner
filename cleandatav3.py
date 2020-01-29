@@ -275,10 +275,12 @@ def main():
                             logging.debug(f'{unzippedfile} EXISTS')
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
                             break
+
                     else:
                         time.sleep(0.1)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
+                        print(f'File not found {time_counter} {file}')
 
                 if option.c:
                     logging.debug('Cleaning Called')
@@ -405,15 +407,15 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                 if data_type == 'cdna':
                     logging.debug('cDNA Massaging')
                     new_name = massage(name, data_type)
+                    print(new_name)
                 elif data_type != 'cdna':
                     logging.debug(f'{data_type} being used')
                     new_name = massage(name, data_type)
+                    print(new_name)
 
                 else:
                     logging.critical(f'Data type of {data_type} not recognised.')
                     sys.exit(0)
-
-                print(new_name)
 
                 nameseq = new_name, seq
 
