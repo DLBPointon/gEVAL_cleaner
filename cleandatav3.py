@@ -249,6 +249,7 @@ def main():
         time_to_wait = 100
         cwd = os.getcwd()
         for file in os.listdir(f'{cwd}/'):
+            print(file)
             if file.endswith('.clean'):
                 print(f'{file} found')
                 unzippedfile = file
