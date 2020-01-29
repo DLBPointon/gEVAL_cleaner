@@ -248,14 +248,16 @@ def main():
         time_counter = 0
         time_to_wait = 100
         cwd = os.getcwd()
-        for file in cwd:
+        for file in os.listdir(cwd):
             while not file.endswith('.clean'):
                 time.sleep(1)
                 time_counter += 1
                 print('File not found')
                 if file.endswith('.clean'):
                     unzippedfile = file
+                    print(f'{file} found')
                     break
+
                 elif time_counter > time_to_wait:
                     break
 
