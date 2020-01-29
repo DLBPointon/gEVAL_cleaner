@@ -471,8 +471,8 @@ def massage(name, data_type):
                     gene_symbol = gene_symbol.group(0)
                 except:
                     if gene_symbol is None:
-                    gene_symbol = re.search(r'gene:(\w+)', name)
-                    gene_symbol = gene_symbol.group(1)
+                        gene_symbol = re.search(r'gene:(\w+)', name)
+                        gene_symbol = gene_symbol.group(1)
                 else:
                     gene_symbol = 'MissingInfo'
 
