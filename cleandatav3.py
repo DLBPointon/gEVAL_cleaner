@@ -245,37 +245,39 @@ def main():
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
+
         for file in os.listdir('./'):
             if file.endswith('.fa'):
 
                 if option.t == 'cdna':
                     seqclean(file)
                 else:
-                    unzippedfile = f'./{file}'
+                    unzippedfile = f'{file}'
                     if option.t == 'pep':
                         entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                     else:
                         entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
-        time_counter = 0
-        time_to_wait = 100
-        cwd = os.getcwd()
-        while not file.endswith('.clean'):
-            for file in os.listdir(cwd):
-                if file.endswith('.clean'):
-                    unzippedfile = f'./{file}'
-                    if os.path.exists(unzippedfile):
-                        print('EXISTS')
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                        break
-                else:
-                    time.sleep(0.5)
-                    time_counter += 1
-                    print(f'File not found {time_counter} {file}')
+        if option.t == 'cdna':
+            time_counter = 0
+            time_to_wait = 100
+            cwd = os.getcwd()
+            while not file.endswith('.clean'):
+                for file in os.listdir(cwd):
+                    if file.endswith('.clean'):
+                        unzippedfile = f'./{file}'
+                        if os.path.exists(unzippedfile):
+                            print('EXISTS')
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                            break
+                    else:
+                        time.sleep(0.5)
+                        time_counter += 1
+                        print(f'File not found {time_counter} {file}')
 
-            if option.c:
-                logging.debug('Cleaning Called')
-                clean_file_system(option.s, directory)
+                if option.c:
+                    logging.debug('Cleaning Called')
+                    clean_file_system(option.s, directory)
 
         print("Script is Done!")
         logging.debug('Main function finished')
