@@ -273,7 +273,7 @@ def main():
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
                             break
                     else:
-                        time.sleep(0.5)
+                        time.sleep(0.1)
                         time_counter += 1
                         print(f'File not found {time_counter} {file}')
 
