@@ -247,8 +247,8 @@ def main():
 
         time_counter = 0
         time_to_wait = 100
-
-        for file in os.listdir('./'):
+        cwd = os.getcwd()
+        for file in cwd:
             while not file.endswith('.clean'):
                 time.sleep(1)
                 time_counter += 1
