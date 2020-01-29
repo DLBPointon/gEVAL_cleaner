@@ -246,19 +246,20 @@ def main():
                 seqclean(file)
 
         time_counter = 0
-        time_to_wait = 10
+        time_to_wait = 100
 
-        while not file.endswith('.clean'):
-            time.sleep(1)
-            time_counter += 1
-            print('File not found')
-            if file.endswith('.clean'):
-                unzippedfile = file
-            elif time_counter > time_to_wait:
-                break
+        for file in os.listdir('./'):
+            while not file.endswith('.clean'):
+                time.sleep(1)
+                time_counter += 1
+                print('File not found')
+                if file.endswith('.clean'):
+                    unzippedfile = file
+                    break
+                elif time_counter > time_to_wait:
+                    break
 
-        print(f'{file} Found')
-
+                print(f'{file} Found')
 
         entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
 
