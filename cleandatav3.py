@@ -22,6 +22,7 @@ DOCSTRING = """
             sys      - for system interfacing
             re       - for regex usage
             logging  - for debug logging
+            time     - for waiting for file creation 
 -------------------------------------------------------------
 USE CASE FOR THE SCRIPT
 1, The aim of this script is to take an input FASTA file
@@ -277,7 +278,7 @@ def main():
                             break
 
                     else:
-                        time.sleep(1)
+                        time.sleep(0.25)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
                         print(f'File not found {time_counter} {file}')
@@ -534,21 +535,10 @@ def clean_file_system(directory, save):
     """
     logging.debug('Cleaning File System')
 
-    file_type_del = ['.log', '.cidx', '.sort', '.cln', '.fa', '.fa.gz', '.fa.gz.*']
+    file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa', '*.fa.gz', '*.fa.gz.*']
 
-    # To delete the misc files in child folders if any.
-    for folder in directory:
-        path = f'{save}{folder}'
-        for file in os.listdir(path):
-            if not file.endswith('.fa') or file.endswith('.clean'):
-                os.popen(f'rm {file}')
-                logging.debug(f'File to be removed: {file}')
-
-    # To delete the downloaded and unzipped original file.
-    for file in os.listdir(save):
-        for ext in file_type_del:
-            if file.endswith(ext):
-                os.popen(f'rm {file}')
+    for extension in file_type_del:
+        os.popen(f'rm {extension}')
 
     logging.debug('Cleaning File System finished')
 
