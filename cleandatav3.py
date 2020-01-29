@@ -277,7 +277,7 @@ def main():
                             break
 
                     else:
-                        time.sleep(0.1)
+                        time.sleep(1)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
                         print(f'File not found {time_counter} {file}')
@@ -466,14 +466,15 @@ def massage(name, data_type):
                 gene_symbol = gene_symbol.group(1)
 
             elif gene_symbol is None:
-                gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
-                gene_symbol = gene_symbol.group(0)
-                if gene_symbol is None:
+                try:
+                    gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
+                    gene_symbol = gene_symbol.group(0)
+                except:
+                    if gene_symbol is None:
                     gene_symbol = re.search(r'gene:(\w+)', name)
                     gene_symbol = gene_symbol.group(1)
-
-            else:
-                gene_symbol = 'MissingInfo'
+                else:
+                    gene_symbol = 'MissingInfo'
 
             if ens_code:
                 ens_code = ens_code.group(0)
