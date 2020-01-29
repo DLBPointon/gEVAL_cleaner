@@ -91,7 +91,6 @@ FILE STRUCTURE
 --------------------------------------------------------------
 """
 
-
 PRINT_ERROR = '''Does not exist\n
                  Get module installed before import attempt\n
                  If running server side then contact your admin'''
@@ -110,6 +109,7 @@ except ImportError:
 
 try:
     import argparse
+
     print('argparse imported')
 except ImportError:
     print(f'argparse not imported \n {PRINT_ERROR}')
@@ -117,6 +117,7 @@ except ImportError:
 
 try:
     import os
+
     print('os imported')
 except ImportError:
     print(f'os not imported \n {PRINT_ERROR}')
@@ -124,6 +125,7 @@ except ImportError:
 
 try:
     import re
+
     print('regex imported')
 except ImportError:
     print(f're not imported \n {PRINT_ERROR}')
@@ -131,6 +133,7 @@ except ImportError:
 
 try:
     import logging
+
     print('logging imported')
 except ImportError:
     print(f'logging not imported \n {PRINT_ERROR}')
@@ -138,6 +141,7 @@ except ImportError:
 
 try:
     import shutil
+
     print('Shutil imported')
 except ImportError:
     print(f'Shutil not imported \n {PRINT_ERROR}')
@@ -145,6 +149,7 @@ except ImportError:
 
 try:
     import time
+
     print('Time imported')
 except ImportError:
     print(f'Time not imported \n {PRINT_ERROR}')
@@ -236,86 +241,44 @@ def main():
             logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
                                 filename='gEVAL_clean.log')
 
-        unzippedfile ='./'
+        unzippedfile = './'
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
-
         for file in os.listdir('./'):
             if file.endswith('.fa'):
-                seqclean(file)
+
+                if option.t == 'cdna':
+                    seqclean(file)
+                else:
+                    unzippedfile = f'./{file}'
+                    if option.t == 'pep':
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                    else:
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
         time_counter = 0
         time_to_wait = 100
         cwd = os.getcwd()
-        for file in os.listdir(f'{cwd}/'):
-            print(file)
-            if file.endswith('.clean'):
-                print(f'{file} found')
-                unzippedfile = file
-                entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+        while not file.endswith('.clean'):
+            for file in os.listdir(cwd):
+                if file.endswith('.clean'):
+                    unzippedfile = f'./{file}'
+                    if os.path.exists(unzippedfile):
+                        print('EXISTS')
+                        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                        break
+                else:
+                    time.sleep(0.5)
+                    time_counter += 1
+                    print(f'File not found {time_counter} {file}')
 
-            elif not file.endswith('.clean'):
-                time.sleep(1)
-                time_counter += 1
-                print('File not found')
+            if option.c:
+                logging.debug('Cleaning Called')
+                clean_file_system(option.s, directory)
 
-
-            else:
-                if time_counter > time_to_wait:
-                    sys.exit(0)
-
-
-                print(f'{file} Found')
-
-
-
-        # if option.t:
-        #     for file in os.listdir(cwd):
-        #         if option.t == 'cdna':
-        #             if file.endswith('.fa'):
-        #                 unzippedfile = './' + file
-        #                 entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-        #                 for file2 in os.listdir(f'{option.s}{directory[2]}'):
-        #                     path = f'{option.s}{directory[2]}/{file2}'
-        #                     if file2.startswith(f'{org}') and file2.endswith('.fa'):
-        #                         try:
-        #                             seqclean(path)
-        #                             os.popen(f'mv *.clean {option.s}{directory[2]}')
-        #                         except:
-        #                             logging.debug(f'FAILED @ {path}')
-        #                             print(f'FAILED @ {path} + retrying?')
-        #                             seqclean(path)
-        #                         else:
-        #                             print(f'It ain\'t working {path}')
-        #                         os.popen(f'mv *.clean {option.s}{directory[2]}')
-        #                     else:
-        #                         logging.debug('file doesn\'t start with {org} or end with \'fa')
-        #                 else:
-        #                     logging.debug('seqclean didn\'t run')
-        #             else:
-        #                 logging.debug('No unzipped .fa files found')
-        #
-        #         elif option.t == 'pep':
-        #             unzippedfile = './' + file
-        #             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
-        #
-        #         elif option.t == 'cds':
-        #             unzippedfile = './' + file
-        #             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-        #
-        #         else:
-        #             logging.critical('data type not recognised')
-        # else:
-        #     logging.critical('No valid data type')
-        #     sys.exit(0)
-
-        if option.c:
-            logging.debug('Cleaning Called')
-            clean_file_system(option.s, directory)
-
-    print("Script is Done!")
-    logging.debug('Main function finished')
+        print("Script is Done!")
+        logging.debug('Main function finished')
 
 
 def file_jenny(ftp, save):
