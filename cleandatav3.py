@@ -252,11 +252,13 @@ def main():
                 if option.t == 'cdna':
                     seqclean(file)
                 else:
-                    unzippedfile = f'{file}'
-                    if option.t == 'pep':
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
-                    else:
-                        entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+                    unzippedfile = f'./{file}'
+                    if os.path.exists(unzippedfile):
+                        unzippedfile = file
+                        if option.t == 'pep':
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                        else:
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
         if option.t == 'cdna':
             time_counter = 0
