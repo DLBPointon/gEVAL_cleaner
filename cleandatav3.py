@@ -283,9 +283,10 @@ def main():
                         logging.debug(f'File not found {time_counter} {file}')
                         print(f'File not found {time_counter} {file}')
 
-                if option.c:
-                    logging.debug('Cleaning Called')
-                    clean_file_system(option.s, directory)
+    if option.c:
+        print('Cleaning')
+        logging.debug('Cleaning Called')
+        clean_file_system()
 
         print("Script is Done!")
         logging.debug('Main function finished')
@@ -529,13 +530,13 @@ def seqclean(path):
     logging.debug('seqclean finished')
 
 
-def clean_file_system(directory, save):
+def clean_file_system():
     """
     A function to clean the stray files that appear in the process of this script
     """
     logging.debug('Cleaning File System')
 
-    file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa', '*.fa.gz', '*.fa.gz.*']
+    file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa', '*.fa.gz', '*.fa.gz.*', '*.clean', '*sx_file*', '*_tmp']
 
     for extension in file_type_del:
         os.popen(f'rm {extension}')
