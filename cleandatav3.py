@@ -249,21 +249,25 @@ def main():
         time_to_wait = 100
         cwd = os.getcwd()
         for file in os.listdir(f'{cwd}/'):
-            while not file.endswith('.clean'):
+            if file.endswith('.clean'):
+                print(f'{file} found')
+                unzippedfile = file
+                entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+
+            elif not file.endswith('.clean'):
                 time.sleep(1)
                 time_counter += 1
                 print('File not found')
-                if file.endswith('.clean'):
-                    unzippedfile = file
-                    print(f'{file} found')
-                    break
 
-                elif time_counter > time_to_wait:
-                    break
+
+            else:
+                if time_counter > time_to_wait:
+                    sys.exit(0)
+
 
                 print(f'{file} Found')
 
-        entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+
 
         # if option.t:
         #     for file in os.listdir(cwd):
