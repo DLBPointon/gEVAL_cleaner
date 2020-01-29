@@ -21,10 +21,25 @@ or
 
 ### To-Do list
 - SeqClean Function
+- Fix bugs.
+- Add readme for stats.
 --------------
+### 29/01/2020
+- Script working.
+    - Scans working directory for .clean file to then run that file through the entryfunction.
+- Script now accepts all data types.
+- Added the Time module to allow for the directory scanning.
+- Confirmed working on all data types and with the file structure.
+#### Update 2
+- Added regex options for metazoans and insects.
+- Corrected rm_redundants - addition of extensions and major simplification thanks to simplifying file structure.
+
+Known Bugs:
+- For cdna files the script must be interrupted twice and then allowed to run, the cause is currently unknown.
+- Occasionally other data types will fail for no reason and need to be re-run.
+
 ### 24/01/2020
 - Begin work on implementing the seqclean function.
-
 
 ### 23/01/2020
 - Entries now being produced for v3 script.
