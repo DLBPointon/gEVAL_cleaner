@@ -3,24 +3,18 @@
 ## Development Diary
 
 ### Usage instructions
-./cleandata.py -TYPE cdna -ORG mesocricetus_auratus -SAVE ./test
-
-or
-
-./cleandata.py -TYPE cdna -ORG ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz -SAVE ./test
+./cleandatav3.py -TYPE cdna -FTP ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz -SAVE ./test
 
 -------------
 #### Args
 
-- t = -TYPE 	cdna, pep, ncrna, cds.
+- t = -TYPE 	cdna, pep, cds.
 - s = -SAVE 	Save location for the file structure.
-- o = -ORGNAME 	Orgnaism name as appears on the relevant database or the full ftp link.
-- p = --prefix 	Currently Unused - User-defined naming scheme.
+- f = -FTP 	Full ftp address.
 - c = --clean 	Clean all unneeded files.
 --------------
 
 ### To-Do list
-- SeqClean Function
 - Fix bugs.
 - Add readme for stats.
 --------------
