@@ -246,8 +246,10 @@ def main():
 
         downandsave(option.f)
 
+        # Command block to control usage of seqclean
         for file in os.listdir('./'):
             if file.endswith('.fa'):
+                if
 
                 if option.t == 'cdna':
                     seqclean(file)
@@ -255,11 +257,13 @@ def main():
                     unzippedfile = f'./{file}'
                     if os.path.exists(unzippedfile):
                         unzippedfile = file
+                        logging.debug(f'{unzippedfile} EXISTS')
                         if option.t == 'pep':
                             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                         else:
                             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
 
+        # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
             time_counter = 0
             time_to_wait = 100
@@ -269,13 +273,13 @@ def main():
                     if file.endswith('.clean'):
                         unzippedfile = f'./{file}'
                         if os.path.exists(unzippedfile):
-                            print('EXISTS')
+                            logging.debug(f'{unzippedfile} EXISTS')
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
                             break
                     else:
                         time.sleep(0.1)
                         time_counter += 1
-                        print(f'File not found {time_counter} {file}')
+                        logging.debug(f'File not found {time_counter} {file}')
 
                 if option.c:
                     logging.debug('Cleaning Called')
@@ -402,7 +406,6 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                 if data_type == 'cdna':
                     logging.debug('cDNA Massaging')
                     new_name = massage(name, data_type)
-                    print(new_name)
                 elif data_type != 'cdna':
                     logging.debug(f'{data_type} being used')
                     new_name = massage(name, data_type)
@@ -410,6 +413,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                 else:
                     logging.critical(f'Data type of {data_type} not recognised.')
                     sys.exit(0)
+
+                print(new_name)
 
                 nameseq = new_name, seq
 
@@ -463,11 +468,19 @@ def massage(name, data_type):
                 gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
                 gene_symbol = gene_symbol.group(0)
 
+            elif gene_symbol is None:
+                gene_symbol = re.search(r'gene:(\w+)'name)
+                gene_symbol = gene_symbol.group(1)
+
             else:
                 gene_symbol = 'MissingInfo'
 
             if ens_code:
                 ens_code = ens_code.group(0)
+
+            elif ens_code is None:
+                ens_code = re.search(r'>(\S+)')
+                ens_code = ens_code.group(1)
 
             else:
                 ens_code = 'NoEnsCode'
