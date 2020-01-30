@@ -22,7 +22,7 @@ DOCSTRING = """
             sys      - for system interfacing
             re       - for regex usage
             logging  - for debug logging
-            time     - for waiting for file creation 
+            time     - for waiting for file creation
 -------------------------------------------------------------
 USE CASE FOR THE SCRIPT
 1, The aim of this script is to take an input FASTA file
@@ -50,36 +50,20 @@ MesAur1.0.cdna.all.fa.gz -SAVE ./test
 
 Optionals include --clean and/or --debug
 -------------------------------------------------------------
-ARGUMENTS
- - SAVE - ./test
-
- - FTP - The full FTP address for the file in question.
-
- - TYPE - will be a choice between cdna/cds/pep/rna.
-
- --PRE - Prefix - will be the user defined naming scheme
-    NOT IN USE.
-  
- --ORG - Organism Name - the name of the organism as it looks
-  in the respective database.
-  
- --clean - and optional argument to remove parent files.
-
- --debug - Used to diagnose issues with the running of the
-  script.
--------------------------------------------------------------
 FUTURE CHANGES
-    - Add Seqclean 
     - MissingGene Counter
         - General counters and Stats
+    - Add option for parent directory as FTP and script
+    searches for file to use.
+    - Add README.txt to show stats on data
 -------------------------------------------------------------
 CONTACT
-    - dp24@sanger.ac.uk 
+    - dp24@sanger.ac.uk
             or
     - grit@sanger.ac.uk
 -------------------------------------------------------------
-FILE STRUCTURE
-                        Organism Name
+FILE STRUCTURE - if save == './'
+                        ./Organism Name
                         -------------
                               |
                               |
@@ -174,23 +158,9 @@ def parse_command_args(args=None):
 
     parser.add_argument('-TYPE',
                         type=str,
-                        choices=['cds', 'cdna', 'pep', 'ncrna'],
+                        choices=['cds', 'cdna', 'pep'],
                         help='The type of DATA contained in the file',
                         dest='t')
-
-    parser.add_argument('--prefix',
-                        type=str,
-                        action='store',
-                        help='User-defined naming scheme',
-                        dest='p')
-
-    parser.add_argument('--ORGNAME',
-                        type=str,
-                        action='store',
-                        help='''The Organism under scrutiny
-                            (use how the name would appear in ensembl
-                            to make life easier, long name)''',
-                        dest='o')
 
     parser.add_argument('-SAVE',
                         type=str,
@@ -219,12 +189,6 @@ def parse_command_args(args=None):
                         type=str,
                         dest='f')
 
-    parser.add_argument('--SEQ',
-                        action='store_true',
-                        help='''This argument is to be used when sequence
-                         cleaning of the cDNA is needed''',
-                        dest='sc')
-
     option = parser.parse_args(args)
     return option
 
@@ -234,15 +198,14 @@ def main():
     The Main function which controls the logic for the script
     """
     option = parse_command_args()
-    logging.debug('Main function has been called')
-    cwd = os.getcwd()
-
     if option.f and option.s and option.t:
         if option.d:
             logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
                                 filename='gEVAL_clean.log')
 
-        unzippedfile = './'
+        logging.debug('Main function has been called')
+        cwd = os.getcwd()
+
         org, directory = file_jenny(option.f, option.s)
 
         downandsave(option.f)
@@ -250,7 +213,6 @@ def main():
         # Command block to control usage of seqclean
         for file in os.listdir('./'):
             if file.endswith('.fa'):
-
                 if option.t == 'cdna':
                     seqclean(file)
                 else:
@@ -259,22 +221,22 @@ def main():
                         unzippedfile = file
                         logging.debug(f'{unzippedfile} EXISTS')
                         if option.t == 'pep':
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                         else:
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+                        readme_jenny(a, b, c, d, e, f, g, h, directory, option.t)
 
         # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
             time_counter = 0
-            time_to_wait = 100
-            cwd = os.getcwd()
             while not file.endswith('.clean'):
                 for file in os.listdir(cwd):
                     if file.endswith('.clean'):
                         unzippedfile = f'./{file}'
                         if os.path.exists(unzippedfile):
                             logging.debug(f'{unzippedfile} EXISTS')
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                            readme_jenny(a, b, c, d, e, f, g, h, directory, option.t)
                             break
 
                     else:
@@ -288,8 +250,8 @@ def main():
         logging.debug('Cleaning Called')
         clean_file_system()
 
-        print("Script is Done!")
-        logging.debug('Main function finished')
+    print("Script is Done!")
+    logging.debug('Main function finished')
 
 
 def file_jenny(ftp, save):
@@ -328,6 +290,63 @@ def file_jenny(ftp, save):
     return org, directory_naming
 
 
+def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
+    """
+    A function to generate a README.txt with relevant stats and information.
+    """
+    # All stats are post cleaning for cdna
+    save_to = directory[1]
+    none_es_gene = a
+    none_ens_s = b
+    numb_headers = c
+    missing_ens = d
+    missing_gene = e
+    gene_ens = f
+    ens_style_ens = g
+    gene_name = h
+
+    logging.info('README function stated')
+    with open(f'{save_to}/README.txt', 'w+') as readme:
+        readme.write(f"""|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
+                         Stats and numbers for the output of the
+                         cleandatav3.py script
+                         -----------------------------------------------
+                         {save_to}
+                         {data_type.upper()}
+                         -----------------------------------------------
+                         The number of entries:
+                         {numb_headers}
+                         -----------------------------------------------
+                         Number of named genes:
+                         {gene_name}
+                         
+                         Number of gene symbols
+                            (ENS style):
+                         {gene_ens}
+
+                         Number of missing genes:
+                         {missing_gene}
+
+                         Number of None ENS style genecode
+                            (e.g. barcode style):
+                         {none_es_gene}
+                         -----------------------------------------------
+                         Number of ENS codes:
+                         {ens_style_ens}
+
+                         Number of missing ENS:
+                         {missing_ens}
+
+                         Number of missing ENS 
+                            (Barcode style):
+                         {none_ens_s}
+                         |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
+
+                        """)
+
+    logging.info('README function finished')
+
+
 def downandsave(ftp):
     """
     A function to download, save and unzip a file
@@ -338,7 +357,9 @@ def downandsave(ftp):
         try:
             logging.info(f'Starting Download of {ftp}')
             os.popen(f'wget -q -o /dev/null {ftp}')
-            logging.info('Download finished')
+            time.sleep(2)
+            logging.debug('Giving time to download')
+
         except:
             logging.critical('File NOT Downloaded')
             sys.exit(0)
@@ -348,8 +369,11 @@ def downandsave(ftp):
     cwd = os.getcwd()
     for file in os.listdir(f'{cwd}/'):
         if file.endswith('.fa.gz'):
+            logging.info('Download finished')
             try:
                 os.popen(f'gunzip -fd {file}')
+                time.sleep(2)
+                logging.debug('Giving time up unpack .gz')
             except:
                 logging.critical('Gunzip failed to unzip file')
         elif file.endswith('.fa.gz.1'):
@@ -381,7 +405,7 @@ def read_fasta(filetoparse):
     logging.info('Entry produced')
 
 
-def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
+def entryfunction(org, directory, data_type, unzippedfile, entryper):
     """
     The entryfunction function splits a FASTA file into a defined
     number of entries per file, pep == 2000 enteries and everything
@@ -408,11 +432,11 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
                 # possible errors.
                 if data_type == 'cdna':
                     logging.debug('cDNA Massaging')
-                    new_name = massage(name, data_type)
+                    new_name, a, b, c, d, e, f, g, h = massage(name, data_type)
                     print(new_name)
                 elif data_type != 'cdna':
                     logging.debug(f'{data_type} being used')
-                    new_name = massage(name, data_type)
+                    new_name, a, b, c, d, e, f, g, h = massage(name, data_type)
                     print(new_name)
 
                 else:
@@ -450,42 +474,60 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper=1):
 
     logging.debug('Entry Function finished')
 
+    return a, b, c, d, e, f, g, h
+
 
 def massage(name, data_type):
     """
     A function to 'massage' the sequence headers into a more human readable
      style
     """
+    none_es_gene = 0
+    none_ens_s = 0
+    numb_headers = 0
+    missing_ens = 0
+    missing_gene = 0
+    gene_name = 0
+    gene_ens = 0
+    ens_style_ens = 0
     logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'cdna':
 
         if name.startswith('>'):
+            numb_headers += 1
             logging.info('Renaming headers')
             gene_symbol = re.search(r'symbol:(\w+\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
+                gene_name += 1
                 gene_symbol = gene_symbol.group(1)
 
             elif gene_symbol is None:
                 try:
+                    gene_ens += 1
                     gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
                     gene_symbol = gene_symbol.group(0)
                 except:
                     if gene_symbol is None:
+                        none_es_gene += 1
                         gene_symbol = re.search(r'gene:(\w+)', name)
                         gene_symbol = gene_symbol.group(1)
                 else:
+                    missing_gene += 1
                     gene_symbol = 'MissingInfo'
 
             if ens_code:
+                ens_style_ens += 1
                 ens_code = ens_code.group(0)
 
             elif ens_code is None:
+                none_ens_s += 1
                 ens_code = re.search(r'>(\S+)', name)
                 ens_code = ens_code.group(1)
 
             else:
+                missing_ens += 1
                 ens_code = 'NoEnsCode'
 
             logging.info(f'Gene Symbol found as: {gene_symbol}')
@@ -501,7 +543,7 @@ def massage(name, data_type):
         sys.exit(0)
 
     logging.debug('Massage finished')
-    return name
+    return name, none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene, gene_ens, ens_style_ens, gene_name
 
 
 def seqclean(path):
