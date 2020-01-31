@@ -141,6 +141,16 @@ except ImportError:
     sys.exit(0)
 
 
+none_es_gene = 0
+none_ens_s = 0
+numb_headers = 0
+missing_ens = 0
+missing_gene = 0
+gene_name = 0
+gene_ens = 0
+ens_style_ens = 0
+
+
 def parse_command_args(args=None):
     """
     A function to verify the command line arguments to be passed
@@ -221,10 +231,11 @@ def main():
                         unzippedfile = file
                         logging.debug(f'{unzippedfile} EXISTS')
                         if option.t == 'pep':
-                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                         else:
-                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-                        readme_jenny(a, b, c, d, e, f, g, h, directory, option.t)
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
+                        readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
+                                     gene_name, gene_ens, ens_style_ens, directory, option.t)
 
         # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
@@ -235,8 +246,9 @@ def main():
                         unzippedfile = f'./{file}'
                         if os.path.exists(unzippedfile):
                             logging.debug(f'{unzippedfile} EXISTS')
-                            a, b, c, d, e, f, g, h = entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                            readme_jenny(a, b, c, d, e, f, g, h, directory, option.t)
+                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
+                            readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
+                                         gene_name, gene_ens, ens_style_ens, directory, option.t)
                             break
 
                     else:
@@ -296,53 +308,45 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     """
     # All stats are post cleaning for cdna
     save_to = directory[1]
-    none_es_gene = a
-    none_ens_s = b
-    numb_headers = c
-    missing_ens = d
-    missing_gene = e
-    gene_ens = f
-    ens_style_ens = g
-    gene_name = h
 
     logging.info('README function stated')
-    with open(f'{save_to}/README.txt', 'w+') as readme:
+    with open(f'{save_to}/README.txt', 'a') as readme:
         readme.write(f"""|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
-                         Stats and numbers for the output of the
-                         cleandatav3.py script
-                         -----------------------------------------------
-                         {save_to}
-                         {data_type.upper()}
-                         -----------------------------------------------
-                         The number of entries:
-                         {numb_headers}
-                         -----------------------------------------------
-                         Number of named genes:
-                         {gene_name}
-                         
-                         Number of gene symbols
-                            (ENS style):
-                         {gene_ens}
+        Stats and numbers for the output of the
+        cleandatav3.py script
+        -----------------------------------------------
+        {save_to}
+        {data_type.upper()}
+        -----------------------------------------------
+        The number of entries:
+        {c}
+        -----------------------------------------------
+        Number of named genes:
+        {h}
+         
+        Number of gene symbols
+           (ENS style):
+        {f}
 
-                         Number of missing genes:
-                         {missing_gene}
+        Number of missing genes:
+        {e}
 
-                         Number of None ENS style genecode
-                            (e.g. barcode style):
-                         {none_es_gene}
-                         -----------------------------------------------
-                         Number of ENS codes:
-                         {ens_style_ens}
+        Number of None ENS style genecode
+           (e.g. barcode style):
+        {a}
+        -----------------------------------------------
+        Number of ENS codes:
+        {g}
 
-                         Number of missing ENS:
-                         {missing_ens}
+        Number of missing ENS:
+        {d}
 
-                         Number of missing ENS 
-                            (Barcode style):
-                         {none_ens_s}
-                         |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
+        Number of missing ENS 
+           (Barcode style):
+        {b}
+        |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
 
-                        """)
+        """)
 
     logging.info('README function finished')
 
@@ -482,14 +486,14 @@ def massage(name, data_type):
     A function to 'massage' the sequence headers into a more human readable
      style
     """
-    none_es_gene = 0
-    none_ens_s = 0
-    numb_headers = 0
-    missing_ens = 0
-    missing_gene = 0
-    gene_name = 0
-    gene_ens = 0
-    ens_style_ens = 0
+    global none_es_gene
+    global none_ens_s
+    global numb_headers
+    global missing_ens
+    global missing_gene
+    global gene_name
+    global gene_ens
+    global ens_style_ens
     logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'cdna':
 

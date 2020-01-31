@@ -18,6 +18,9 @@
 - Fix bugs.
 - Add readme for stats.
 --------------
+### 30/01/2020
+
+
 ### 29/01/2020
 - Script working.
     - Scans working directory for .clean file to then run that file through the entryfunction.
