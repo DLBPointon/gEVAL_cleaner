@@ -18,6 +18,12 @@
 - Fix bugs.
 - Add readme for stats.
 --------------
+### 31/01/2020
+- Multi-run bug fixed
+    - Issue due to script fracturing - where a command line arg is passed in script and the python script tries
+     to continue before the completion of the command line arg.
+- 
+
 ### 30/01/2020
 
 

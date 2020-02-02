@@ -310,43 +310,43 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     save_to = directory[1]
 
     logging.info('README function stated')
-    with open(f'{save_to}/README.txt', 'a') as readme:
+    with open(f'.{save_to}/README.txt', 'a') as readme:
         readme.write(f"""|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
-        Stats and numbers for the output of the
-        cleandatav3.py script
-        -----------------------------------------------
-        {save_to}
-        {data_type.upper()}
-        -----------------------------------------------
-        The number of entries:
-        {c}
-        -----------------------------------------------
-        Number of named genes:
-        {h}
-         
-        Number of gene symbols
-           (ENS style):
-        {f}
+    Stats and numbers for the output of the
+    cleandatav3.py script
+    -----------------------------------------------
+    {save_to}
+    {data_type.upper()}
+    -----------------------------------------------
+    The number of entries:
+    {c}
+    -----------------------------------------------
+    Number of named genes:
+    {h}
+     
+    Number of gene symbols
+       (ENS style):
+    {f}
 
-        Number of missing genes:
-        {e}
+    Number of missing genes:
+    {e}
 
-        Number of None ENS style genecode
-           (e.g. barcode style):
-        {a}
-        -----------------------------------------------
-        Number of ENS codes:
-        {g}
+    Number of None ENS style genecode
+       (e.g. barcode style):
+    {a}
+    -----------------------------------------------
+    Number of ENS codes:
+    {g}
 
-        Number of missing ENS:
-        {d}
+    Number of missing ENS:
+    {d}
 
-        Number of missing ENS 
-           (Barcode style):
-        {b}
-        |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
+    Number of missing ENS 
+       (Barcode style):
+    {b}
+    |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
 
-        """)
+    """)
 
     logging.info('README function finished')
 
