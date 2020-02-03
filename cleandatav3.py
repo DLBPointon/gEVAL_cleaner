@@ -170,21 +170,24 @@ def parse_command_args(args=None):
                             ftp address for this script''',
                         type=str,
                         metavar='F',
-                        dest='f')
+                        dest='f',
+                        nargs='+')
 
     parser.add_argument('SAVE',
                         type=str,
                         action='store',
                         help='Save location for the downloaded files',
                         metavar='S',
-                        dest='s')
+                        dest='s',
+                        nargs='+')
 
     parser.add_argument('TYPE',
                         type=str,
                         choices=['cds', 'cdna', 'pep'],
                         help='The type of DATA contained in the file',
                         metavar='T',
-                        dest='t')
+                        dest='t',
+                        nargs='+')
 
     parser.add_argument('-v', '--version',
                         action='version',
