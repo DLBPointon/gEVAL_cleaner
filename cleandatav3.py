@@ -164,9 +164,7 @@ def parse_command_args(args=None):
                                      formatter_class=descformat,
                                      description=DOCSTRING)
 
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version='%(prog)s  3.0')
+
 
     parser.add_argument('FTP',
                         action='store',
@@ -186,6 +184,10 @@ def parse_command_args(args=None):
                         choices=['cds', 'cdna', 'pep'],
                         help='The type of DATA contained in the file',
                         dest='t')
+
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version='%(prog)s  3.0')
 
     parser.add_argument('--clean',
                         action='store_true',
