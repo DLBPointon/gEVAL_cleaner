@@ -164,30 +164,24 @@ def parse_command_args(args=None):
                                      formatter_class=descformat,
                                      description=DOCSTRING)
 
-    parser.add_argument('FTP',
+    parser.add_argument('-FTP',
                         action='store',
                         help='''This argument is to be used when using an 
                             ftp address for this script''',
                         type=str,
-                        metavar='F',
-                        dest='f',
-                        nargs='+')
+                        dest='f')
 
-    parser.add_argument('SAVE',
+    parser.add_argument('-SAVE',
                         type=str,
                         action='store',
                         help='Save location for the downloaded files',
-                        metavar='S',
-                        dest='s',
-                        nargs='+')
+                        dest='s',)
 
-    parser.add_argument('TYPE',
+    parser.add_argument('-TYPE',
                         type=str,
                         choices=['cds', 'cdna', 'pep'],
                         help='The type of DATA contained in the file',
-                        metavar='T',
-                        dest='t',
-                        nargs='+')
+                        dest='t')
 
     parser.add_argument('-v', '--version',
                         action='version',
