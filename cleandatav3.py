@@ -44,9 +44,11 @@ needed.
 -------------------------------------------------------------
 USAGE INSTRUCTIONS
 
-./cleandatav3.py -TYPE cdna -FTP ftp://ftp.ensembl.org/pub/
+[-arg] = positional args
+
+./cleandatav3.py [-FTP] ftp://ftp.ensembl.org/pub/
 release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
-MesAur1.0.cdna.all.fa.gz -SAVE ./test
+MesAur1.0.cdna.all.fa.gz [-SAVE] ./test [-TYPE] cdna
 
 Optionals include --clean and/or --debug
 -------------------------------------------------------------
@@ -166,13 +168,13 @@ def parse_command_args(args=None):
                         action='version',
                         version='%(prog)s  3.0')
 
-    parser.add_argument('-TYPE',
+    parser.add_argument('TYPE',
                         type=str,
                         choices=['cds', 'cdna', 'pep'],
                         help='The type of DATA contained in the file',
                         dest='t')
 
-    parser.add_argument('-SAVE',
+    parser.add_argument('SAVE',
                         type=str,
                         action='store',
                         help='Save location for the downloaded files',
@@ -192,7 +194,7 @@ def parse_command_args(args=None):
                             doing''',
                         dest='d')
 
-    parser.add_argument('-FTP',
+    parser.add_argument('FTP',
                         action='store',
                         help='''This argument is to be used when using an 
                             ftp address for this script''',
@@ -582,7 +584,8 @@ def clean_file_system():
     """
     logging.debug('Cleaning File System')
 
-    file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa', '*.fa.gz', '*.fa.gz.*', '*.clean', '*sx_file*', '*_tmp']
+    file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa',
+                     '*.fa.gz', '*.fa.gz.*', '*.clean', '*sx_file*', '*_tmp']
 
     for extension in file_type_del:
         os.popen(f'rm {extension}')
