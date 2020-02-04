@@ -124,19 +124,19 @@ except ImportError:
     sys.exit(0)
 
 try:
-    import shutil
-
-    print('Shutil imported')
-except ImportError:
-    print(f'Shutil not imported \n {PRINT_ERROR}')
-    sys.exit(0)
-
-try:
     import time
 
     print('Time imported')
 except ImportError:
     print(f'Time not imported \n {PRINT_ERROR}')
+    sys.exit(0)
+
+try:
+    import timeit
+
+    print('timeit imported')
+except ImportError:
+    print(f'Timeit not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
 
@@ -596,4 +596,9 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    main()
+    option = parse_command_args()
+    if option.time:
+        timed = timeit.timeit(main())
+        print(f'Script run time is {timed}')
+    else:
+        main()
