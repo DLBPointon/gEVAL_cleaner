@@ -198,6 +198,10 @@ def parse_command_args(args=None):
                             doing''',
                         dest='d')
 
+    parser.add_argument('--time',
+                        action='store_true',
+                        help='A flag to check the run time of the script')
+
     option = parser.parse_args(args)
     return option
 
