@@ -163,7 +163,7 @@ def parse_command_args(args=None):
 
     parser.add_argument('-FTP',
                         action='store',
-                        help='''This argument is to be used when using an 
+                        help='''This argument is to be used when using an
                             ftp address for this script''',
                         type=str,
                         dest='f')
@@ -209,7 +209,8 @@ def main():
     option = parse_command_args()
     if option.f and option.s and option.t:
         if option.d:
-            logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s',
+            logging.basicConfig(level=logging.INFO,
+                                format='%(asctime)s :: %(levelname)s :: %(message)s',
                                 filename='gEVAL_clean.log')
 
         logging.debug('Main function has been called')
@@ -233,8 +234,7 @@ def main():
                             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                         else:
                             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-                        readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
-                                     gene_name, gene_ens, ens_style_ens, directory, option.t)
+                        readme_jenny(directory, option.t)
 
         # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
@@ -246,8 +246,7 @@ def main():
                         if os.path.exists(unzippedfile):
                             logging.debug(f'{unzippedfile} EXISTS')
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                            readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
-                                         gene_name, gene_ens, ens_style_ens, directory, option.t)
+                            readme_jenny(directory, option.t)
                             break
 
                     else:
@@ -304,7 +303,7 @@ def file_jenny(ftp, save):
     return org, directory_naming
 
 
-def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
+def readme_jenny(directory, data_type):
     """
     A function to generate a README.txt with relevant stats and information.
     """
@@ -325,7 +324,7 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     -----------------------------------------------
     Number of named genes:
     {h}
-     
+
     Number of gene symbols
        (ENS style):
     {f}
@@ -446,7 +445,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
                     print(new_name)
 
                 else:
-                    logging.critical(f'Data type of {data_type} not recognised.')
+                    logging.critical(f'Data type of {data_type}'
+                                     f' not recognised.')
                     sys.exit(0)
 
                 nameseq = new_name, seq
