@@ -602,7 +602,7 @@ def clean_file_system():
 if __name__ == '__main__':
     option = parse_command_args()
     if option.time:
-        timed = timeit.timeit(main())
+        timed = timeit.timeit(main(), number=1)
         print(f'Script run time is {timed}')
     else:
         main()
