@@ -39,12 +39,10 @@ seqclean usage.
 4, Sequences are then trimmed and modified by Seqclean
 (not finished).
 
-5, Finally folders can be cleaned and debug can be read if
-needed.
+5, Finally folders can be cleaned and debug logs can be read
+ if needed.
 -------------------------------------------------------------
 USAGE INSTRUCTIONS
-
-[-arg] = positional args
 
 ./cleandatav3.py [-FTP] ftp://ftp.ensembl.org/pub/
 release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
@@ -53,11 +51,10 @@ MesAur1.0.cdna.all.fa.gz [-SAVE] ./test [-TYPE] cdna
 Optionals include --clean and/or --debug
 -------------------------------------------------------------
 FUTURE CHANGES
-    - MissingGene Counter
-        - General counters and Stats
     - Add option for parent directory as FTP and script
     searches for file to use.
-    - Add README.txt to show stats on data
+    - Add more stats to the README.txt
+    - Get positional args to work.
 -------------------------------------------------------------
 CONTACT
     - dp24@sanger.ac.uk
@@ -254,10 +251,13 @@ def main():
                             break
 
                     else:
-                        time.sleep(0.25)
+                        time.sleep(0.05)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
                         print(f'File not found {time_counter} {file}')
+
+                    logging.info(f'File found in {time_counter/20}')
+                    print(f'Run Time of {time_counter/20}')
 
     if option.c:
         print('Cleaning')
