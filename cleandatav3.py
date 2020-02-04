@@ -234,7 +234,8 @@ def main():
                             entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
                         else:
                             entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-                        readme_jenny(directory, option.t)
+                        readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
+                                     gene_name, gene_ens, ens_style_ens, directory, option.t)
 
         # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
@@ -246,7 +247,8 @@ def main():
                         if os.path.exists(unzippedfile):
                             logging.debug(f'{unzippedfile} EXISTS')
                             entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                            readme_jenny(directory, option.t)
+                            readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
+                                         gene_name, gene_ens, ens_style_ens, directory, option.t)
                             break
 
                     else:
@@ -303,7 +305,7 @@ def file_jenny(ftp, save):
     return org, directory_naming
 
 
-def readme_jenny(directory, data_type):
+def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     """
     A function to generate a README.txt with relevant stats and information.
     """
