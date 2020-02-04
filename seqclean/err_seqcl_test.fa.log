@@ -1,0 +1,22 @@
+seqclean running options: 
+seqclean ../../data/zfish_mrna/test.fa
+ Standard log file: seqcl_test.fa.log
+ Error log file:    err_seqcl_test.fa.log
+ Using 1 CPUs for cleaning
+-= Rebuilding test.fa cdb index =-
+5 entries from file ../../data/zfish_mrna/test.fa were indexed in file test.fa.cidx
+ Launching actual cleaning process:
+ psx -p 1  -n 1000  -i ../../data/zfish_mrna/test.fa -d cleaning -C '/nfs/team71/zfish/wc2/temp/seqclean/../../data/zfish_mrna/test.fa:ANLMS100:::11:0' -c '/nfs/team71/zfish/wc2/temp/seqclean/bin/seqclean.psx'
+WAITING for all children to finish before starting last child!
+WAITING for all children to finish!
+Collecting cleaning reports
+
+**************************************************
+Sequences analyzed:         5
+-----------------------------------
+                   valid:         5  (1 trimmed)
+                 trashed:         0
+**************************************************
+Output file containing only valid and trimmed sequences: test.fa.clean
+For trimming and trashing details see cleaning report  : test.fa.cln
+--------------------------------------------------
