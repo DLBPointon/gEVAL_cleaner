@@ -570,13 +570,13 @@ def seqclean(path):
         logging.info('Running Seq_clean script')
         os.popen(f'./seqclean/seqclean {path}')
         logging.debug(f'Finished, Your file is here: {path}.clean')
-        print('dp24 seqclean site')
+        print('Primary seqclean site')
 
     except:
         logging.info('Running alt Seq_clean at wc2/tools/')
         os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {path}')
         logging.debug(f'Finished, Your file is here: {path}.clean')
-        print('wc2 seqclean site')
+        print('Secondary seqclean site')
 
     else:
         logging.debug('Seqclean locations are wrong')
