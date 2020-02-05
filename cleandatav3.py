@@ -306,6 +306,7 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     A function to generate a README.txt with relevant stats and information.
     """
     # All stats are post cleaning for cdna
+    option = parse_command_args()
     save_to = directory[1]
 
     logging.info('README function stated')
@@ -316,6 +317,10 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     -----------------------------------------------
     {save_to}
     {data_type.upper()}
+    -----------------------------------------------
+    Direct link to data used to produce the nested
+    information
+    {option.f}
     -----------------------------------------------
     The number of entries:
     {c}
@@ -501,7 +506,7 @@ def massage(name, data_type):
         if name.startswith('>'):
             numb_headers += 1
             logging.info('Renaming headers')
-            gene_symbol = re.search(r'>(\w+\S+)', name)
+            gene_symbol = re.search(r'symbol:(\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
@@ -509,18 +514,18 @@ def massage(name, data_type):
                 gene_symbol = gene_symbol.group(1)
 
             elif gene_symbol is None:
-                try:
-                    gene_ens += 1
-                    gene_symbol = re.search(r'ENS(\w+)G(\w+.\d+)', name)
-                    gene_symbol = gene_symbol.group(0)
-                except:
-                    if gene_symbol is None:
-                        none_es_gene += 1
-                        gene_symbol = re.search(r'gene:(\w+)', name)
-                        gene_symbol = gene_symbol.group(1)
-                else:
-                    missing_gene += 1
+                gene_symbol = re.search(r'gene:(\S+)', name)
+
+                if gene_symbol:
+                    gene_symbol = gene_symbol.group(1)
+                    if gene_symbol.startswith('ENS'):
+                        gene_ens += 1
+                    else:
+                        gene_name += 1
+
+                elif gene_symbol is None:
                     gene_symbol = 'MissingInfo'
+                    none_es_gene += 1
 
             if ens_code:
                 ens_style_ens += 1
@@ -529,11 +534,11 @@ def massage(name, data_type):
             elif ens_code is None:
                 none_ens_s += 1
                 ens_code = re.search(r'>(\S+)', name)
-                ens_code = ens_code.group(1)
-
-            else:
-                missing_ens += 1
-                ens_code = 'NoEnsCode'
+                if ens_code:
+                    ens_code = ens_code.group(1)
+                elif ens_code is None:
+                    missing_ens += 1
+                    ens_code = 'NoEnsCode'
 
             logging.info(f'Gene Symbol found as: {gene_symbol}')
             logging.info(f'Ens Code found as: {ens_code}')
