@@ -18,14 +18,30 @@
 - Fix bugs.
 - Add readme for stats.
 --------------
+### 05/02/2020
+- Regex use has been corrected and now captured more data than previous - Issue #2
+- README generation has been improved by including the url of the data used in the running of the script - Issue #3
+
+### 04/02/2020
+- Removing changes for positional args for simplification.
+- Reversed as it broke the script.
+    - Changed args for readme_jenny for simplification.
+- Removed specific naming of seqclean locations.
+- Removed dead code and scripts.
+
+### 03/02/2020
+- Attempting to add positional args rather than relying on flags.
+    - Abandoned due to the added complexity of multiple parsers to include positionals and optionals.
+
 ### 31/01/2020
 - Multi-run bug fixed
     - Issue due to script fracturing - where a command line arg is passed in script and the python script tries
      to continue before the completion of the command line arg.
-- 
+- Commit entries from another project under Update 2 were included but should be ignored.
+- Merge of the LoggingTest branch to main.
 
 ### 30/01/2020
-
+- Change of permissions.
 
 ### 29/01/2020
 - Script working.
