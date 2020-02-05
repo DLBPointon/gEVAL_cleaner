@@ -131,14 +131,6 @@ except ImportError:
     print(f'Time not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
-try:
-    import timeit
-
-    print('timeit imported')
-except ImportError:
-    print(f'Timeit not imported \n {PRINT_ERROR}')
-    sys.exit(0)
-
 
 none_es_gene = 0
 none_ens_s = 0
@@ -259,10 +251,10 @@ def main():
                         time.sleep(0.05)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
-                        print(f'File not found {time_counter} {file}')
 
-                    logging.info(f'File found in {time_counter/20}')
-                    print(f'Run Time of {time_counter/20}')
+                    real_count = time_counter / 20
+                    logging.info(f'File found in {real_count}')
+                    print(f'Run Time of {real_count}')
 
     if option.c:
         print('Cleaning')
@@ -502,13 +494,14 @@ def massage(name, data_type):
     global gene_name
     global gene_ens
     global ens_style_ens
+
     logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'cdna':
 
         if name.startswith('>'):
             numb_headers += 1
             logging.info('Renaming headers')
-            gene_symbol = re.search(r'symbol:(\w+\S+)', name)
+            gene_symbol = re.search(r'>(\w+\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
@@ -600,9 +593,4 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    option = parse_command_args()
-    if option.time:
-        timed = timeit.timeit(main(), number=1)
-        print(f'Script run time is {timed}')
-    else:
-        main()
+    main()
