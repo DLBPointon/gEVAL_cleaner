@@ -251,6 +251,7 @@ def main():
                         time.sleep(0.05)
                         time_counter += 1
                         logging.debug(f'File not found {time_counter} {file}')
+                        print(f' File not found {time_counter} {file}')
 
                     real_count = time_counter / 20
                     logging.info(f'File found in {real_count}')

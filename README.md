@@ -21,6 +21,7 @@
 ### 05/02/2020
 - Regex use has been corrected and now captured more data than previous - Issue #2
 - README generation has been improved by including the url of the data used in the running of the script - Issue #3
+- README.md updated.
 
 ### 04/02/2020
 - Removing changes for positional args for simplification.
