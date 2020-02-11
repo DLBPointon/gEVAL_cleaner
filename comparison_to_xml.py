@@ -122,20 +122,46 @@ def main():
     The Main function which controls the logic for the script
     """
     option = parse_command_args()
+    rowsandstuff = {}
+    counter_already = 0
+    no_gene_name = 0
+    new_gene_name = 0
+    not_present_in_homo_comp = 0
 
-    pd_compare = pd.read_csv(option.f, sep='\t', header=0, engine='python')
-    print(pd_compare.columns)
+    with open(f'{option.f}', 'r') as martfile:
+        for line in martfile:
+            row = line.strip().split('\t')
+            rowsandstuff[row[0]] = row
 
-    for file in os.listdir(option.m):
-        file_loc = option.m + file
-        with open(file_loc, 'r') as compare_to:
-            for line in compare_to:
+    for file in os.listdir(f'{option.m}'):
+        with open(f'{option.m}{file}') as reading:
+            for line in reading:
                 if line.startswith('>'):
-                    gene_symbol = re.search(r'>(\w+)', line)
-                    gene_symbol = gene_symbol.group(1)
-                    results = pd_compare['Gene stable ID'] == gene_symbol
-                    print(results.all())
-                    if results.all() == True:                        printresults.all(
+                    line = re.search(r'>(\w+)', line)
+                    line = line.group(1)
+                    if line.startswith('AGAP'):
+                        try:
+                            if rowsandstuff[line]:
+                                try:
+                                    if rowsandstuff[line][3] != '':
+                                        print(rowsandstuff[line][3])
+                                        new_gene_name += 1
+                                except:
+                                    # print('No Gene Name')
+                                    no_gene_name += 1
+                            else:
+                                no_gene_name += 1
+                        except:
+                            # Gets rid of those not in the homologue comparison dict
+                            not_present_in_homo_comp += 1
+                    else:
+                        # print('Gene Name already there')
+                        counter_already += 1
+
+            print(f' new genes = {new_gene_name}'
+                  f'\n no gene name = {no_gene_name}'
+                  f'\n gene already there = {counter_already}'
+                  f'\n homologue comp = {not_present_in_homo_comp}')
 
 
 if __name__ == '__main__':
