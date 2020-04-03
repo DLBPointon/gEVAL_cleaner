@@ -8,6 +8,8 @@ Does the Script Run: ![automated_script_runner](https://github.com/DLBPointon/gE
 ### Usage instructions
 ./cleandatav3.py ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz ./ cdna
 
+./cleandatav3.py {FTP} {SAVE} {cdna, pep, cds, all}
+
 -------------
 #### Args
 
