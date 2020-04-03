@@ -30,9 +30,9 @@ jobs:
         
     - name: CDS Test Run
       run: |
-        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/cds/Arabidopsis_thaliana.TAIR10.cds.all.fa.gz -SAVE ./ -TYPE cds
         
     - name: CDNA Test Run
       run: |
-        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/cdna/Arabidopsis_thaliana.TAIR10.cdna.all.fa.gz -SAVE ./ -TYPE cdna
         
