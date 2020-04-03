@@ -22,14 +22,19 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-
         pip install argparse
-        pip install re
         pip install os
         pip install time
-        pip install sys
     
-    - name: Run cleandatav3.py
+    - name: PEP Test Run
+      run: |
+        cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        
+    - name: CDS Test Run
+      run: |
+        cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        
+    - name: CDNA Test Run
       run: |
         cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
         
