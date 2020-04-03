@@ -44,17 +44,14 @@ seqclean usage.
 -------------------------------------------------------------
 USAGE INSTRUCTIONS
 
-./cleandatav3.py [-FTP] ftp://ftp.ensembl.org/pub/
-release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.
-MesAur1.0.cdna.all.fa.gz [-SAVE] ./test [-TYPE] cdna
+./cleandatav3.py {FTP} {SAVE} {pep, cds, cdna, all}
+                 [--clean] [--debug] [--time]
 
-Optionals include --clean and/or --debug
 -------------------------------------------------------------
 FUTURE CHANGES
     - Add option for parent directory as FTP and script
     searches for file to use.
     - Add more stats to the README.txt
-    - Get positional args to work.
 -------------------------------------------------------------
 CONTACT
     - dp24@sanger.ac.uk
@@ -69,9 +66,9 @@ FILE STRUCTURE - if save == './'
                 Organism Name + Accession No.
                               |
                               |
-                    ---------------------
-                    |         |         |
-                    cDNA   Peptide     CDS
+                ------------------------------
+                |         |         |        |
+                cDNA   Peptide     CDS   README.txt
 --------------------------------------------------------------
 """
 
@@ -155,44 +152,41 @@ def parse_command_args(args=None):
                                      formatter_class=descformat,
                                      description=DOCSTRING)
 
-    parser.add_argument('-FTP',
+    parser.add_argument('FTP',
                         action='store',
                         help='''This argument is to be used when using an
                             ftp address for this script''',
-                        type=str,
-                        dest='f')
+                        type=str)
 
-    parser.add_argument('-SAVE',
+    parser.add_argument('SAVE',
                         type=str,
                         action='store',
-                        help='Save location for the downloaded files',
-                        dest='s',)
+                        help='Save location for the downloaded files')
 
-    parser.add_argument('-TYPE',
+    parser.add_argument('TYPE',
                         type=str,
-                        choices=['cds', 'cdna', 'pep'],
-                        help='The type of DATA contained in the file',
-                        dest='t')
+                        choices=['cds', 'cdna', 'pep', 'all'],
+                        help='The type of DATA contained in the file')
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='%(prog)s  3.0')
+                        version='%(prog)s  3.1.1')
 
-    parser.add_argument('--clean',
+    parser.add_argument('-c', '--clean',
                         action='store_true',
                         help='''Specifying this argument allows the
                             script to clean all un-necessary files after
                             use''',
                         dest='c')
 
-    parser.add_argument('--debug',
+    parser.add_argument('-d', '--debug',
                         action='store_true',
                         help='''Specifying this argument allows debug
                             prints to work and show everything the script is
                             doing''',
                         dest='d')
 
-    parser.add_argument('--time',
+    parser.add_argument('-t', '--time',
                         action='store_true',
                         help='A flag to check the run time of the script')
 
@@ -205,7 +199,7 @@ def main():
     The Main function which controls the logic for the script
     """
     option = parse_command_args()
-    if option.f and option.s and option.t:
+    if option.FTP and option.SAVE and option.TYPE:
         if option.d:
             logging.basicConfig(level=logging.INFO,
                                 format='%(asctime)s :: '
@@ -216,33 +210,33 @@ def main():
         logging.debug('Main function has been called')
         cwd = os.getcwd()
 
-        org, directory = file_jenny(option.f, option.s)
+        org, directory = file_jenny(option.FTP, option.SAVE)
 
-        downandsave(option.f)
+        downandsave(option.FTP)
 
         # Command block to control usage of seqclean
         for file in os.listdir('./'):
             if file.endswith('cdna.all.fa'):
-                if option.t == 'cdna':
+                if option.TYPE == 'cdna':
                     seqclean(file)
                 else:
                     unzippedfile = f'./{file}'
                     if os.path.exists(unzippedfile):
                         unzippedfile = file
                         logging.debug('%s EXISTS', unzippedfile)
-                        if option.t == 'pep':
-                            entryfunction(org, directory, option.t,
+                        if option.TYPE == 'pep':
+                            entryfunction(org, directory, option.TYPE,
                                           unzippedfile, entryper=2000)
                         else:
-                            entryfunction(org, directory, option.t,
+                            entryfunction(org, directory, option.TYPE,
                                           unzippedfile, entryper=3000)
                         readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
                                      NUMB_HEADERS, MISSING_ENS,
                                      MISSING_GENE, GENE_NAME, GENE_ENS,
-                                     ENS_STYLE_ENS, directory, option.t)
+                                     ENS_STYLE_ENS, directory, option.TYPE)
 
         # Command block to control seqclean and the following entryfunction
-        if option.t == 'cdna':
+        if option.TYPE == 'cdna':
             time_counter = 0
             while not file.endswith('.clean'):
                 for file in os.listdir(cwd):
@@ -250,13 +244,13 @@ def main():
                         unzippedfile = f'./{file}'
                         if os.path.exists(unzippedfile):
                             logging.debug('%s EXISTS', unzippedfile)
-                            entryfunction(org, directory, option.t,
+                            entryfunction(org, directory, option.TYPE,
                                           unzippedfile, entryper=5000)
                             readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
                                          NUMB_HEADERS, MISSING_ENS,
                                          MISSING_GENE, GENE_NAME,
                                          GENE_ENS, ENS_STYLE_ENS,
-                                         directory, option.t)
+                                         directory, option.TYPE)
                             break
 
                     else:
@@ -340,7 +334,7 @@ def readme_jenny(none_ens_code, none_ens_s, numb_headers, missing_ens,
     -----------------------------------------------
     Direct link to data used to produce the nested
     information
-    {option.f}
+    {option.FTP}
     -----------------------------------------------
     The number of entries:
     {numb_headers}
@@ -446,7 +440,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
     filecounter = 0
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
-    short_save_dir = f'{option.s}{filesavedto}{org}{filecounter}' \
+    short_save_dir = f'{option.SAVE}{filesavedto}{org}{filecounter}' \
                      f'{data_type}'
     logging.info('Supplied data is %s', data_type)
 
@@ -505,7 +499,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
                 entry = []
 
             logging.debug(f'File saved:\n{0}'
-                          f'{1}.MOD.fa'.format(option.s, short_save_dir))
+                          f'{1}.MOD.fa'.format(option.SAVE, short_save_dir))
     else:
         print('Not found')
         logging.debug('Cannot find unzipped file')
