@@ -3,7 +3,7 @@ on:
   push:
     branches: 
       - master
-        - code_structure
+      - code_structure
 
 jobs:
   build:
