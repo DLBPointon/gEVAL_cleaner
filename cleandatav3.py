@@ -132,14 +132,16 @@ except ImportError:
     sys.exit(0)
 
 
-none_es_gene = 0
-none_ens_s = 0
-numb_headers = 0
-missing_ens = 0
-missing_gene = 0
-gene_name = 0
-gene_ens = 0
-ens_style_ens = 0
+# ----- NAMING CONSTANTS -----
+NONE_ENS_GENE = 0
+NONE_ENS_S = 0
+NUMB_HEADERS = 0
+MISSING_ENS = 0
+MISSING_GENE = 0
+GENE_NAME = 0
+GENE_ENS = 0
+ENS_STYLE_ENS = 0
+# ----- NAMING CONSTANTS -----
 
 
 def parse_command_args(args=None):
@@ -206,7 +208,9 @@ def main():
     if option.f and option.s and option.t:
         if option.d:
             logging.basicConfig(level=logging.INFO,
-                                format='%(asctime)s :: %(levelname)s :: %(message)s',
+                                format='%(asctime)s :: '
+                                       '%(levelname)s :: '
+                                       '%(message)s',
                                 filename='gEVAL_clean.log')
 
         logging.debug('Main function has been called')
@@ -225,13 +229,17 @@ def main():
                     unzippedfile = f'./{file}'
                     if os.path.exists(unzippedfile):
                         unzippedfile = file
-                        logging.debug(f'{unzippedfile} EXISTS')
+                        logging.debug('%s EXISTS', unzippedfile)
                         if option.t == 'pep':
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=2000)
+                            entryfunction(org, directory, option.t,
+                                          unzippedfile, entryper=2000)
                         else:
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=3000)
-                        readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
-                                     gene_name, gene_ens, ens_style_ens, directory, option.t)
+                            entryfunction(org, directory, option.t,
+                                          unzippedfile, entryper=3000)
+                        readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                     NUMB_HEADERS, MISSING_ENS,
+                                     MISSING_GENE, GENE_NAME, GENE_ENS,
+                                     ENS_STYLE_ENS, directory, option.t)
 
         # Command block to control seqclean and the following entryfunction
         if option.t == 'cdna':
@@ -241,20 +249,25 @@ def main():
                     if file.endswith('.clean'):
                         unzippedfile = f'./{file}'
                         if os.path.exists(unzippedfile):
-                            logging.debug(f'{unzippedfile} EXISTS')
-                            entryfunction(org, directory, option.t, unzippedfile, entryper=5000)
-                            readme_jenny(none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene,
-                                         gene_name, gene_ens, ens_style_ens, directory, option.t)
+                            logging.debug('%s EXISTS', unzippedfile)
+                            entryfunction(org, directory, option.t,
+                                          unzippedfile, entryper=5000)
+                            readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                         NUMB_HEADERS, MISSING_ENS,
+                                         MISSING_GENE, GENE_NAME,
+                                         GENE_ENS, ENS_STYLE_ENS,
+                                         directory, option.t)
                             break
 
                     else:
                         time.sleep(0.05)
                         time_counter += 1
-                        logging.debug(f'File not found {time_counter} {file}')
+                        logging.debug(f'File not found {0}'
+                                      f' {1}'.format(time_counter, file))
                         print(f' File not found {time_counter} {file}')
 
                     real_count = time_counter / 20
-                    logging.info(f'File found in {real_count}')
+                    logging.info('File found in %s', real_count)
                     print(f'Run Time of {real_count}')
 
     if option.c:
@@ -282,27 +295,32 @@ def file_jenny(ftp, save):
 
     org_ass = f'{org}.{accession}'
 
-    directory_naming = [f'/{org}', f'/{org}/{org_ass}', f'/{org}/{org_ass}/cdna', f'/{org}/{org_ass}/pep',
+    directory_naming = [f'/{org}', f'/{org}/{org_ass}',
+                        f'/{org}/{org_ass}/cdna',
+                        f'/{org}/{org_ass}/pep',
                         f'/{org}/{org_ass}/cds']
 
     for direct in directory_naming:
         path = save + direct
         if os.path.exists(path):
-            logging.info(f'Path: {path} :already exists')
+            logging.info('Path: %s :already exists', path)
         else:
             try:
                 os.makedirs(path, access_rights)
             except OSError:
-                logging.critical(f'Creation of directory has failed at: {path}')
+                logging.critical('Creation of directory'
+                                 ' has failed at: %s', path)
             else:
-                logging.info(f'''Successfully created the directory path at:
-                                     {path}''')
+                logging.info('Successfully created the directory '
+                             'path at: %s', path)
 
     logging.debug('Folder generator finished')
     return org, directory_naming
 
 
-def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
+def readme_jenny(none_ens_code, none_ens_s, numb_headers, missing_ens,
+                 missing_gene, gene_name, gene_ens, ens_style_ens,
+                 directory, data_type):
     """
     A function to generate a README.txt with relevant stats and information.
     """
@@ -312,7 +330,8 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
 
     logging.info('README function stated')
     with open(f'.{save_to}/README.txt', 'a') as readme:
-        readme.write(f"""|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
+        readme.write(f"""
+    |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
     Stats and numbers for the output of the
     cleandatav3.py script
     -----------------------------------------------
@@ -324,31 +343,31 @@ def readme_jenny(a, b, c, d, e, f, g, h, directory, data_type):
     {option.f}
     -----------------------------------------------
     The number of entries:
-    {c}
+    {numb_headers}
     -----------------------------------------------
     Number of named genes:
-    {h}
+    {ens_style_ens}
 
     Number of gene symbols
        (ENS style):
-    {f}
+    {gene_name}
 
     Number of missing genes:
-    {e}
+    {missing_gene}
 
     Number of None ENS style genecode
        (e.g. barcode style):
-    {a}
+    {none_ens_code}
     -----------------------------------------------
     Number of ENS codes:
-    {g}
+    {gene_ens}
 
     Number of missing ENS:
-    {d}
+    {missing_ens}
 
-    Number of missing ENS 
+    Number of missing ENS
        (Barcode style):
-    {b}
+    {none_ens_s}
     |*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*||*|*|*|*|*|
 
     """)
@@ -364,16 +383,17 @@ def downandsave(ftp):
     if ftp:
         logging.debug('FTP address given as argument')
         try:
-            logging.info(f'Starting Download of {ftp}')
+            logging.info('Starting Download of %s', ftp)
             os.popen(f'wget -q -o /dev/null {ftp}')
             time.sleep(2)
             logging.debug('Giving time to download')
 
-        except:
+        except NameError:
             logging.critical('File NOT Downloaded')
             sys.exit(0)
     else:
-        logging.debug('FTP address not given (using just the org name will be coded soon)')
+        logging.debug('FTP address not given (using just the org name'
+                      ' will be coded soon)')
 
     cwd = os.getcwd()
     for file in os.listdir(f'{cwd}/'):
@@ -383,12 +403,12 @@ def downandsave(ftp):
                 os.popen(f'gunzip -fd {file}')
                 time.sleep(2)
                 logging.debug('Giving time up unpack .gz')
-            except:
+            except Exception:
                 logging.critical('Gunzip failed to unzip file')
         elif file.endswith('.fa.gz.1'):
             try:
                 os.popen(f'gunzip -fd {file}')
-            except:
+            except Exception:
                 logging.critical('Gunzip failed to unzip file')
 
 
@@ -426,10 +446,12 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
     filecounter = 0
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
-    logging.info(f'Supplied data is {data_type}')
+    short_save_dir = f'{option.s}{filesavedto}{org}{filecounter}' \
+                     f'{data_type}'
+    logging.info('Supplied data is %s', data_type)
 
     if os.path.exists(unzippedfile):
-        logging.info(f'File found at {unzippedfile}')
+        logging.info('File found at %s', unzippedfile)
         print(unzippedfile)
         with open(unzippedfile, 'r') as filetoparse:
             for name, seq in read_fasta(filetoparse):
@@ -441,16 +463,20 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
                 # possible errors.
                 if data_type == 'cdna':
                     logging.debug('cDNA Massaging')
-                    new_name, a, b, c, d, e, f, g, h = massage(name, data_type)
+                    new_name, none_ens_code, none_ens_s, numb_headers,\
+                        missing_ens, missing_gene, gene_name, gene_ens,\
+                        ens_style_ens = massage(name, data_type)
                     print(new_name)
                 elif data_type != 'cdna':
-                    logging.debug(f'{data_type} being used')
-                    new_name, a, b, c, d, e, f, g, h = massage(name, data_type)
+                    logging.debug('%s being used', data_type)
+                    new_name, none_ens_code, none_ens_s, numb_headers,\
+                        missing_ens, missing_gene, gene_name, gene_ens,\
+                        ens_style_ens = massage(name, data_type)
                     print(new_name)
 
                 else:
-                    logging.critical(f'Data type of {data_type}'
-                                     f' not recognised.')
+                    logging.critical('Data type of %s'
+                                     ' not recognised.', data_type)
                     sys.exit(0)
 
                 nameseq = new_name, seq
@@ -460,23 +486,26 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
 
                 if count == entryper:
                     filecounter += 1
-                    with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
+                    with open(f'{short_save_dir}.MOD.fa', 'w') as done:
                         for head, body in entry:
                             done.write(f'{head}\n{body}\n')
 
                         count = 0
                         entry = []
 
-                    logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa')
+                    logging.debug('File saved:\n'
+                                  '%s.MOD.fa',
+                                  short_save_dir)
 
                 filecounter += 1
-            with open(f'''{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa''', 'w') as done:
+            with open(f'{short_save_dir}.MOD.fa', 'w') as done:
                 for head, body in entry:
                     done.write(f'{head}\n{body}\n')
 
                 entry = []
 
-            logging.debug(f'File saved:\n{option.s}{filesavedto}{org}{filecounter}{data_type}.MOD.fa')
+            logging.debug(f'File saved:\n{0}'
+                          f'{1}.MOD.fa'.format(option.s, short_save_dir))
     else:
         print('Not found')
         logging.debug('Cannot find unzipped file')
@@ -484,7 +513,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
 
     logging.debug('Entry Function finished')
 
-    return a, b, c, d, e, f, g, h
+    return none_ens_code, none_ens_s, numb_headers, missing_ens,\
+        missing_gene, gene_name, gene_ens, ens_style_ens
 
 
 def massage(name, data_type):
@@ -492,26 +522,26 @@ def massage(name, data_type):
     A function to 'massage' the sequence headers into a more human readable
      style
     """
-    global none_es_gene
-    global none_ens_s
-    global numb_headers
-    global missing_ens
-    global missing_gene
-    global gene_name
-    global gene_ens
-    global ens_style_ens
+    global NONE_ENS_GENE
+    global NONE_ENS_S
+    global NUMB_HEADERS
+    global MISSING_ENS
+    global MISSING_GENE
+    global GENE_NAME
+    global GENE_ENS
+    global ENS_STYLE_ENS
 
     logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'cdna':
 
         if name.startswith('>'):
-            numb_headers += 1
+            NUMB_HEADERS += 1
             logging.info('Renaming headers')
             gene_symbol = re.search(r'symbol:(\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
             if gene_symbol:
-                gene_name += 1
+                GENE_NAME += 1
                 gene_symbol = gene_symbol.group(1)
 
             elif gene_symbol is None:
@@ -520,29 +550,29 @@ def massage(name, data_type):
                 if gene_symbol:
                     gene_symbol = gene_symbol.group(1)
                     if gene_symbol.startswith('ENS'):
-                        gene_ens += 1
+                        GENE_ENS += 1
                     else:
-                        gene_name += 1
+                        GENE_NAME += 1
 
                 elif gene_symbol is None:
                     gene_symbol = 'MissingInfo'
-                    none_es_gene += 1
+                    NONE_ENS_GENE += 1
 
             if ens_code:
-                ens_style_ens += 1
+                ENS_STYLE_ENS += 1
                 ens_code = ens_code.group(0)
 
             elif ens_code is None:
-                none_ens_s += 1
+                NONE_ENS_S += 1
                 ens_code = re.search(r'>(\S+)', name)
                 if ens_code:
                     ens_code = ens_code.group(1)
                 elif ens_code is None:
-                    missing_ens += 1
+                    MISSING_ENS += 1
                     ens_code = 'NoEnsCode'
 
-            logging.info(f'Gene Symbol found as: {gene_symbol}')
-            logging.info(f'Ens Code found as: {ens_code}')
+            logging.info('Gene Symbol found as: %s', gene_symbol)
+            logging.info('Ens Code found as: %s', ens_code)
             name = f'>{gene_symbol}({ens_code})'
 
         else:
@@ -550,11 +580,14 @@ def massage(name, data_type):
             sys.exit(0)
 
     else:
-        logging.debug('Some how you\'ve got to this point with an incorrect data type')
+        logging.debug('Some how you\'ve got to this point'
+                      ' with an incorrect data type')
         sys.exit(0)
 
     logging.debug('Massage finished')
-    return name, none_es_gene, none_ens_s, numb_headers, missing_ens, missing_gene, gene_ens, ens_style_ens, gene_name
+    return name, NONE_ENS_GENE, NONE_ENS_S,\
+        NUMB_HEADERS, MISSING_ENS, MISSING_GENE,\
+        GENE_ENS, ENS_STYLE_ENS, GENE_NAME
 
 
 def seqclean(path):
@@ -568,13 +601,13 @@ def seqclean(path):
     try:
         logging.info('Running Seq_clean script')
         os.popen(f'./seqclean/seqclean {path}')
-        logging.debug(f'Finished, Your file is here: {path}.clean')
+        logging.debug('Finished, Your file is here: %s.clean', path)
         print('Primary seqclean site')
 
-    except:
+    except Exception:
         logging.info('Running alt Seq_clean at wc2/tools/')
         os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {path}')
-        logging.debug(f'Finished, Your file is here: {path}.clean')
+        logging.debug('Finished, Your file is here: %s.clean', path)
         print('Secondary seqclean site')
 
     else:
@@ -585,12 +618,14 @@ def seqclean(path):
 
 def clean_file_system():
     """
-    A function to clean the stray files that appear in the process of this script
+    A function to clean the stray files that appear in the process
+    of this script
     """
     logging.debug('Cleaning File System')
 
     file_type_del = ['*.log', '*.cidx', '*.sort', '*.cln', '*.fa',
-                     '*.fa.gz', '*.fa.gz.*', '*.clean', '*sx_file*', '*_tmp']
+                     '*.fa.gz', '*.fa.gz.*', '*.clean', '*sx_file*',
+                     '*_tmp']
 
     for extension in file_type_del:
         os.popen(f'rm {extension}')
