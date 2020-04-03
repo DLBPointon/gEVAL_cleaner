@@ -1,3 +1,5 @@
+Code Style Check: ![Python application](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Python%20application/badge.svg?branch=master)
+
 # cleandata.py by dp24
 
 ### Usage instructions
