@@ -222,7 +222,7 @@ def main():
 
         # Command block to control usage of seqclean
         for file in os.listdir('./'):
-            if file.endswith('.fa'):
+            if file.endswith('cdna.all.fa'):
                 if option.t == 'cdna':
                     seqclean(file)
                 else:
