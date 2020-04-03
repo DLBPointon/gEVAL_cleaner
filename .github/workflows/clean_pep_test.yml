@@ -26,13 +26,13 @@ jobs:
     
     - name: PEP Test Run
       run: |
-        cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
         
     - name: CDS Test Run
       run: |
-        cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
         
     - name: CDNA Test Run
       run: |
-        cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
+        ./cleandatav3.py -FTP ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz -SAVE ./ -TYPE pep
         
