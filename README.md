@@ -21,21 +21,32 @@ FTP can be either:
         arabidopsis_thaliana+plants
         
 This +plants refers to the ensemblgenomes directory
+
 so this can be:
+
 +plants
+
 +metazoa
+
 +protists
+
 +fungi
+
 +bacteria
+
 If org is not in ensemblgenomes then use:
+
 +ensembl
+
 This will tell the script so search ftp.ensembl.org not ftp.ensemblgenomes.org
 
 ./cleandatav3.py ftp://ftp.ensembl.org/pub/release-98/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz ./test cdna
+
 or
+
 ./cleandata mesocricetus_auratus+ensembl ./test cdna
 
-This creates a such cleaner look when calling the script
+This creates a such cleaner look when calling the script.
 
 -------------
 #### Args
