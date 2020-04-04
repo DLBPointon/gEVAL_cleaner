@@ -47,6 +47,27 @@ USAGE INSTRUCTIONS
 ./cleandatav3.py {FTP} {SAVE} {pep, cds, cdna, all}
                  [--clean] [--debug] [--time]
 
+FTP can be either:
+- The full ftp address for example:
+        ftp://ftp.ensemblgenomes.org/pub/release-46/
+        plants/fasta/arabidopsis_thaliana/cdna/
+        Arabidopsis_thaliana.TAIR10.cdna.all.fa.gz
+
+- Or organism name + org type in the style of:
+        arabidopsis_thaliana+plants
+        
+        This +plants refers to the ensemblgenomes directory
+        so this can be:
+        +plants
+        +metazoa
+        +protists
+        +fungi
+        +bacteria
+        If org is not in ensemblgenomes then use:
+        +ensembl
+        This will tell the script so search ftp.ensembl.org
+        not ftp.ensemblgenomes.org
+
 -------------------------------------------------------------
 FUTURE CHANGES
     - Add option for parent directory as FTP and script
@@ -128,6 +149,13 @@ except ImportError:
     print(f'Time not imported \n {PRINT_ERROR}')
     sys.exit(0)
 
+try:
+    from ftplib import FTP
+
+    print('FTP module imported')
+except ImportError:
+    print(f'FTP not imported \n {PRINT_ERROR}')
+    sys.exit(0)
 
 # ----- NAMING CONSTANTS -----
 NONE_ENS_GENE = 0
@@ -198,7 +226,33 @@ def main():
     """
     The Main function which controls the logic for the script
     """
+    logging.debug('Main function has been called')
     option = parse_command_args()
+
+    # --- None ftp link style name handling ---
+    if not option.FTP.startswith('ftp://'):
+        logging.debug(f'shortened ftp address used: {option.FTP}')
+        name_list = option.FTP.split('+')
+        # example input being arabidopsis_thaliana+plants to help specify DB
+        if name_list[1] == 'ensembl':
+            url_gen = f'pub/release-99/fasta/{name_list[0]}/{option.TYPE}/'
+            ftp_loc = 'ftp.ensembl.org'
+        else:
+            url_gen = f'pub/release-46/{name_list[1]}/fasta/{name_list[0]}/{option.TYPE}/'
+            ftp_loc = 'ftp.ensemblgenomes.org'
+
+        full_ftp = f'{ftp_loc}/{url_gen}'
+        ftp_url = FTP(ftp_loc)
+        ftp_url.login()
+        ftp_url.cwd(f'{url_gen}')
+        ftp_dir = ftp_url.nlst()
+        for file in ftp_dir:
+            if file.endswith(f'{option.TYPE}.all.fa.gz'):
+                option.FTP = f'ftp://{full_ftp}{file}'
+                logging.debug(f'shortened ftp address converted to '
+                              f'long style used: {option.FTP}')
+    # --- None ftp link style name handling ---
+    logging.debug(f'long ftp address used: {option.FTP}')
     if option.FTP and option.SAVE and option.TYPE:
         if option.d:
             logging.basicConfig(level=logging.INFO,
@@ -207,11 +261,8 @@ def main():
                                        '%(message)s',
                                 filename='gEVAL_clean.log')
 
-        logging.debug('Main function has been called')
         cwd = os.getcwd()
-
         org, directory = file_jenny(option.FTP, option.SAVE)
-
         downandsave(option.FTP)
 
         # Command block to control usage of seqclean
