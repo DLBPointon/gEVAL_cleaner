@@ -55,7 +55,7 @@ FTP can be either:
 
 - Or organism name + org type in the style of:
         arabidopsis_thaliana+plants
-        
+
         This +plants refers to the ensemblgenomes directory
         so this can be:
         +plants
@@ -198,7 +198,7 @@ def parse_command_args(args=None):
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='%(prog)s  3.1.1')
+                        version='%(prog)s  3.2.0')
 
     parser.add_argument('-c', '--clean',
                         action='store_true',
@@ -238,7 +238,8 @@ def main():
             url_gen = f'pub/release-99/fasta/{name_list[0]}/{option.TYPE}/'
             ftp_loc = 'ftp.ensembl.org'
         else:
-            url_gen = f'pub/release-46/{name_list[1]}/fasta/{name_list[0]}/{option.TYPE}/'
+            url_gen = f'pub/release-46/{name_list[1]}/fasta/' \
+                      f'{name_list[0]}/{option.TYPE}/'
             ftp_loc = 'ftp.ensemblgenomes.org'
 
         full_ftp = f'{ftp_loc}/{url_gen}'
