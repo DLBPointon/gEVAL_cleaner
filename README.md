@@ -49,13 +49,20 @@ or
 This creates a such cleaner look when calling the script.
 
 -------------
-#### Args
 
-TYPE 	cdna, pep, cds.
-SAVE 	Save location for the file structure.
-FTP 	Full ftp address.
-- c = --clean 	Clean all unneeded files.
-- d = --debug   Allow the production of debug.
-- t = --time    Time the script.
---------------
+positional arguments:
+  FTP                 This argument is to be used when using an ftp address
+                      for this script
+  SAVE                Save location for the downloaded files
+  {cds,cdna,pep,all}  The type of DATA contained in the file
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -v, --version       show program's version number and exit
+  -c, --clean         Specifying this argument allows the script to clean all
+                      un-necessary files after use
+  -d, --debug         Specifying this argument allows debug prints to work and
+                      show everything the script is doing
+  -t, --time          A flag to check the run time of the script
+
 
