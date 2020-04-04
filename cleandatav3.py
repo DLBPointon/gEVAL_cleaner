@@ -23,6 +23,8 @@ DOCSTRING = """
             re       - for regex usage
             logging  - for debug logging
             time     - for waiting for file creation
+            ftplib   - for access to and searching through an
+                        ftp server
 -------------------------------------------------------------
 USE CASE FOR THE SCRIPT
 1, The aim of this script is to take an input FASTA file
@@ -233,7 +235,7 @@ def main():
     if not option.FTP.startswith('ftp://'):
         logging.debug(f'shortened ftp address used: {option.FTP}')
         name_list = option.FTP.split('+')
-        # example input being arabidopsis_thaliana+plants to help specify DB
+
         if name_list[1] == 'ensembl':
             url_gen = f'pub/release-99/fasta/{name_list[0]}/{option.TYPE}/'
             ftp_loc = 'ftp.ensembl.org'
@@ -247,12 +249,14 @@ def main():
         ftp_url.login()
         ftp_url.cwd(f'{url_gen}')
         ftp_dir = ftp_url.nlst()
+
         for file in ftp_dir:
             if file.endswith(f'{option.TYPE}.all.fa.gz'):
                 option.FTP = f'ftp://{full_ftp}{file}'
                 logging.debug(f'shortened ftp address converted to '
                               f'long style used: {option.FTP}')
     # --- None ftp link style name handling ---
+
     logging.debug(f'long ftp address used: {option.FTP}')
     if option.FTP and option.SAVE and option.TYPE:
         if option.d:
