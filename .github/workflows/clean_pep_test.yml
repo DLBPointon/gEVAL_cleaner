@@ -1,4 +1,4 @@
-name: automated_script_runner
+name: Long FTP checker - Still needs work 
 
 on:  
   push:
