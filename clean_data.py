@@ -256,6 +256,7 @@ def main():
 
         full_ftp = f'{ftp_loc}/{url_gen}'
         ftp_url = FTP(ftp_loc)
+        ftp_url.login()
         ftp_url.cwd(f'{url_gen}')
         ftp_dir = ftp_url.nlst()
 
@@ -281,13 +282,13 @@ def main():
         downandsave(option.FTP)
 
         # Command block to control usage of seqclean
-        for file in os.listdir('./'):
+        for file in os.listdir(option.SAVE):
             if file.endswith('.all.fa'):
                 if option.TYPE == 'cdna':
                     if file.endswith('cdna.all.fa'):
                         seqclean(file)
                 else:
-                    unzippedfile = f'./{file}'
+                    unzippedfile = f'{option.SAVE}{file}'
                     if os.path.exists(unzippedfile):
                         unzippedfile = file
                         logging.debug('%s EXISTS', unzippedfile)
@@ -308,7 +309,7 @@ def main():
             while not file.endswith('.clean'):
                 for file in os.listdir(cwd):
                     if file.endswith('.clean'):
-                        unzippedfile = f'./{file}'
+                        unzippedfile = f'{option.SAVE}{file}'
                         if os.path.exists(unzippedfile):
                             logging.debug('%s EXISTS', unzippedfile)
                             entryfunction(org, directory, option.TYPE,
