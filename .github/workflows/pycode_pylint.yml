@@ -23,7 +23,7 @@ jobs:
         pip install pylint
     - name: Lint with pycodestyle - will fail and stop on any issues!
       run: |
-        pycodestyle cleandata*.py
+        pycodestyle clean_data.py
     - name: pylint on code directory. N.B. always passes! Please check log below for issues.
       run: |
-        pylint --exit-zero -d logging-fstring-interpolation,logging-format-interpolation cleandata*.py
+        pylint --exit-zero -d logging-fstring-interpolation,logging-format-interpolation clean_data.py
