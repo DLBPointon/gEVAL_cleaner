@@ -1,4 +1,4 @@
-name: Long FTP checker - Still needs work 
+name: Short FTP - Still needs work
 
 on:  
   push:
@@ -26,13 +26,14 @@ jobs:
     
     - name: PEP Test Run
       run: |
-        ./cleandatav3.py ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz ./ pep
+        ./cleandatav3.py arabidopsis_thaliana+plant ./ pep
         
     - name: CDS Test Run
       run: |
-        ./cleandatav3.py ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/cds/Arabidopsis_thaliana.TAIR10.cds.all.fa.gz ./ cds
+        ./cleandatav3.py arabidopsis_thaliana+plant ./ cds
+
         
     - name: CDNA Test Run
       run: |
-        ./cleandatav3.py ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/cdna/Arabidopsis_thaliana.TAIR10.cdna.all.fa.gz ./ cdna
+        ./cleandatav3.py arabidopsis_thaliana+plant ./ cdna
         
