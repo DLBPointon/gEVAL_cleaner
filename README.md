@@ -2,7 +2,9 @@
 ---
 Code Style Check: ![Python application](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Python%20application/badge.svg?branch=master)
 
-Does the Script Run: ![automated_script_runner](https://github.com/DLBPointon/gEVAL_cleaner/workflows/automated_script_runner/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
+Does the Script Run - long commands: ![automated_script_runner](https://github.com/DLBPointon/gEVAL_cleaner/workflows/automated_script_runner/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
+
+Does the Script Run - short commands: ![Short FTP - Still needs work](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Short%20FTP%20-%20Still%20needs%20work/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
 
 ---
 ### Usage instructions
