@@ -26,14 +26,14 @@ jobs:
     
     - name: PEP Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ pep
+        ./clean_data.py arabidopsis_thaliana+plants ./ pep
         
     - name: CDS Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ cds
+        ./clean_data.py arabidopsis_thaliana+plants ./ cds
 
         
     - name: CDNA Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ cdna
+        ./clean_data.py arabidopsis_thaliana+plants ./ cdna
         
