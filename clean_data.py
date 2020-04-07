@@ -247,25 +247,22 @@ def main():
         name_list = option.FTP.split('+')
 
         if name_list[1] == 'ensembl':
-            url_gen = f'/pub/release-99/fasta/{name_list[0]}/{option.TYPE}/'
+            url_gen = f'/pub/release-99/fasta/{name_list[0]}/{option.TYPE}'
             ftp_loc = 'ftp.ensembl.org'
         else:
             url_gen = f'/pub/release-46/{name_list[1]}/fasta/' \
-                      f'{name_list[0]}/{option.TYPE}/'
+                      f'{name_list[0]}/{option.TYPE}'
             ftp_loc = 'ftp.ensemblgenomes.org'
 
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
         ftp_url.login()
         ftp_url.cwd(f'{url_gen}')
-        print(f'{full_ftp}\n'
-              f'{ftp_loc}\n'
-              f'{ftp_url}')
         ftp_dir = ftp_url.nlst()
 
         for file in ftp_dir:
             if file.endswith(f'{option.TYPE}.all.fa.gz'):
-                option.FTP = f'ftp://{full_ftp}{file}'
+                option.FTP = f'ftp://{full_ftp}/{file}'
                 logging.debug(f'shortened ftp address converted to '
                               f'long style used: {option.FTP}')
 
@@ -281,6 +278,7 @@ def main():
                                 filename='gEVAL_clean.log')
 
         cwd = os.getcwd()
+        print(option.FTP)
         org, directory = file_jenny(option.FTP, option.SAVE)
         downandsave(option.FTP)
 
