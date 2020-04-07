@@ -254,10 +254,13 @@ def main():
                       f'{name_list[0]}/{option.TYPE}/'
             ftp_loc = 'ftp.ensemblgenomes.org'
 
-        full_ftp = f'{ftp_loc}/{url_gen}'
+        full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
         ftp_url.login()
         ftp_url.cwd(f'{url_gen}')
+        print(f'{full_ftp}\n'
+              f'{ftp_loc}\n'
+              f'{ftp_url}')
         ftp_dir = ftp_url.nlst()
 
         for file in ftp_dir:
