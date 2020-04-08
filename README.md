@@ -6,6 +6,8 @@ Does the Script Run - long commands: ![automated_script_runner](https://github.c
 
 Does the Script Run - short commands: ![Short FTP - Still needs work](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Short%20FTP%20-%20Still%20needs%20work/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
 
+In-Depth changes are found in the Wiki section.
+
 ---
 ### Usage instructions
 
