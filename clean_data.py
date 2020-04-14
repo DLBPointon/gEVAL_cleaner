@@ -257,6 +257,7 @@ def main():
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
         ftp_url.login()
+        # Insert a return code check, if not 200 sys.exit()
         ftp_url.cwd(f'{url_gen}')
         ftp_dir = ftp_url.nlst()
 
@@ -278,17 +279,17 @@ def main():
                                 filename='gEVAL_clean.log')
 
         cwd = os.getcwd()
-        print(option.FTP)
+        logging.debug(' FTP == %s', option.FTP)
         org, directory = file_jenny(option.FTP, option.SAVE)
         downandsave(option.FTP)
 
         # Command block to control usage of seqclean
         for file in os.listdir(option.SAVE):
             if file.endswith('.all.fa'):
-                if option.TYPE == 'cdna':
+                if option.TYPE == 'cdna' or 'all':
                     if file.endswith('cdna.all.fa'):
                         seqclean(file)
-                else:
+                elif option.TYPE != 'cdna':
                     unzippedfile = f'{option.SAVE}{file}'
                     if os.path.exists(unzippedfile):
                         unzippedfile = file
