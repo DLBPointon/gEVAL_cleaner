@@ -28,4 +28,4 @@ jobs:
         
     - name: all run short
       run: |
-        ./clean_data.py arabidopsis+thaliana+plant ./second all
+        ./clean_data.py arabidopsis+thaliana+plants ./second all
