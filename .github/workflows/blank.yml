@@ -1,9 +1,7 @@
 name: Short FTP - Still needs work
 
 on:  
-  push:
-    branches:
-    - master
+  [push]
 
 jobs:
   build:
