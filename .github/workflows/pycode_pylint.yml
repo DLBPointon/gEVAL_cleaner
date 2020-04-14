@@ -1,9 +1,6 @@
 name: Python application
 on:
-  push:
-    branches: 
-      - master
-      - code_structure
+  [push]
 
 jobs:
   build:
