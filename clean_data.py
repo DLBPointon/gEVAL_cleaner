@@ -699,4 +699,10 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    main()
+    option = parse_command_args()
+    all_types = ['cdna', 'cds', 'pep']
+    if option.TYPE == 'all':
+        for data_type in all_types:
+            main()
+    else:
+        main()
