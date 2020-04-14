@@ -1,9 +1,7 @@
 name: Short FTP - Still needs work
 
 on:  
-  push:
-    branches:
-    - master
+  [push]
 
 jobs:
   build:
@@ -17,7 +15,7 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-        perl-version: 4.0
+        perl-version: 5.6
     
     - name: Install dependencies
       run: |
@@ -26,14 +24,14 @@ jobs:
     
     - name: PEP Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ pep
+        ./clean_data.py arabidopsis_thaliana+plants ./ pep
         
     - name: CDS Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ cds
+        ./clean_data.py arabidopsis_thaliana+plants ./ cds
 
         
     - name: CDNA Test Run
       run: |
-        ./clean_data.py arabidopsis_thaliana+plant ./ cdna
+        ./clean_data.py arabidopsis_thaliana+plants ./ cdna
         
