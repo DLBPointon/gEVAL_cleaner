@@ -253,7 +253,8 @@ def main():
             url_gen = f'/pub/release-46/{name_list[1]}/fasta/' \
                       f'{name_list[0]}/{option.TYPE}'
             ftp_loc = 'ftp.ensemblgenomes.org'
-
+        print(option.TYPE)
+        print(url_gen)
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
         ftp_url.login()
