@@ -241,11 +241,6 @@ def main():
     logging.debug('Main function has been called')
     option = parse_command_args()
 
-    all_types = ['cdna', 'cds', 'pep']
-    if option.TYPE == 'all':
-        for data_type in all_types:
-            option.TYPE = data_type
-
     # --- None ftp link style name handling ---
     if not option.FTP.startswith('ftp://'):
         logging.debug(f'shortened ftp address used: {option.FTP}')
@@ -703,4 +698,12 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    main()
+    option = parse_command_args()
+    all_types = ['cdna', 'cds', 'pep']
+    if option.TYPE == 'all':
+        for data_type in all_types:
+            option.TYPE = data_type
+            main()
+
+    else:
+        main()
