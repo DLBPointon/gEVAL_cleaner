@@ -703,6 +703,7 @@ if __name__ == '__main__':
     all_types = ['cdna', 'cds', 'pep']
     if option.TYPE == 'all':
         for data_type in all_types:
+            option.TYPE = data_type
             main()
     else:
         main()
