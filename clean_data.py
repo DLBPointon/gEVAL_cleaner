@@ -241,6 +241,11 @@ def main():
     logging.debug('Main function has been called')
     option = parse_command_args()
 
+    all_types = ['cdna', 'cds', 'pep']
+    if option.TYPE == 'all':
+        for data_type in all_types:
+            option.TYPE = data_type
+
     # --- None ftp link style name handling ---
     if not option.FTP.startswith('ftp://'):
         logging.debug(f'shortened ftp address used: {option.FTP}')
@@ -253,8 +258,6 @@ def main():
             url_gen = f'/pub/release-46/{name_list[1]}/fasta/' \
                       f'{name_list[0]}/{option.TYPE}'
             ftp_loc = 'ftp.ensemblgenomes.org'
-        print(option.TYPE)
-        print(url_gen)
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
         ftp_url.login()
@@ -700,11 +703,4 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    option = parse_command_args()
-    all_types = ['cdna', 'cds', 'pep']
-    if option.TYPE == 'all':
-        for data_type in all_types:
-            option.TYPE = data_type
-            main()
-    else:
-        main()
+    main()
