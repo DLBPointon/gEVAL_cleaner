@@ -21,11 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install argparse
-    
-    - name: all run long
-      run: |
-        ./clean_data.py ftp://ftp.ensemblgenomes.org/pub/plants/release-46/fasta/arabidopsis_thaliana/pep/Arabidopsis_thaliana.TAIR10.pep.all.fa.gz ./first all
-        
+  
     - name: all run short
       run: |
-        ./clean_data.py arabidopsis+thaliana+plants ./second all
+        ./clean_data.py arabidopsis+thaliana+plants ./second pep cds cdna
