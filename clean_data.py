@@ -46,8 +46,13 @@ seqclean usage.
 -------------------------------------------------------------
 USAGE INSTRUCTIONS
 
-./clean_data.py {FTP} {SAVE} {pep, cds, cdna, all}
+./clean_data.py {FTP} {SAVE} {pep, cds, cdna}
                  [--clean] [--debug] [--time]
+                 
+Any number of TYPE flag may be specified e.g. 
+pep, cds and cdna can all be called. 
+- Example:
+./clean_data.py arabidopsis_thaliana+plants ./save pep cds cdna
 
 FTP can be either:
 - The full ftp address for example:
@@ -205,8 +210,9 @@ def parse_command_args(args=None):
 
     parser.add_argument('TYPE',
                         type=str,
-                        choices=['cds', 'cdna', 'pep', 'all'],
-                        help='The type of DATA contained in the file')
+                        choices=['cds', 'cdna', 'pep'],
+                        help='The type of DATA contained in the file',
+                        nargs='*')
 
     parser.add_argument('-v', '--version',
                         action='version',
@@ -240,18 +246,103 @@ def main():
     """
     logging.debug('Main function has been called')
     option = parse_command_args()
+    # --- None ftp link style name handler ---
+    for options in option.TYPE:
+        options_type = options
+        option.FTP = ftp_handler(options)
 
-    # --- None ftp link style name handling ---
+        logging.debug(f'long ftp address used: {option.FTP}')
+        if option.FTP and option.SAVE and options:
+            if option.d:
+                logging.basicConfig(level=logging.INFO,
+                                    format='%(asctime)s :: '
+                                           '%(levelname)s :: '
+                                           '%(message)s',
+                                    filename='gEVAL_clean.log')
+
+            cwd = os.getcwd()
+            logging.debug(' FTP == %s', option.FTP)
+            org, directory = file_jenny(option.FTP, option.SAVE)
+            downandsave(option.FTP)
+
+            # Command block to control usage of seqclean
+            for file in os.listdir(option.SAVE):
+                if file.endswith('.all.fa'):
+                    if options == 'cdna':
+                        if file.endswith('cdna.all.fa'):
+                            print(file)
+                            seqclean(file)
+                    elif options != 'cdna':
+                        unzippedfile = f'{option.SAVE}{file}'
+                        if os.path.exists(unzippedfile):
+                            unzippedfile = file
+                            logging.debug('%s EXISTS', unzippedfile)
+                            if options == 'pep':
+                                entryfunction(org, directory, options_type,
+                                              unzippedfile, entryper=2000)
+                            else:
+                                entryfunction(org, directory, options_type,
+                                              unzippedfile, entryper=3000)
+                            readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                         NUMB_HEADERS, MISSING_ENS,
+                                         MISSING_GENE, GENE_NAME, GENE_ENS,
+                                         ENS_STYLE_ENS, directory, options_type)
+
+            # Command block to control seqclean and the following entryfunction
+            if options == 'cdna':
+                time_counter = 0
+                while not file.endswith('.clean'):
+                    for file in os.listdir(cwd):
+                        if file.endswith('.clean'):
+                            unzippedfile = f'{option.SAVE}{file}'
+                            if os.path.exists(unzippedfile):
+                                logging.debug('%s EXISTS', unzippedfile)
+                                entryfunction(org, directory, options_type,
+                                              unzippedfile, entryper=5000)
+                                readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                             NUMB_HEADERS, MISSING_ENS,
+                                             MISSING_GENE, GENE_NAME,
+                                             GENE_ENS, ENS_STYLE_ENS,
+                                             directory, options_type)
+                                break
+
+                        else:
+                            time.sleep(0.05)
+                            time_counter += 1
+                            logging.debug(f'File not found {0}'
+                                          f' {1}'.format(time_counter, file))
+                            print(f' File not found {time_counter} {file}')
+
+                        real_count = time_counter / 20
+                        logging.info('File found in %s', real_count)
+                        print(f'Run Time of {real_count}')
+
+    if option.c:
+        print('Cleaning')
+        logging.debug('Cleaning Called')
+        clean_file_system()
+
+    print("Script is Done!")
+    logging.debug('Main function finished')
+
+
+def ftp_handler(options):
+    """
+    A function to handle which FTP has been passed by option.FTP
+    as well as searching through the ftp server
+    """
+    option = parse_command_args()
+
     if not option.FTP.startswith('ftp://'):
         logging.debug(f'shortened ftp address used: {option.FTP}')
         name_list = option.FTP.split('+')
 
         if name_list[1] == 'ensembl':
-            url_gen = f'/pub/release-99/fasta/{name_list[0]}/{option.TYPE}'
+            url_gen = f'/pub/release-99/fasta/{name_list[0]}/{options}'
             ftp_loc = 'ftp.ensembl.org'
         else:
             url_gen = f'/pub/release-46/{name_list[1]}/fasta/' \
-                      f'{name_list[0]}/{option.TYPE}'
+                      f'{name_list[0]}/{options}'
             ftp_loc = 'ftp.ensemblgenomes.org'
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
@@ -261,85 +352,11 @@ def main():
         ftp_dir = ftp_url.nlst()
 
         for file in ftp_dir:
-            if file.endswith(f'{option.TYPE}.all.fa.gz'):
+            if file.endswith(f'{options}.all.fa.gz'):
                 option.FTP = f'ftp://{full_ftp}/{file}'
                 logging.debug(f'shortened ftp address converted to '
                               f'long style used: {option.FTP}')
-
-    # --- None ftp link style name handling ---
-
-    logging.debug(f'long ftp address used: {option.FTP}')
-    if option.FTP and option.SAVE and option.TYPE:
-        if option.d:
-            logging.basicConfig(level=logging.INFO,
-                                format='%(asctime)s :: '
-                                       '%(levelname)s :: '
-                                       '%(message)s',
-                                filename='gEVAL_clean.log')
-
-        cwd = os.getcwd()
-        logging.debug(' FTP == %s', option.FTP)
-        org, directory = file_jenny(option.FTP, option.SAVE)
-        downandsave(option.FTP)
-
-        # Command block to control usage of seqclean
-        for file in os.listdir(option.SAVE):
-            if file.endswith('.all.fa'):
-                if option.TYPE == 'cdna' or 'all':
-                    if file.endswith('cdna.all.fa'):
-                        seqclean(file)
-                elif option.TYPE != 'cdna':
-                    unzippedfile = f'{option.SAVE}{file}'
-                    if os.path.exists(unzippedfile):
-                        unzippedfile = file
-                        logging.debug('%s EXISTS', unzippedfile)
-                        if option.TYPE == 'pep':
-                            entryfunction(org, directory, option.TYPE,
-                                          unzippedfile, entryper=2000)
-                        else:
-                            entryfunction(org, directory, option.TYPE,
-                                          unzippedfile, entryper=3000)
-                        readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
-                                     NUMB_HEADERS, MISSING_ENS,
-                                     MISSING_GENE, GENE_NAME, GENE_ENS,
-                                     ENS_STYLE_ENS, directory, option.TYPE)
-
-        # Command block to control seqclean and the following entryfunction
-        if option.TYPE == 'cdna':
-            time_counter = 0
-            while not file.endswith('.clean'):
-                for file in os.listdir(cwd):
-                    if file.endswith('.clean'):
-                        unzippedfile = f'{option.SAVE}{file}'
-                        if os.path.exists(unzippedfile):
-                            logging.debug('%s EXISTS', unzippedfile)
-                            entryfunction(org, directory, option.TYPE,
-                                          unzippedfile, entryper=5000)
-                            readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
-                                         NUMB_HEADERS, MISSING_ENS,
-                                         MISSING_GENE, GENE_NAME,
-                                         GENE_ENS, ENS_STYLE_ENS,
-                                         directory, option.TYPE)
-                            break
-
-                    else:
-                        time.sleep(0.05)
-                        time_counter += 1
-                        logging.debug(f'File not found {0}'
-                                      f' {1}'.format(time_counter, file))
-                        print(f' File not found {time_counter} {file}')
-
-                    real_count = time_counter / 20
-                    logging.info('File found in %s', real_count)
-                    print(f'Run Time of {real_count}')
-
-    if option.c:
-        print('Cleaning')
-        logging.debug('Cleaning Called')
-        clean_file_system()
-
-    print("Script is Done!")
-    logging.debug('Main function finished')
+    return option.FTP
 
 
 def file_jenny(ftp, save):
@@ -661,7 +678,7 @@ def seqclean(path):
     requires correcting.
     """
     logging.debug('Seqclean called')
-
+    print(path)
     try:
         logging.info('Running Seq_clean script')
         os.popen(f'./seqclean/seqclean {path}')
@@ -673,9 +690,6 @@ def seqclean(path):
         os.popen(f'./nfs/users/nfs_w/wc2/tools/seqclean/seqclean {path}')
         logging.debug('Finished, Your file is here: %s.clean', path)
         print('Secondary seqclean site')
-
-    else:
-        logging.debug('Seqclean locations are wrong')
 
     logging.debug('seqclean finished')
 
@@ -698,12 +712,4 @@ def clean_file_system():
 
 
 if __name__ == '__main__':
-    option = parse_command_args()
-    all_types = ['cdna', 'cds', 'pep']
-    if option.TYPE == 'all':
-        for data_type in all_types:
-            option.TYPE = data_type
-            main()
-
-    else:
-        main()
+    main()
