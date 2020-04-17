@@ -21,7 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install argparse
-    
-    - name: all run long
+
+    - name: all run short
       run: |
-        ./clean_data.py arabidopsis_thaliana+plants ./ pep cds cdna
+        ./clean_data.py arabidopsis+thaliana+plants ./second all
