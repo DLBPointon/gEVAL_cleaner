@@ -48,9 +48,9 @@ USAGE INSTRUCTIONS
 
 ./clean_data.py {FTP} {SAVE} {pep, cds, cdna}
                  [--clean] [--debug] [--time]
-                 
-Any number of TYPE flag may be specified e.g. 
-pep, cds and cdna can all be called. 
+
+Any number of TYPE flag may be specified e.g.
+pep, cds and cdna can all be called.
 - Example:
 ./clean_data.py arabidopsis_thaliana+plants ./save pep cds cdna
 
@@ -286,7 +286,8 @@ def main():
                             readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
                                          NUMB_HEADERS, MISSING_ENS,
                                          MISSING_GENE, GENE_NAME, GENE_ENS,
-                                         ENS_STYLE_ENS, directory, options_type)
+                                         ENS_STYLE_ENS, directory,
+                                         options_type)
 
             # Command block to control seqclean and the following entryfunction
             if options == 'cdna':
