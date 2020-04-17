@@ -24,4 +24,4 @@ jobs:
     
     - name: all run long
       run: |
-        ./clean_data.py arabidopsis_thaliana+plants ./ all
+        ./clean_data.py arabidopsis_thaliana+plants ./ pep cds cdna
