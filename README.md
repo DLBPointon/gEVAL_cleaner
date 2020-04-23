@@ -1,8 +1,8 @@
-# cleandata.py by dp24
+# clean_data.py by dp24
 ---
-Code Style Check:                     ![Python application](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Python%20application/badge.svg?branch=master)
+Code Style Check:![Python application](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Python%20application/badge.svg?branch=master)
 
-Does the Script Run - long commands: ![automated_script_runner](https://github.com/DLBPointon/gEVAL_cleaner/workflows/automated_script_runner/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
+Does the Script Run - long commands:![automated_script_runner](https://github.com/DLBPointon/gEVAL_cleaner/workflows/automated_script_runner/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
 
 Does the Script Run - short commands: ![Short FTP - Still needs work](https://github.com/DLBPointon/gEVAL_cleaner/workflows/Short%20FTP%20-%20Still%20needs%20work/badge.svg?branch=master) - Still requires a final check to test for contents of folders.
 
@@ -45,6 +45,18 @@ If org is not in ensemblgenomes then use:
 
 This will tell the script so search ftp.ensembl.org not ftp.ensemblgenomes.org
 
+./clean_data.py ftp://ftp.ensembl.org/pub/release-99/
+                fasta/mesocricetus_auratus/cdna/
+                Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz
+                ./test cdna
+
+or
+
+./clean_data.py mesocricetus_auratus+ensembl ./test cdna
+
+This creates a much cleaner look when calling the script.
+
+
 -------------------------------------------------------------
 
 Positional arguments:
@@ -61,5 +73,3 @@ Optional arguments:
 - d, --debug         Specifying this argument allows debug prints to work and
                      show everything the script is doing
 - t, --time          A flag to check the run time of the script
-
-
