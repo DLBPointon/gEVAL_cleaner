@@ -312,7 +312,6 @@ def main():
                             time_counter += 1
                             logging.debug(f'File not found {0}'
                                           f' {1}'.format(time_counter, file))
-                            print(f' File not found {time_counter} {file}')
 
                         real_count = time_counter / 20
                         logging.info('File found in %s', real_count)
@@ -528,8 +527,7 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
     filecounter = 0
     entry = []
     filesavedto = f'{directory[1]}/{data_type}/'
-    short_save_dir = f'{option.SAVE}{filesavedto}{org}{filecounter}' \
-                     f'{data_type}'
+    short_save_dir = f'{option.SAVE}{filesavedto}{org}'
     logging.info('Supplied data is %s', data_type)
 
     if os.path.exists(unzippedfile):
@@ -568,26 +566,29 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
 
                 if count == entryper:
                     filecounter += 1
-                    with open(f'{short_save_dir}.MOD.fa', 'w') as done:
+                    with open(f'{short_save_dir}{filecounter}'
+                              f'{data_type}.MOD.fa', 'w') as done:
                         for head, body in entry:
                             done.write(f'{head}\n{body}\n')
 
                         count = 0
                         entry = []
 
-                    logging.debug('File saved:\n'
-                                  '%s.MOD.fa',
-                                  short_save_dir)
+                    logging.debug(f'File saved:\n{short_save_dir}'
+                                  f'{filecounter}{data_type}.MOD.fa')
 
                 filecounter += 1
-            with open(f'{short_save_dir}.MOD.fa', 'w') as done:
+            with open(f'{short_save_dir}{filecounter}'
+                      f'{data_type}.MOD.fa', 'w') as done:
                 for head, body in entry:
                     done.write(f'{head}\n{body}\n')
 
+                # Although labelled as not used,
+                # the nature of this loop does ensure that it is in use
                 entry = []
 
-            logging.debug(f'File saved:\n{0}'
-                          f'{1}.MOD.fa'.format(option.SAVE, short_save_dir))
+                logging.debug(f'File saved:\n{short_save_dir}'
+                              f'{filecounter}{data_type}.MOD.fa')
     else:
         print('Not found')
         logging.debug('Cannot find unzipped file')
