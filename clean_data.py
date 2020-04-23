@@ -346,10 +346,16 @@ def ftp_handler(options):
             ftp_loc = 'ftp.ensemblgenomes.org'
         full_ftp = f'{ftp_loc}{url_gen}'
         ftp_url = FTP(ftp_loc)
-        ftp_url.login()
-        # Insert a return code check, if not 200 sys.exit()
-        ftp_url.cwd(f'{url_gen}')
-        ftp_dir = ftp_url.nlst()
+
+        ftp_code = ftp_url.login()
+        if ftp_code == '230 Login successful.':
+            ftp_url.cwd(f'{url_gen}')
+            ftp_dir = ftp_url.nlst()
+            logging.debug('230 FTP response, carrying on')
+        else:
+            logging.debug('Login to FTP server unsuccessful,'
+                          'script cannot run')
+            sys.exit()
 
         for file in ftp_dir:
             if file.endswith(f'{options}.all.fa.gz'):
