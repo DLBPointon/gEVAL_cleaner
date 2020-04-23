@@ -583,6 +583,8 @@ def entryfunction(org, directory, data_type, unzippedfile, entryper):
                 for head, body in entry:
                     done.write(f'{head}\n{body}\n')
 
+                # Although labelled as not used,
+                # the nature of this loop does ensure that it is in use
                 entry = []
 
                 logging.debug(f'File saved:\n{short_save_dir}'

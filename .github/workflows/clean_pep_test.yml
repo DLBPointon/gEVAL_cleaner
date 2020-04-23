@@ -1,9 +1,7 @@
 name: Long FTP checker - Still needs work 
 
 on:  
-  push:
-    branches:
-    - master
+  [push]
 
 jobs:
   build:
