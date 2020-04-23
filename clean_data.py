@@ -225,17 +225,6 @@ def parse_command_args(args=None):
                             use''',
                         dest='c')
 
-    parser.add_argument('-d', '--debug',
-                        action='store_true',
-                        help='''Specifying this argument allows debug
-                            prints to work and show everything the script is
-                            doing''',
-                        dest='d')
-
-    parser.add_argument('-t', '--time',
-                        action='store_true',
-                        help='A flag to check the run time of the script')
-
     option = parser.parse_args(args)
     return option
 
@@ -244,78 +233,77 @@ def main():
     """
     The Main function which controls the logic for the script
     """
-    logging.debug('Main function has been called')
     option = parse_command_args()
+
     # --- None ftp link style name handler ---
+
+    logging.basicConfig(filename='clean_data.log',
+                        level=logging.DEBUG,
+                        filemode='w',
+                        format='%(asctime)s :: %(levelname)s :: %(message)s')
+    logging.warning('Debug has been activated by default')
+
+    logging.debug('Main function has been called')
+
     for options in option.TYPE:
         options_type = options
         option.FTP = ftp_handler(options)
 
-        logging.debug(f'long ftp address used: {option.FTP}')
-        if option.FTP and option.SAVE and options:
-            if option.d:
-                logging.basicConfig(level=logging.INFO,
-                                    format='%(asctime)s :: '
-                                           '%(levelname)s :: '
-                                           '%(message)s',
-                                    filename='gEVAL_clean.log')
+        cwd = os.getcwd()
+        org, directory = file_jenny(option.FTP, option.SAVE)
+        downandsave(option.FTP)
 
-            cwd = os.getcwd()
-            logging.debug(' FTP == %s', option.FTP)
-            org, directory = file_jenny(option.FTP, option.SAVE)
-            downandsave(option.FTP)
-
-            # Command block to control usage of seqclean
-            for file in os.listdir(option.SAVE):
-                if file.endswith('.all.fa'):
-                    if options == 'cdna':
-                        if file.endswith('cdna.all.fa'):
-                            print(file)
-                            seqclean(file)
-                    elif options != 'cdna':
-                        unzippedfile = f'{option.SAVE}{file}'
-                        if os.path.exists(unzippedfile):
-                            unzippedfile = file
-                            logging.debug('%s EXISTS', unzippedfile)
-                            if options == 'pep':
-                                entryfunction(org, directory, options_type,
-                                              unzippedfile, entryper=2000)
-                            else:
-                                entryfunction(org, directory, options_type,
-                                              unzippedfile, entryper=3000)
-                            readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
-                                         NUMB_HEADERS, MISSING_ENS,
-                                         MISSING_GENE, GENE_NAME, GENE_ENS,
-                                         ENS_STYLE_ENS, directory,
-                                         options_type)
+        # Command block to control usage of seqclean
+        for file in os.listdir(option.SAVE):
+            if file.endswith('.all.fa'):
+                if options == 'cdna':
+                    if file.endswith('cdna.all.fa'):
+                        print(file)
+                        seqclean(file)
+                elif options != 'cdna':
+                    unzippedfile = f'{option.SAVE}{file}'
+                    if os.path.exists(unzippedfile):
+                        unzippedfile = file
+                        logging.debug('%s EXISTS', unzippedfile)
+                        if options == 'pep':
+                            entryfunction(org, directory, options_type,
+                                          unzippedfile, entryper=2000)
+                        else:
+                            entryfunction(org, directory, options_type,
+                                          unzippedfile, entryper=3000)
+                        readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                     NUMB_HEADERS, MISSING_ENS,
+                                     MISSING_GENE, GENE_NAME, GENE_ENS,
+                                     ENS_STYLE_ENS, directory,
+                                     options_type)
 
             # Command block to control seqclean and the following entryfunction
-            if options == 'cdna':
-                time_counter = 0
-                while not file.endswith('.clean'):
-                    for file in os.listdir(cwd):
-                        if file.endswith('.clean'):
-                            unzippedfile = f'{option.SAVE}{file}'
-                            if os.path.exists(unzippedfile):
-                                logging.debug('%s EXISTS', unzippedfile)
-                                entryfunction(org, directory, options_type,
-                                              unzippedfile, entryper=5000)
-                                readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
-                                             NUMB_HEADERS, MISSING_ENS,
-                                             MISSING_GENE, GENE_NAME,
-                                             GENE_ENS, ENS_STYLE_ENS,
-                                             directory, options_type)
-                                break
+        if options == 'cdna':
+            time_counter = 0
+            while not file.endswith('.clean'):
+                for file in os.listdir(cwd):
+                    if file.endswith('.clean'):
+                        unzippedfile = f'{option.SAVE}{file}'
+                        if os.path.exists(unzippedfile):
+                            logging.debug('%s EXISTS', unzippedfile)
+                            entryfunction(org, directory, options_type,
+                                          unzippedfile, entryper=5000)
+                            readme_jenny(NONE_ENS_GENE, NONE_ENS_S,
+                                         NUMB_HEADERS, MISSING_ENS,
+                                         MISSING_GENE, GENE_NAME,
+                                         GENE_ENS, ENS_STYLE_ENS,
+                                         directory, options_type)
+                            break
 
-                        else:
-                            time.sleep(0.05)
-                            time_counter += 1
-                            logging.debug(f'File not found {0}'
-                                          f' {1}'.format(time_counter, file))
+                    else:
+                        time.sleep(0.05)
+                        time_counter += 1
+                        logging.debug(f'File not found {0}'
+                                      f' {1}'.format(time_counter, file))
 
-                        real_count = time_counter / 20
-                        logging.info('File found in %s', real_count)
-                        print(f'Run Time of {real_count}')
+                    real_count = time_counter / 20
+                    logging.info('File found in %s', real_count)
+                    print(f'Run Time of {real_count}')
 
     if option.c:
         print('Cleaning')
@@ -620,12 +608,10 @@ def massage(name, data_type):
     global GENE_ENS
     global ENS_STYLE_ENS
 
-    logging.debug('Massage started')
     if data_type == 'pep' or 'cds' or 'cdna':
 
         if name.startswith('>'):
             NUMB_HEADERS += 1
-            logging.info('Renaming headers')
             gene_symbol = re.search(r'symbol:(\S+)', name)
             ens_code = re.search(r'ENS(\w+)T(\w+.\d+)', name)
 
