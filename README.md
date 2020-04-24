@@ -17,7 +17,7 @@ PLEASE BE AWARE THAT THIS RELEASE IS SPECIFIC FOR __***ensemblgenomes.org releas
 USAGE INSTRUCTIONS
 
 ./clean_data.py {FTP} {SAVE} {pep, cds, cdna}
-                 [--clean] [--debug] [--time]
+                 [--clean]
 
 Any number of TYPE flag may be specified e.g.
 pep, cds and cdna can all be called.
@@ -70,6 +70,3 @@ Optional arguments:
 - v, --version       show program's version number and exit
 - c, --clean         Specifying this argument allows the script to clean all
                      un-necessary files after use
-- d, --debug         Specifying this argument allows debug prints to work and
-                     show everything the script is doing
-- t, --time          A flag to check the run time of the script
