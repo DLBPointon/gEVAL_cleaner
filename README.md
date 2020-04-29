@@ -70,3 +70,7 @@ Optional arguments:
 - v, --version       show program's version number and exit
 - c, --clean         Specifying this argument allows the script to clean all
                      un-necessary files after use
+---
+### Acknowledgements
+
+Seqclean has not been written by my self, it is legacy code in use by GRIT at Sanger.
