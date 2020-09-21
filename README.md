@@ -20,33 +20,26 @@ NCBI Example:
 
 -------------------------------------------------------------
 
-positional arguments:
 
-  FTP                   This argument is to be used when using an ftp address
-                        for this script
-                        
-  SAVE                  Save location for the downloaded files
-  
-  {ens,ncbi}            Specify the FTP
-  
-  {cds,cdna,pep,rna}    The type of DATA contained in the file
+Positional Arguments:
+|ARGUMENT|EXPLANATION| 
+|---|---|
+|  FTP  | This argument is to be used when using an ftp address for this script|
+|  SAVE | Save location for the downloaded files|
+|{ens,ncbi}| Specify the FTP|
+|{cds,cdna,pep,rna}|The type of DATA contained in the file|
+---------
 
-optional arguments:
+Optional Arguments:
 
-  -h, --help            show this help message and exit
-  
-  -NAME NAME, --organism_ncbi NAME
-                        If using ncbi FTP, then the organisms name must be
-                        provided due to how they name their files
-                        
-  -v, --version         show program's version number and exit
-  
-  -c, --clean           Specifying this argument allows the script to clean
-                        all un-necessary files after use
-                        
-  -d, --debug           Specifying this argument allows debug prints to work
-                        and creates a log file documenting everything the 
-                        script does.
+|ARGUMENT|EXPLANATION| 
+|---|---|
+|-h, --help |show this help message and exit.|
+| -NAME NAME, --organism_ncbi NAME | If using ncbi FTP, then the organisms name must be provided due to how they name their files |
+|-v, --version|show program's version number and exit|
+|-c, --clean|Specifying this argument allows the script to clean all un-necessary files after use|
+|-d, --debug |Specifying this argument allows debug prints to workand creates a log file documenting everything the script does.|
+--------
 
 ---
 ### Acknowledgements
