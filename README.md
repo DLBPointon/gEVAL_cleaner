@@ -5,13 +5,17 @@ In-Depth changes are found in the Wiki section.
 ---
 ### Usage instructions
 
-./clean_data.py {FTP} {SAVE} {FTP_TYPE [ncbi|ens]}{pep, cds, cdna} [-NAME] [--debug] [--clean]
+./clean_data.py {FTP} {SAVE} {FTP_TYPE [ncbi|ens]} {pep, cds, cdna} [-NAME] [--debug] [--clean]
 -NAME is required when using ncbi data due to their naming scheme.
 
+
 Ensembl Example:
+
 ./cleaning_gEVAL_data.py ftp://ftp.ensembl.org/pub/release-99/fasta/mesocricetus_auratus/cdna/Mesocricetus_auratus.MesAur1.0.cdna.all.fa.gz ./ ens cdna
 
+
 NCBI Example:
+
 ./cleaning_gEVAL_data.py https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/184/155/GCF_000184155.1_FraVesHawaii_1.0/GCF_000184155.1_FraVesHawaii_1.0_protein.faa.gz ./ ncbi pep -NAME Fragaria_Vesca 
 
 -------------------------------------------------------------
