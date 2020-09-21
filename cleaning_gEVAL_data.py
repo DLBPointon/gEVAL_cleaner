@@ -63,6 +63,23 @@ a file is produced.
 5, Finally folders can be cleaned and debug logs can be read
 if needed.
 -------------------------------------------------------------
+CONTACT
+    - dp24@sanger.ac.uk
+          and/or
+    - grit@sanger.ac.uk
+-------------------------------------------------------------
+FILE STRUCTURE - if save == './'
+                        ./Organism Name
+                        -------------
+                              |
+                              |
+                Organism Name + Accession No.
+                              |
+                              |
+            ------------------------------------
+            |         |         |      |       |
+            cDNA   Peptide     CDS    RNA   README.txt
+--------------------------------------------------------------
 """
 
 PRINT_ERROR = '''Does not exist\n
