@@ -44,4 +44,4 @@ Optional Arguments:
 ---
 ### Acknowledgements
 
-Seqclean has not been written by my self, it was pridced by the Dana-Farber Cancer Institute and used in GRIT operations.
+Seqclean has not been written by my self, it was produced by the Dana-Farber Cancer Institute and used in GRIT operations.
