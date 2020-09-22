@@ -1,11 +1,11 @@
-# clean_gEVAL_data.py by dp24
+# cleaning_gEVAL_data.py by dp24
 ---
 In-Depth changes are found in the Wiki section.
 
 ---
 ### Usage instructions
 
-./clean_data.py {FTP} {SAVE} {FTP_TYPE [ncbi|ens]} {pep, cds, cdna} [-NAME] [--debug] [--clean]
+./cleaning_gEVAL_data.py {FTP} {SAVE} {FTP_TYPE [ncbi|ens]} {pep, cds, cdna} [-NAME] [--debug] [--clean]
 -NAME is required when using ncbi data due to their naming scheme.
 
 
