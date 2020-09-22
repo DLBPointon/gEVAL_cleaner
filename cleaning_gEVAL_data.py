@@ -159,9 +159,9 @@ def parse_command_args(args=None):
     :param args:
     :return option:
     """
-    # Although This Chunk is Highlighted as an Error,
+    # Although the parser Chunk is highlighted as an error,
     # it is correct and does function as intended.
-    parser = argparse.ArgumentParser(prog='Clean the gEVAL Supporting DATA',
+    parser = argparse.ArgumentParser(prog='Cleaning_gEVAL_data.py',
                                      description=DOCSTRING,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -384,7 +384,8 @@ def seqclean(option):
     :return file_to_seq:
     """
     if option.FTP_TYPE == 'ens':
-        file_to_seq = re.search(r'\/fasta\/\w+\/\w+\/(\w*.+).gz', option.FTP)
+        file_to_seq = re.search(r'\/fasta\/\w+\/\w+\/(\w*.+).gz',
+                                option.FTP)
         file_to_seq = file_to_seq.group(1)
     else:
         file_to_seq = re.search(r'\/(GC\w*.\w*.\w+).gz', option.FTP)
@@ -442,11 +443,14 @@ def entryfunction(option, seq_file, org, directory, entryper):
         if os.path.exists(file_path):
             logging.info('File found at %s', file_path)
             with open(file_path, 'r') as filetoparse:
+                # Logging is here inorder to stop un-needed
+                # repetition in log
                 logging.info('Renaming headers')
                 for name, seq in read_fasta(filetoparse):
-                    # Logging is here inorder to stop un-needed repetition in log
                     new_name = massage(option, name)
-                    print(new_name)  # Here as a manual check of headers
+                    if option.d:
+                        print(new_name)  # Here as a manual check of
+                                         # headers
                     nameseq = new_name, seq
                     entry.append(nameseq)
                     count += 1
@@ -460,7 +464,8 @@ def entryfunction(option, seq_file, org, directory, entryper):
                             count = 0
                             entry = []
                         logging.info('File saved:\n '
-                                     '%s %i %s .MOD.fa', short_save_dir, filecounter, data_type)
+                                     '%s %i %s .MOD.fa', short_save_dir,
+                                     filecounter, data_type)
 
                     filecounter += 1
 
@@ -472,7 +477,8 @@ def entryfunction(option, seq_file, org, directory, entryper):
                     entry = []
 
                     logging.info('File saved:\n '
-                                 '%s %i %s .MOD.fa', short_save_dir, filecounter, data_type)
+                                 '%s %i %s .MOD.fa', short_save_dir,
+                                 filecounter, data_type)
 
 
 # Should be changed as if, elif statements in this way are
@@ -480,8 +486,8 @@ def entryfunction(option, seq_file, org, directory, entryper):
 # expansive to catch the best data possible.
 def massage(option, name):
     """
-    A function to 'massage' the sequence headers into a more human readable
-    style
+    A function to 'massage' the sequence headers into a more human
+    readable style
     :param option:
     :param name:
     :return name:
@@ -583,7 +589,8 @@ def read_fasta(filetoparse):
 # Alot more stats that could be added, but is it worth it?
 def readme_jenny(directory, data_type):
     """
-    A function to generate a README.txt with relevant stats and information.
+    A function to generate a README.txt with relevant stats and
+    information.
     :param directory:
     :param data_type:
     """
