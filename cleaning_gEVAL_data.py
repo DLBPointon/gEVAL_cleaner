@@ -39,6 +39,7 @@ NOTE:- -NAME is required if using ncbi address due to their
 
 EXAMPLES
 Found on the GitHub Page:
+    https://github.com/DLBPointon/gEVAL_cleaner
 
 
 -------------------------------------------------------------
