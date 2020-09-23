@@ -20,7 +20,8 @@ NCBI Example:
 ./cleaning_gEVAL_data.py https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/184/155/GCF_000184155.1_FraVesHawaii_1.0/GCF_000184155.1_FraVesHawaii_1.0_protein.faa.gz ./ ncbi pep -NAME Fragaria_Vesca 
 
 -------------------------------------------------------------
-USE CASE FOR THE SCRIPT
+### What does this script do?
+
 1, The aim of this script is to take an input FASTA file
 (whether cdna, cds, pep or rna) from ensembl or ncbi.
 
@@ -38,6 +39,7 @@ a file is produced.
 
 6, Finally folders can be cleaned and debug logs can be read
 if needed.
+
 -------------------------------------------------------------
 
 Positional Arguments:
@@ -47,6 +49,7 @@ Positional Arguments:
 |  SAVE | Save location for the downloaded files|
 |{ens,ncbi}| Specify the FTP|
 |{cds,cdna,pep,rna}|The type of DATA contained in the file|
+
 ---------
 
 Optional Arguments:
@@ -59,6 +62,7 @@ Optional Arguments:
 |-c, --clean|Specifying this argument allows the script to clean all un-necessary files after use|
 |-d, --debug |Specifying this argument allows debug prints to workand creates a log file documenting everything the script does.|
 |-ep, --override_entryper | Overrides to hard coded options to split various data types (defaults are cdna/5000, pep/200 and everything else 3000). |
+
 --------
 
 ### Contacts
