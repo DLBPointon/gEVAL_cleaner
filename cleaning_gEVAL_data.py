@@ -33,6 +33,7 @@ USAGE INSTRUCTIONS
 ./clean_data.py {FTP} {SAVE} {ens | ncbi}
                 {pep, cds, cdna, rna}
                 [-NAME] [-c, --clean] [-d, --debug]
+                [-ep, --overide_entryper]
 NOTE:- -NAME is required if using ncbi address due to their
     naming scheme
 
@@ -51,17 +52,17 @@ USE CASE FOR THE SCRIPT
 
 2, This is downloaded and Unzipped.
 
-2, If Data type is cdna, seqclean is called (may have to
+3, If Data type is cdna, seqclean is called (may have to
 be modified for data sets with high N count).
 
-3, File is read and Headers are split away from the
+4, File is read and Headers are split away from the
 sequence and massaged into an easy read format.
 
-3, New headers and sequence are merged and counted.
+5, New headers and sequence are merged and counted.
 Once the count reaches a set number (for each data type)
 a file is produced.
 
-5, Finally folders can be cleaned and debug logs can be read
+6, Finally folders can be cleaned and debug logs can be read
 if needed.
 -------------------------------------------------------------
 CONTACT
@@ -149,6 +150,8 @@ MISSING_GENE = 0
 GENE_NAME = 0
 GENE_ENS = 0
 ENS_STYLE_ENS = 0
+
+
 # ----- NAMING CONSTANTS -----
 
 
@@ -183,7 +186,7 @@ def parse_command_args(args=None):
 
     parser.add_argument('TYPE',
                         type=str,
-                        choices=['cds', 'cdna', 'pep'],
+                        choices=['cds', 'cdna', 'pep', 'rna'],
                         help='The type of DATA contained in the file',
                         nargs='*')
 
@@ -213,6 +216,14 @@ def parse_command_args(args=None):
                             doing''',
                         dest='d')
 
+    parser.add_argument('-ep', '--entry_override',
+                        type=int,
+                        action='store',
+                        help='''Specifying this argument allows debug
+                            prints to work and show everything the script is
+                            doing''',
+                        dest='ep')
+
     option = parser.parse_args(args)
     return option
 
@@ -223,7 +234,6 @@ def main():
     controlling logic of the script
     """
     option = parse_command_args()
-
     if option.d:
         logging.basicConfig(filename="cleaning.log",
                             level=logging.DEBUG,
@@ -233,7 +243,7 @@ def main():
                      '%s', option)
 
     # Check for -NAME and -FTP_TYPE, if one and not the other then exit
-    if option.FTP_TYPE and not option.name:
+    if option.FTP_TYPE == 'ncbi' and not option.name:
         logging.critical('Argument -NAME is required when ncbi is used')
         sys.exit()
 
@@ -242,21 +252,20 @@ def main():
 
     # Set the file name we want to use
     seq_file = re.search(r'\/(\w+.\w+.\w+.all.fa)', option.FTP)
-    if seq_file:
+    if seq_file is None:
         # For Ens
-        seq_file = seq_file.group(1)
+        seq_file = re.search(r'\/(\w+.\w+.\w+.\w+.all.fa)', option.FTP)
     else:
         # For NCBI
         seq_file = re.search(r'(\w+.\w+.\w+).gz', file)
-        seq_file = seq_file.group(1)
         if not seq_file.startswith('GC'):
-            file = re.search(r'(\w+.\w+.\w+.\w+).gz', file)
-            seq_file = file.group(1)
+            seq_file = re.search(r'(\w+.\w+.\w+.\w+).gz', file)
         else:
             logging.critical('Regex Couldn\'t find the right file name.'
                              'Found: %s', seq_file)
             sys.exit()
 
+    seq_file = seq_file.group(1)
     logging.info('File to use: %s', seq_file)
     print(seq_file)
 
@@ -266,13 +275,19 @@ def main():
             # Re-Sets file name we want to play with
             seq_file = seqclean(option)
             seq_file = f'{seq_file}.clean'
-            entryper = 5000
 
-        elif dtype == 'pep':
-            entryper = 2000
+        if option.ep:
+            entryper = option.ep
         else:
-            # cds and rna
-            entryper = 3000
+            if dtype == 'cdna':
+                entryper = 5000
+
+            elif dtype == 'pep':
+                entryper = 2000
+
+            else:
+                # cds and rna
+                entryper = 3000
 
         logging.info('Type of data: %s \n So entry per file is: %i',
                      dtype, entryper)
@@ -294,20 +309,21 @@ def ftp_check(option):
     if option.FTP_TYPE == 'ens':
         logging.info('Ensembl')
         file = re.search(r'\/(\w+.\w+.\w+.\w+.\w+.gz)', ftp)
-        file = file.group(1)
+        if file is None:
+            file = re.search(r'\/(\w+.\w+.\w+.\w+.\w+.\w+.gz)', ftp)
     elif option.FTP_TYPE == 'ncbi':
         logging.info('NCBI')
         file = re.search(r'(\w+.\w+.\w+.gz)', ftp)
-        file = file.group(1)
         if not file.startswith('GC'):
             file = re.search(r'(\w+.\w+.\w+.\w+.gz)', ftp)
-            file = file.group(1)
         else:
             pass
 
     else:
         logging.critical('Proper file name can\'t be derived')
         sys.exit()
+
+    file = file.group(1)
 
     curling = sub.Popen(['curl', f'-o{file}', f'{ftp}'],
                         stdout=sub.PIPE,
@@ -450,7 +466,7 @@ def entryfunction(option, seq_file, org, directory, entryper):
                     new_name = massage(option, name)
                     if option.d:
                         print(new_name)  # Here as a manual check of
-                                         # headers
+                        # headers
                     nameseq = new_name, seq
                     entry.append(nameseq)
                     count += 1
