@@ -252,22 +252,17 @@ def main():
 
     # Set the file name we want to use
     seq_file = re.search(r'\/(\w+.\w+.\w+.all.fa)', option.FTP)
-    if seq_file is None:
-        # For Ens
+    if seq_file is None and option.FTP_TYPE == 'ens':
         seq_file = re.search(r'\/(\w+.\w+.\w+.\w+.all.fa)', option.FTP)
+    elif option.FTP_TYPE == 'ncbi':
+        seq_file = re.search(r'(GC.+).gz', file)
     else:
-        # For NCBI
-        seq_file = re.search(r'(\w+.\w+.\w+).gz', file)
-        if not seq_file.startswith('GC'):
-            seq_file = re.search(r'(\w+.\w+.\w+.\w+).gz', file)
-        else:
-            logging.critical('Regex Couldn\'t find the right file name.'
+        logging.critical('Regex Couldn\'t find the right file name.'
                              'Found: %s', seq_file)
-            sys.exit()
+        sys.exit()
 
     seq_file = seq_file.group(1)
     logging.info('File to use: %s', seq_file)
-    print(seq_file)
 
     # CURRENTLY A LIST TO FACILITATE MULTI-FETCHING
     for dtype in option.TYPE:
@@ -314,8 +309,10 @@ def ftp_check(option):
     elif option.FTP_TYPE == 'ncbi':
         logging.info('NCBI')
         file = re.search(r'(\w+.\w+.\w+.gz)', ftp)
+        file = file.group(1)
         if not file.startswith('GC'):
             file = re.search(r'(\w+.\w+.\w+.\w+.gz)', ftp)
+            file = file.group(1)
         else:
             pass
 
@@ -323,7 +320,9 @@ def ftp_check(option):
         logging.critical('Proper file name can\'t be derived')
         sys.exit()
 
-    file = file.group(1)
+    if option.FTP_TYPE == 'ens':
+        if file:
+            file = file.group(1)
 
     curling = sub.Popen(['curl', f'-o{file}', f'{ftp}'],
                         stdout=sub.PIPE,
@@ -404,8 +403,8 @@ def seqclean(option):
                                 option.FTP)
         file_to_seq = file_to_seq.group(1)
     else:
-        file_to_seq = re.search(r'\/(GC\w*.\w*.\w+).gz', option.FTP)
-        file_to_seq = file_to_seq.group(1)
+        file_to_seq = re.search(r'\/(GC.+)\/(GC.+).gz', option.FTP)
+        file_to_seq = file_to_seq.group(2)
 
     cwd = os.getcwd()
 
