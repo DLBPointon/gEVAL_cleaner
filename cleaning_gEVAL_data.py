@@ -224,6 +224,13 @@ def parse_command_args(args=None):
                             doing''',
                         dest='ep')
 
+    parser.add_argument('-seq', '--seqclean-overide',
+                        action='store_true',
+                        help='''Specifying this argument will allow the script
+                            to ignore the use of seqclean, useful in cases where
+                            shotgun sequencing and high N counts are expected''',
+                        dest='seq')
+
     option = parser.parse_args(args)
     return option
 
@@ -251,9 +258,9 @@ def main():
     directory = directory_jenny(option, org_name)
 
     # Set the file name we want to use
-    seq_file = re.search(r'\/(\w+.\w+.\w+.all.fa)', option.FTP)
+    seq_file = re.search(r'(\w+.\w+.\w+.all.fa)', option.FTP)
     if seq_file is None and option.FTP_TYPE == 'ens':
-        seq_file = re.search(r'\/(\w+.\w+.\w+.\w+.all.fa)', option.FTP)
+        seq_file = re.search(r'(\w+.\w+.\w+.\w+.all.fa)', option.FTP)
     elif option.FTP_TYPE == 'ncbi':
         seq_file = re.search(r'(GC.+).gz', file)
     else:
@@ -266,10 +273,12 @@ def main():
 
     # CURRENTLY A LIST TO FACILITATE MULTI-FETCHING
     for dtype in option.TYPE:
-        if dtype == 'cdna':
+        if dtype == 'cdna' and option.seq == False:
             # Re-Sets file name we want to play with
             seq_file = seqclean(option)
             seq_file = f'{seq_file}.clean'
+        else:
+            seq_file=seq_file
 
         if option.ep:
             entryper = option.ep
@@ -358,7 +367,7 @@ def directory_jenny(option, org_name):
         org_name = org_from_name.group(1)
         accession = org_from_name.group(2)
     else:
-        acc = re.search(r'\/GC._\w+.(\w+)',
+        acc = re.search(r'GC._\w+.(\w+)',
                         option.FTP)
         accession_re = acc.group(1).split('_')
         accession = accession_re[1]
@@ -450,7 +459,7 @@ def entryfunction(option, seq_file, org, directory, entryper):
         filesavedto = f'{directory[1]}/{data_type}/'
         short_save_dir = f'{option.SAVE}{filesavedto}{org}'
 
-        if data_type == 'cdna':
+        if data_type == 'cdna' and option.seq == False:
             file_path = f'{seq_file}.clean'
         else:
             file_path = seq_file
