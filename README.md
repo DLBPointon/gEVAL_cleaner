@@ -62,6 +62,7 @@ Optional Arguments:
 |-c, --clean|Specifying this argument allows the script to clean all un-necessary files after use|
 |-d, --debug |Specifying this argument allows debug prints to workand creates a log file documenting everything the script does.|
 |-ep, --override_entryper | Overrides to hard coded options to split various data types (defaults are cdna/5000, pep/200 and everything else 3000). |
+|-seq, --seqclean-override | Overrides the seqclean function for cdna data, this is particularly useful for shotgun data and data with high N count which would otherwise break this module. BE AWARE this will need significant cleaning !! |
 
 --------
 
@@ -82,4 +83,4 @@ Alternatively leave an issue on this repo.
 ---
 ### Acknowledgements
 
-Seqclean has not been written by my self, it was produced by the Dana-Farber Cancer Institute and used in GRIT operations.
+Seqclean has not been written by my self, it was produced by the Dana-Farber Cancer Institute and is used in GRIT operations.
